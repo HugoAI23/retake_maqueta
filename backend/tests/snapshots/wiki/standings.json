@@ -1,0 +1,29 @@
+{
+  "consulted": {
+    "source": "wiki",
+    "url": "https://cod-esports.fandom.com/api.php?action=cargoquery&format=json&tables=Standings&where=OverviewPage LIKE 'Call of Duty League/2026%'",
+    "date": "2026-09-23",
+    "used_for": "Tabla de posiciones con puntos (fuente de respaldo de la tabla, RF-75 de la 002)"
+  },
+  "notes": [],
+  "content": {
+    "cargoquery": [
+      {
+        "OverviewPage": "Call of Duty League/2026 Season",
+        "Team": "Boston Breach",
+        "Place": "10",
+        "Points": "115",
+        "WinSeries": "12",
+        "LossSeries": "25"
+      },
+      {
+        "OverviewPage": "Call of Duty League/2026 Season",
+        "Team": "Carolina Royal Ravens",
+        "Place": "9",
+        "Points": "150",
+        "WinSeries": "16",
+        "LossSeries": "22"
+      }
+    ]
+  }
+}

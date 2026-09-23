@@ -1,0 +1,43 @@
+{
+  "consulted": {
+    "source": "bp",
+    "url": "https://breakingpoint.gg/players/27/Shotzzy",
+    "date": "2026-09-23",
+    "used_for": "Datos personales publicados, retirada e historial de equipos (roster con fechas)"
+  },
+  "notes": [
+    "El país solo se publica como country_id numérico; la tabla de países no se ha encontrado.",
+    "No publica gamertags anteriores.",
+    "Se omiten redes sociales, fotos y apodos: la 002 no los usa."
+  ],
+  "content": {
+    "player": {
+      "id": 27,
+      "tag": "Shotzzy",
+      "first_name": "Anthony",
+      "last_name": "Cuevas-Castro",
+      "date_of_birth": "2001-07-04",
+      "country_id": 234,
+      "current_team_id": 4,
+      "retired": false
+    },
+    "teamHistory": [
+      {
+        "player_id": 27,
+        "team_id": 14,
+        "team_name": "Dallas Empire",
+        "start_date": "2019-10-15",
+        "end_date": "2021-11-08",
+        "role_name": "Player"
+      },
+      {
+        "player_id": 27,
+        "team_id": 4,
+        "team_name": "OpTic Texas",
+        "start_date": "2021-11-08",
+        "end_date": null,
+        "role_name": "Player"
+      }
+    ]
+  }
+}

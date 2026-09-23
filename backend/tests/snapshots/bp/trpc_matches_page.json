@@ -1,0 +1,117 @@
+{
+  "consulted": {
+    "source": "bp",
+    "url": "https://breakingpoint.gg/api/trpc/cached.matches.fetchMatchesPage?input={json:{seasonId:2026,status:'completed',cdlOnly:true,eventIds:[101],pageSize:25,slug:'cod',direction:'forward'}}",
+    "date": "2026-09-23",
+    "used_for": "Partidos de un evento, paginados con nextCursor (API interna JSON)"
+  },
+  "notes": [
+    "status en origen: 'complete'; el origen del bracket se publica como winner_next_match_id / loser_next_match_id en el partido de origen.",
+    "round.bracket_side: winners, elimination, grand_final o none."
+  ],
+  "content": {
+    "data": [
+      {
+        "id": 214853,
+        "event_id": 101,
+        "datetime": "2026-02-01T23:00:00+00:00",
+        "best_of": 7,
+        "team_1_id": 4,
+        "team_2_id": 743,
+        "winner_id": 743,
+        "team_1_score": 3,
+        "team_2_score": 4,
+        "status": "complete",
+        "winner_next_match_id": null,
+        "loser_next_match_id": null,
+        "winner_next_match_team_position": null,
+        "loser_next_match_team_position": null,
+        "completed_at": "2026-02-02T02:11:52.185+00:00",
+        "points_earned": 25,
+        "is_tiebreaker": false,
+        "updated_at": "2026-02-02T00:34:26.229+00:00",
+        "round": {
+          "name": "Grand Finals",
+          "stage": "playoffs",
+          "bracket_side": "grand_final"
+        },
+        "event": {
+          "id": 101,
+          "name": "CDL Major 1 Tournament",
+          "tier": "Tournament",
+          "type": "Offline",
+          "start_date": "2026-01-29",
+          "end_date": "2026-02-01",
+          "qualifier_event_id": 100
+        },
+        "team1": {
+          "id": 4,
+          "event_id": 101,
+          "name": "OpTic Texas",
+          "name_short": "TX",
+          "logo_darkmode": "https://dfpiiufxcciujugzjvgx.supabase.co/storage/v1/object/public/teams/TX-OpTic-color-darkmode.png",
+          "color_hex": "#93C852"
+        },
+        "team2": {
+          "id": 743,
+          "event_id": 101,
+          "name": "Paris Gentle Mates",
+          "name_short": "M8",
+          "logo_darkmode": "https://dfpiiufxcciujugzjvgx.supabase.co/storage/v1/object/public/teams/Team%20Logos/Paris_Gentle_Mates.webp",
+          "color_hex": "#edb0e5"
+        }
+      },
+      {
+        "id": 214852,
+        "event_id": 101,
+        "datetime": "2026-02-01T21:30:00+00:00",
+        "best_of": 5,
+        "team_1_id": 743,
+        "team_2_id": 1,
+        "winner_id": 743,
+        "team_1_score": 3,
+        "team_2_score": 2,
+        "status": "complete",
+        "winner_next_match_id": 214853,
+        "loser_next_match_id": null,
+        "winner_next_match_team_position": "team2",
+        "loser_next_match_team_position": null,
+        "completed_at": "2026-02-01T23:26:34.939+00:00",
+        "points_earned": 15,
+        "is_tiebreaker": false,
+        "updated_at": "2025-10-29T21:36:42.805722+00:00",
+        "round": {
+          "name": "Elimination Finals",
+          "stage": "playoffs",
+          "bracket_side": "elimination"
+        },
+        "event": {
+          "id": 101,
+          "name": "CDL Major 1 Tournament",
+          "tier": "Tournament",
+          "type": "Offline",
+          "start_date": "2026-01-29",
+          "end_date": "2026-02-01",
+          "qualifier_event_id": 100
+        },
+        "team1": {
+          "id": 743,
+          "event_id": 101,
+          "name": "Paris Gentle Mates",
+          "name_short": "M8",
+          "logo_darkmode": "https://dfpiiufxcciujugzjvgx.supabase.co/storage/v1/object/public/teams/Team%20Logos/Paris_Gentle_Mates.webp",
+          "color_hex": "#edb0e5"
+        },
+        "team2": {
+          "id": 1,
+          "event_id": 101,
+          "name": "FaZe Vegas",
+          "name_short": "FV",
+          "logo_darkmode": "https://dfpiiufxcciujugzjvgx.supabase.co/storage/v1/object/public/teams/Team%20Logos/FaZe_Vegaslogo_square.webp",
+          "color_hex": "#db1de6"
+        }
+      }
+    ],
+    "nextCursor": null
+  }
+}

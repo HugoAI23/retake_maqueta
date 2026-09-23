@@ -1,0 +1,58 @@
+{
+  "consulted": {
+    "source": "cdl",
+    "url": "https://assets.blz-contentstack.com/v3/assets/blta7b34f1f894a2422/blt7d66c444aa2f15b0/6a8f43c02437ed3b6cd48670/2026-regular-standings.json",
+    "date": "2026-09-23",
+    "used_for": "Tabla de posiciones oficial de la temporada regular (rank y cdlPoints)"
+  },
+  "notes": [
+    "La dirección cambia con cada versión del archivo; se descubre desde el CMS de la página (content-types/tab), que respondió 503 de forma intermitente.",
+    "13 filas en la temporada 2026."
+  ],
+  "content": {
+    "standings": [
+      {
+        "standing": {
+          "programTeamId": 6,
+          "rank": 1,
+          "cdlPoints": 650,
+          "eventsPlayed": 0
+        },
+        "teamCard": {
+          "id": 6,
+          "name": "OpTic Texas",
+          "abbreviation": "TX",
+          "darkLogoUrl": "https://images.blz-contentstack.com/v3/assets/blta7b34f1f894a2422/blt4bee833057845797/618af2431bb8c23cf8bbede5/cdl_optic_texas_icon_light.svg?auto=webp"
+        }
+      },
+      {
+        "standing": {
+          "programTeamId": 7,
+          "rank": 2,
+          "cdlPoints": 540,
+          "eventsPlayed": 0
+        },
+        "teamCard": {
+          "id": 7,
+          "name": "FaZe Vegas",
+          "abbreviation": "VGS",
+          "darkLogoUrl": "https://images.blz-contentstack.com/v3/assets/blta7b34f1f894a2422/bltdea71ea67a2999d7/68cc24e4e6f87a2d6e27a6c6/Asset_14.svg?auto=webp"
+        }
+      },
+      {
+        "standing": {
+          "programTeamId": 69,
+          "rank": 3,
+          "cdlPoints": 515,
+          "eventsPlayed": 0
+        },
+        "teamCard": {
+          "id": 69,
+          "name": "Los Angeles Thieves",
+          "abbreviation": "LAT",
+          "darkLogoUrl": "https://images.blz-contentstack.com/v3/assets/blta7b34f1f894a2422/blt78b043271782b3f4/5fac2b07a9e913483b74d214/cdl_thieves_logo-b-w.svg?auto=webp"
+        }
+      }
+    ]
+  }
+}

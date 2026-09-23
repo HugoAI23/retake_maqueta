@@ -1,0 +1,36 @@
+{
+  "consulted": {
+    "source": "wiki",
+    "url": "https://cod-esports.fandom.com/api.php?action=cargoquery&format=json&tables=TournamentResults&where=OverviewPage='Call of Duty League Championship 2026'",
+    "date": "2026-09-23",
+    "used_for": "Clasificación final y premio por equipo de un campeonato del historial"
+  },
+  "notes": [
+    "No trae el porcentaje de la bolsa: solo aparece en el HTML de la página (action=parse).",
+    "El nombre de la página del Champs sigue el patrón de CDL-data-analysis (2020-2026: 'Call of Duty League Championship AAAA')."
+  ],
+  "content": {
+    "cargoquery": [
+      {
+        "OverviewPage": "Call of Duty League Championship 2026",
+        "Event": "Call of Duty League Championship 2026",
+        "Date": "2026-07-19",
+        "Place": "1",
+        "Prize USD": "800000",
+        "Team": "FaZe Vegas",
+        "RosterPage": "Call of Duty League Championship 2026",
+        "Date__precision": "1"
+      },
+      {
+        "OverviewPage": "Call of Duty League Championship 2026",
+        "Event": "Call of Duty League Championship 2026",
+        "Date": "2026-07-19",
+        "Place": "2",
+        "Prize USD": "480000",
+        "Team": "OpTic Texas",
+        "RosterPage": "Call of Duty League Championship 2026",
+        "Date__precision": "1"
+      }
+    ]
+  }
+}
