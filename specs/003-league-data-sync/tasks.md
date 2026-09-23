@@ -3,7 +3,7 @@
 - **Spec**: [`spec.md`](spec.md) (`Aprobado`, 2026-09-23, con la revisión R-1)
 - **Plan**: [`plan.md`](plan.md) (`Aprobado`, 2026-09-23)
 - **Fecha**: `2026-09-23`
-- **Estado**: `Aprobado` (aprobado por Hugo el 2026-09-23). En implementación: **F0 completada** el 2026-09-23 (decisiones en `source-map.md` §5 y registro del plan I-1 a I-8); tareas de F1 en adelante ajustadas a esas decisiones.
+- **Estado**: `Aprobado` (aprobado por Hugo el 2026-09-23). En implementación: **F0 y F1 completadas** el 2026-09-23 (decisiones de F0 en `source-map.md` §5; ajustes en el registro del plan, I-1 a I-12).
 
 Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los requisitos que cubre (**RF**), de qué tareas depende (**Dep.**) y cuándo se considera terminada (**Hecho cuando**).
 
@@ -69,35 +69,35 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
 
 ## F1 — Dependencias, configuración y modelo de datos
 
-- [ ] **T-008** Añadir con uv las dependencias de H-1, H-2, H-7 y H-9: httpx (de desarrollo pasa a principal), requests (Wiki, I-1), beautifulsoup4, argon2-cffi y pillow; y como dependencia de desarrollo, responses (pruebas de requests sin internet).
+- [x] **T-008** Añadir con uv las dependencias de H-1, H-2, H-7 y H-9: httpx (de desarrollo pasa a principal), requests (Wiki, I-1), beautifulsoup4, argon2-cffi y pillow; y como dependencia de desarrollo, responses (pruebas de requests sin internet).
   - **RF:** —
   - **Dep.:** T-007
   - **Hecho cuando:** `uv sync` instala todo y las pruebas de la 002 siguen en verde.
-- [ ] **T-009** `app/config`: variables nuevas: `SOURCE_MODE` (`fixtures`, `real` o `simulated`), `TRUSTED_PROXY` (opcional). La cookie de sesión va con `Secure` en producción. La configuración rechaza `simulated` y `fixtures` en producción. Añadirlas a `.env.example`, sin valores secretos.
+- [x] **T-009** `app/config`: variables nuevas: `SOURCE_MODE` (`fixtures`, `real` o `simulated`), `TRUSTED_PROXY` (opcional). La cookie de sesión va con `Secure` en producción. La configuración rechaza `simulated` y `fixtures` en producción. Añadirlas a `.env.example`, sin valores secretos.
   - **RF:** RF-9, RF-11
   - **Dep.:** T-008
   - **Hecho cuando:** pruebas de configuración en verde, incluido el rechazo en producción.
-- [ ] **T-010** Migración, parte de ingesta: `external_ref.last_seen_at` y `retained_since`; `observation.invalid_reason` (`impossible` o `unreadable`); `changed_at` en las tablas resueltas; `match.stats_complete_at` y `disappeared_at`.
+- [x] **T-010** Migración, parte de ingesta: `external_ref.last_seen_at` y `retained_since`; `observation.invalid_reason` (`impossible` o `unreadable`); `changed_at` en las tablas resueltas; `match.stats_complete_at` y `disappeared_at`.
   - **RF:** RF-48 a RF-52, RF-55, RF-157
   - **Dep.:** T-008
   - **Hecho cuando:** la migración se aplica sobre una base de datos con los datos de prueba de la 002 sin perder nada.
-- [ ] **T-011** Migración, parte de logos y frescura: `logo_image`, `identity.logo_image_id` y `dataset_change`.
+- [x] **T-011** Migración, parte de logos y frescura: `logo_image`, `identity.logo_image_id` y `dataset_change`.
   - **RF:** RF-65 a RF-71, RF-155, RF-158
   - **Dep.:** T-010
   - **Hecho cuando:** la migración se aplica y se deshace sin errores.
-- [ ] **T-012** Migración, parte de obtención: `source_state`, `sync_job`, `sync_request`, `sync_run`, `incident` (única por fuente, tipo, dato, valor y motivo), `incident_day` y `daily_summary`, con listas cerradas mediante CHECK (como en la 002).
+- [x] **T-012** Migración, parte de obtención: `source_state`, `sync_job`, `sync_request`, `sync_run`, `incident` (única por fuente, tipo, dato, valor y motivo), `incident_day` y `daily_summary`, con listas cerradas mediante CHECK (como en la 002).
   - **RF:** RF-100 a RF-114, RF-140 a RF-154
   - **Dep.:** T-011
   - **Hecho cuando:** la migración se aplica y se deshace sin errores.
-- [ ] **T-013** Migración, parte de administración: `admin_user` (una sola fila), `admin_session` (solo el *hash* del identificador) y `login_origin`.
+- [x] **T-013** Migración, parte de administración: `admin_user` (una sola fila), `admin_session` (solo el *hash* del identificador) y `login_origin`.
   - **RF:** RF-121, RF-125, RF-127, RF-134
   - **Dep.:** T-012
   - **Hecho cuando:** la migración se aplica y se deshace sin errores.
-- [ ] **T-014** Pruebas del esquema: todas las tablas y columnas nuevas existen; las restricciones rechazan valores fuera de las listas cerradas; `admin_user` no admite una segunda fila.
+- [x] **T-014** Pruebas del esquema: todas las tablas y columnas nuevas existen; las restricciones rechazan valores fuera de las listas cerradas; `admin_user` no admite una segunda fila.
   - **RF:** RF-121
   - **Dep.:** T-013
   - **Hecho cuando:** las pruebas pasan desde una base de datos vacía.
-- [ ] **T-015 · Cierre F1**
+- [x] **T-015 · Cierre F1**
   - **Dep.:** T-008 a T-014
   - **Hecho cuando:** las pruebas están en verde, se ha entregado la guía manual (tablas nuevas en `psql`) y se ha sugerido el commit.
 
@@ -105,7 +105,7 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
 
 ## F2 — Reglas de dominio
 
-- [ ] **T-016** `domain/vocabulary`: tipos de consulta, resultados, tipos de incidencia, conjuntos de datos y umbrales (60 s y 1 h; ciclos de página de 30 s y 5 min) como listas y constantes únicas.
+- [ ] **T-016** `domain/vocabulary`: umbrales (60 s y 1 h; ciclos de página de 30 s y 5 min) como constantes únicas. *(Las listas cerradas —tipos de consulta, resultados, tipos de incidencia, conjuntos de datos, formatos de logo— se adelantaron a F1 porque las necesitaban las restricciones de la migración; registro del plan I-9.)*
   - **RF:** RF-16, RF-18, RF-89
   - **Dep.:** T-015
   - **Hecho cuando:** los modelos y las migraciones importan de aquí las listas cerradas.

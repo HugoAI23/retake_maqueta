@@ -3,13 +3,16 @@
 Las credenciales nunca se escriben en el código (constitución §6.3): se leen de
 `DATABASE_URL` y `TEST_DATABASE_URL`. `backend/.env` queda fuera de git; solo se
 sube `backend/.env.example`, sin secretos.
+
+La spec 003 añade el modo de fuente (`SOURCE_MODE`) y el proxy de confianza
+(`TRUSTED_PROXY`), y deriva de `APP_ENV` si la cookie de sesión es segura.
 """
 
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import ValidationError
+from pydantic import ValidationError, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Ruta absoluta de backend/.env, para que funcione se ejecute desde donde se ejecute.
@@ -29,6 +32,13 @@ class Settings(BaseSettings):
             Solo la necesitan las pruebas de integración.
         app_env: Entorno de ejecución. En `production` no se cargan datos
             ficticios ni se publica `/docs` (plan §5).
+        source_mode: De dónde salen los datos de la liga (spec 003, RF-9 a RF-11):
+            `fixtures` (datos de prueba de la 002), `real` (las fuentes) o
+            `simulated` (fuente simulada con escenarios). En producción solo `real`;
+            en las pruebas automáticas nunca `real`.
+        trusted_proxy: Dirección del proxy cuya cabecera `X-Forwarded-For` se
+            acepta para saber el origen de un intento de acceso (plan D-10). Sin
+            valor, el origen es siempre la dirección de la conexión.
     """
 
     model_config = SettingsConfigDict(env_file=ENV_FILE, extra="ignore")
@@ -36,6 +46,35 @@ class Settings(BaseSettings):
     database_url: str
     test_database_url: str | None = None
     app_env: Literal["development", "test", "production"] = "development"
+    source_mode: Literal["fixtures", "real", "simulated"] = "fixtures"
+    trusted_proxy: str | None = None
+
+    @field_validator("trusted_proxy", mode="before")
+    @classmethod
+    def _empty_proxy_is_none(cls, value: object) -> object:
+        """`TRUSTED_PROXY=` vacío en `.env` significa "sin proxy de confianza"."""
+        return None if isinstance(value, str) and not value.strip() else value
+
+    @property
+    def session_cookie_secure(self) -> bool:
+        """La cookie de sesión del administrador solo viaja por HTTPS en producción (plan §9)."""
+        return self.app_env == "production"
+
+
+def _check_source_mode(settings: Settings) -> None:
+    """Rechaza las combinaciones de entorno y modo de fuente que prohíbe la spec 003.
+
+    Raises:
+        ConfigError: en producción con un modo distinto de `real` (RF-9), o en las
+            pruebas con `real` (RF-10).
+    """
+    if settings.app_env == "production" and settings.source_mode != "real":
+        raise ConfigError(
+            f"En producción solo se admite SOURCE_MODE=real (ahora: {settings.source_mode}): "
+            "nunca se usan datos de prueba ni la fuente simulada."
+        )
+    if settings.app_env == "test" and settings.source_mode == "real":
+        raise ConfigError("SOURCE_MODE=real no se admite con APP_ENV=test: las pruebas no consultan las fuentes reales.")
 
 
 def load_settings(**overrides) -> Settings:
@@ -45,10 +84,11 @@ def load_settings(**overrides) -> Settings:
         **overrides: Valores que sustituyen a los del entorno (útil en pruebas).
 
     Raises:
-        ConfigError: si falta una variable obligatoria o un valor no es válido.
+        ConfigError: si falta una variable obligatoria, un valor no es válido o el
+            modo de fuente no se admite en ese entorno.
     """
     try:
-        return Settings(**overrides)
+        settings = Settings(**overrides)
     except ValidationError as error:
         problems = []
         for issue in error.errors():
@@ -61,6 +101,8 @@ def load_settings(**overrides) -> Settings:
             "Configuración incompleta: " + "; ".join(problems)
             + f". Revisa {ENV_FILE} (hay un ejemplo en .env.example)."
         ) from None
+    _check_source_mode(settings)
+    return settings
 
 
 @lru_cache

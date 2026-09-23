@@ -33,6 +33,12 @@ from app.db.models import (
 
 NOW = datetime(2026, 9, 22, 12, 0, tzinfo=UTC)
 
+SPEC_002_TABLES = (
+    "external_ref", "ref_link", "observation", "season", "event", "franchise", "identity", "player",
+    "player_gamertag", "roster_membership", "match", "match_schedule", "match_slot", "match_map",
+    "player_map_stats", "standing", "championship", "placement", "placement_roster",
+)
+
 
 def test_la_migracion_crea_todas_las_tablas_de_los_modelos(clean_db):
     tables = set(inspect(clean_db).get_table_names()) - {"alembic_version"}
@@ -92,7 +98,8 @@ def test_una_fila_en_cada_tabla(clean_db):
         session.commit()
 
     with Session(clean_db) as session:
-        for model in Base.metadata.tables:
+        # Solo las tablas de la spec 002: las de la 003 las prueba test_schema_003.py.
+        for model in SPEC_002_TABLES:
             count = session.connection().exec_driver_sql(f'SELECT count(*) FROM "{model}"').scalar_one()
             assert count >= 1, f"la tabla {model} está vacía"
         stored = session.query(PlayerMapStats).one()

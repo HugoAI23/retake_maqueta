@@ -1,7 +1,7 @@
 [project]
 name = "retake-backend"
 version = "0.1.0"
-description = "Backend de Retake: datos de la liga (spec 002)."
+description = "Backend de Retake: datos de la liga (spec 002) y su obtención y actualización (spec 003)."
 requires-python = ">=3.13"
 dependencies = [
     "fastapi",
@@ -11,6 +11,11 @@ dependencies = [
     "alembic",
     "pydantic-settings",
     "pyyaml",
+    "httpx>=0.28.1",
+    "requests>=2.34.2",
+    "beautifulsoup4>=4.15.0",
+    "argon2-cffi>=25.1.0",
+    "pillow>=12.3.0",
 ]
 
 [project.scripts]
@@ -19,7 +24,7 @@ retake = "app.cli:main"
 [dependency-groups]
 dev = [
     "pytest",
-    "httpx",
+    "responses>=0.26.3",
 ]
 
 [build-system]

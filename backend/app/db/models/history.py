@@ -1,7 +1,7 @@
 """Tabla de posiciones e historial de campeonatos mundiales (plan de la spec 002, §3.2)."""
 
 import uuid
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 
 from sqlalchemy import (
@@ -18,7 +18,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
-from app.db.models.types import corrected_fields_column, uuid_pk
+from app.db.models.types import changed_at_column, corrected_fields_column, uuid_pk
 
 
 class Standing(Base):
@@ -38,6 +38,7 @@ class Standing(Base):
     franchise_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("franchise.id", ondelete="CASCADE"))
     position: Mapped[int | None] = mapped_column(Integer)
     points: Mapped[int | None] = mapped_column(Integer)
+    changed_at: Mapped[datetime | None] = changed_at_column()
 
 
 class Championship(Base):
@@ -56,6 +57,7 @@ class Championship(Base):
     game_abbreviation: Mapped[str | None] = mapped_column(String(16))
     final_date: Mapped[date | None] = mapped_column(Date)
     completed: Mapped[bool] = mapped_column(Boolean, server_default=text("false"), default=False)
+    changed_at: Mapped[datetime | None] = changed_at_column()
 
 
 class Placement(Base):
@@ -83,6 +85,7 @@ class Placement(Base):
     prize_usd: Mapped[Decimal | None] = mapped_column(Numeric(12, 2))
     pool_percent: Mapped[Decimal | None] = mapped_column(Numeric(6, 3))
     corrected_fields: Mapped[list[str]] = corrected_fields_column()
+    changed_at: Mapped[datetime | None] = changed_at_column()
 
 
 class PlacementRoster(Base):

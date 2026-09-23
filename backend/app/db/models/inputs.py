@@ -13,7 +13,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import Uuid
 
 from app.db.base import Base
-from app.db.models.types import LINK_TYPES, SOURCES, closed_values
+from app.db.models.types import INVALID_REASONS, LINK_TYPES, SOURCES, closed_values
 
 
 class ExternalRef(Base):
@@ -21,6 +21,12 @@ class ExternalRef(Base):
 
     `entity_id` apunta a la entidad interna a la que pertenece (jugador, franquicia,
     partido…) una vez agrupada con las demás referencias de la misma entidad.
+
+    Spec 003:
+    - `last_seen_at`: última consulta con éxito que incluyó la referencia; sirve para
+      detectar desapariciones y reapariciones (RF-50 a RF-52).
+    - `retained_since`: si está retenida por no poder enlazarse con una entidad existente,
+      desde cuándo (RF-55). Una referencia retenida no forma parte de ninguna entidad visible.
     """
 
     __tablename__ = "external_ref"
@@ -32,6 +38,8 @@ class ExternalRef(Base):
     source_id: Mapped[str] = mapped_column(String(255))
     entity_id: Mapped[uuid.UUID | None] = mapped_column(Uuid, index=True)
     fictional: Mapped[bool] = mapped_column(Boolean, server_default=text("false"), default=False)
+    last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    retained_since: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class RefLink(Base):
@@ -53,6 +61,10 @@ class Observation(Base):
     dato "ya había llegado" aunque se descartara (RF-98, RF-100). Un valor nulo en
     `value` significa que la fuente lo publica como ausente; si el campo nunca llegó,
     no hay fila (RF-65).
+
+    `invalid_reason` dice por qué no es válida (spec 003, plan D-8): `impossible` (el dato
+    pasa a ausente, RF-100 de la 002) o `unreadable` (cede el turno a otra fuente o se
+    conserva el valor registrado, RF-48 y RF-49).
     """
 
     __tablename__ = "observation"
@@ -63,5 +75,6 @@ class Observation(Base):
     field: Mapped[str] = mapped_column(String(64))
     value: Mapped[object | None] = mapped_column(JSONB(none_as_null=True))
     is_valid: Mapped[bool] = mapped_column(Boolean)
+    invalid_reason: Mapped[str | None] = mapped_column(closed_values("invalid_reason", INVALID_REASONS))
     first_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     last_seen_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

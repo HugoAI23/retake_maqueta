@@ -23,6 +23,7 @@ from app.db.models.types import (
     MATCH_STATUSES,
     ORIGIN_OUTCOMES,
     PHASES,
+    changed_at_column,
     closed_values,
     corrected_fields_column,
     uuid_pk,
@@ -53,6 +54,9 @@ class Match(Base):
     - `phase` nula = fase desconocida (RF-134).
     - `status` solo avanza: scheduled → live → finished (RF-62, plan §3.4).
     - `maps_won_*`, `live_*` y `winner_side` se rellenan según el estado (RF-36 a RF-39).
+    - Spec 003: `stats_complete_at` (todas sus estadísticas registradas; abre la ventana
+      de revisión de 7 días, RF-19 a RF-21) y `disappeared_at` (desaparecido de las
+      fuentes, RF-50 a RF-52).
     """
 
     __tablename__ = "match"
@@ -80,6 +84,9 @@ class Match(Base):
     live_score_2: Mapped[int | None] = mapped_column(Integer)
     winner_side: Mapped[int | None] = mapped_column(SmallInteger)
     corrected_fields: Mapped[list[str]] = corrected_fields_column()
+    stats_complete_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    disappeared_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    changed_at: Mapped[datetime | None] = changed_at_column()
 
 
 class MatchSchedule(Base):
@@ -144,6 +151,7 @@ class MatchMap(Base):
     score_2: Mapped[int | None] = mapped_column(Integer)
     winner_side: Mapped[int | None] = mapped_column(SmallInteger)
     corrected_fields: Mapped[list[str]] = corrected_fields_column()
+    changed_at: Mapped[datetime | None] = changed_at_column()
 
 
 class PlayerMapStats(Base):
@@ -182,3 +190,4 @@ class PlayerMapStats(Base):
     zone_captures: Mapped[int | None] = mapped_column(Integer)
     overloads: Mapped[int | None] = mapped_column(Integer)
     corrected_fields: Mapped[list[str]] = corrected_fields_column()
+    changed_at: Mapped[datetime | None] = changed_at_column()

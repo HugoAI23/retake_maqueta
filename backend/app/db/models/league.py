@@ -7,7 +7,7 @@ from sqlalchemy import DateTime, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
-from app.db.models.types import uuid_pk
+from app.db.models.types import changed_at_column, uuid_pk
 
 
 class Season(Base):
@@ -24,6 +24,7 @@ class Season(Base):
     year: Mapped[int] = mapped_column(Integer, unique=True)
     name: Mapped[str | None] = mapped_column(String(64))
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    changed_at: Mapped[datetime | None] = changed_at_column()
 
 
 class Event(Base):
@@ -34,6 +35,7 @@ class Event(Base):
     id: Mapped[uuid.UUID] = uuid_pk()
     season_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("season.id", ondelete="CASCADE"))
     name: Mapped[str] = mapped_column(String(255))
+    changed_at: Mapped[datetime | None] = changed_at_column()
 
 
 class Franchise(Base):
@@ -51,6 +53,9 @@ class Identity(Base):
     """Nombre corto, abreviatura, logo y colores de una franquicia desde una fecha (RF-11, RF-74).
 
     Cualquier cambio de esos cinco datos crea una identidad nueva (RF-73).
+
+    `logo_image_id` apunta a la copia propia del logo (spec 003, RF-65); `logo_url`
+    conserva la dirección original publicada por la fuente.
     """
 
     __tablename__ = "identity"
@@ -64,3 +69,5 @@ class Identity(Base):
     primary_color: Mapped[str | None] = mapped_column(String(16))
     secondary_color: Mapped[str | None] = mapped_column(String(16))
     valid_from: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    logo_image_id: Mapped[str | None] = mapped_column(ForeignKey("logo_image.id", ondelete="SET NULL"))
+    changed_at: Mapped[datetime | None] = changed_at_column()

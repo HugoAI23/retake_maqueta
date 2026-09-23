@@ -7,7 +7,7 @@ from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, String, Uni
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
-from app.db.models.types import ROLES, closed_values, uuid_pk
+from app.db.models.types import ROLES, changed_at_column, closed_values, uuid_pk
 
 
 class Player(Base):
@@ -31,6 +31,7 @@ class Player(Base):
     retired: Mapped[bool] = mapped_column(Boolean, server_default=text("false"), default=False)
     role: Mapped[str | None] = mapped_column(closed_values("role", ROLES))
     personal_data_removed: Mapped[bool] = mapped_column(Boolean, server_default=text("false"), default=False)
+    changed_at: Mapped[datetime | None] = changed_at_column()
 
 
 class PlayerGamertag(Base):
@@ -60,3 +61,4 @@ class RosterMembership(Base):
     franchise_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("franchise.id", ondelete="CASCADE"))
     from_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     to_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    changed_at: Mapped[datetime | None] = changed_at_column()
