@@ -10,12 +10,15 @@ El desarrollo en Retake sigue una metodología estricta de **Spec-Driven Develop
 
 1. **Spec-First (Especificación previa obligatoria)**:
    * Queda estrictamente prohibido escribir, modificar o generar código fuente sin una especificación (*spec*) aprobada por Hugo en el directorio `specs/`.
-   * Cada especificación debe contar como mínimo con:
-     - **Contexto y Objetivo**: Propósito de la funcionalidad.
-     - **Criterios de Aceptación**: Comportamiento funcional y no funcional esperado.
-     - **Estructura de Componentes y Contratos de Datos**: Vistas, props, interfaces y modelos.
-     - **Plan de Implementación**: Fases lógicas de desarrollo.
-     - **Checklist de Tareas**: Tareas atómicas, ordenadas y verificables.
+   * Cada funcionalidad vive en su propia carpeta `specs/NNN-<nombre-en-kebab-case>/` y se documenta en tres archivos, creados y aprobados en este orden:
+     - **`spec.md`** — el **QUÉ** y el **POR QUÉ**, sin detalles técnicos:
+       - **Contexto y Objetivo**: Propósito de la funcionalidad.
+       - **Criterios de Aceptación**: Comportamiento funcional y no funcional esperado.
+     - **`plan.md`** — el **CÓMO**, derivado de la spec aprobada:
+       - **Estructura de Componentes y Contratos de Datos**: Vistas, props, interfaces y modelos.
+       - **Plan de Implementación**: Fases lógicas de desarrollo.
+     - **`tasks.md`** — la ejecución, derivada del plan aprobado:
+       - **Checklist de Tareas**: Tareas atómicas, ordenadas y verificables.
 2. **Spec-Anchored (Alcance anclado)**:
    * Los agentes solo deben ejecutar las tareas descritas en la spec activa. Prohibido añadir funcionalidades "sorpresa", cambios cosméticos fuera de alcance o refactorizaciones no solicitadas.
 3. **El Código como Fuente de Verdad y Sincronización Continua**:
@@ -102,7 +105,7 @@ El agente asume el rol de asesor de seguridad para garantizar que la plataforma 
 
 1. **Código Fuente Técnico**: Nombres de variables, funciones, componentes, clases, interfaces, rutas y archivos deben escribirse en **inglés** (ej: `PlayerStatsCard`, `calculateAdjustedKd`, `matchPredictionList`).
 2. **Documentación y Diálogo**: Comentarios en el código, redacción de especificaciones, planes de implementación y explicaciones hacia Hugo deben escribirse en **español**.
-3. **Preparación para Internacionalización (i18n)**: Los textos de la interfaz deben estar estructurados de modo que permitan una traducción fluida entre español e inglés en el futuro.
+3. **Preparación para Internacionalización (i18n)**: Los textos de la interfaz deben estar estructurados de modo que permitan una traducción fluida entre español e inglés.
 
 ---
 

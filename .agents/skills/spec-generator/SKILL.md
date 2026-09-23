@@ -10,7 +10,7 @@ contrato: si algo no está aquí, no se implementa.
 
 ## Proceso
 
-1. **Lee el contexto.** `docs/constitution.md` si existe, y las specs previas
+1. **Lee el contexto.** `maqueta/constitution.md`, y las specs previas
    de `specs/` para respetar convenciones y no contradecir lo ya acordado.
 2. **Entrevista a mi.** Preguntas de **UNA en UNA**, genera el número óptimo de preguntas para cubrir los alcances y objetivos propuestos en base a los requistos y peteciones de Hugo, esperando
    respuesta antes de la siguiente. Céntrate en casos límite, comportamiento
@@ -18,7 +18,8 @@ contrato: si algo no está aquí, no se implementa.
    Prioriza preguntas cuya respuesta cambie lo que hay que construir; descarta
    las que tengan una respuesta obvia por defecto.
 3. **Elige el número.** Mira `specs/` y usa el siguiente libre con tres
-   dígitos: `specs/NNN-<nombre-en-kebab-case>/spec.md`.
+   dígitos: `specs/NNN-<nombre-en-kebab-case>/spec.md`. Esa misma carpeta
+   alojará después `plan.md` y `tasks.md`; esta skill solo genera `spec.md`.
 4. **Redacta** usando `spec-template.md` de esta skill, sin saltarte
    secciones. Criterios de aceptación **siempre en notación EARS**, numerados
    como RF-1, RF-2, … Cada requisito debe ser verificable: si no se te ocurre
@@ -33,7 +34,8 @@ contrato: si algo no está aquí, no se implementa.
 
 - La spec describe **QUÉ** y **POR QUÉ**. Prohibido incluir stack, arquitectura,
   nombres de archivos, esquemas de datos, algoritmos o firmas de funciones:
-  eso va en el plan.
+  eso va en `plan.md` (componentes, contratos de datos y fases) y en
+  `tasks.md` (checklist de tareas), tal como define la constitución.
 - Incluye **siempre** la sección "Fuera de alcance". Es la que evita que la
   funcionalidad crezca sola.
 - Un requisito, una frase. Si necesitas un "y" para unir dos comportamientos,

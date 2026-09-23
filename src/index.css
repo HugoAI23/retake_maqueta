@@ -1,0 +1,27 @@
+@import 'tailwindcss';
+@config '../tailwind.config.js';
+
+/* Retake solo tiene tema oscuro (RF-5): el navegador no aplica su tema claro. */
+:root {
+  color-scheme: dark;
+}
+
+/* Los colores salen del módulo compartido de variables de diseño (tailwind.config.js). */
+html,
+body {
+  background-color: theme(colors.bg);
+  color: theme(colors.text);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Indicador de foco común a todo el marco (RF-76). */
+:focus-visible {
+  outline: 3px solid theme(colors.focus);
+  outline-offset: 2px;
+}
