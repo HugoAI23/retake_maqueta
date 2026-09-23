@@ -2,7 +2,7 @@
 
 - **ID**: `002-league-data`
 - **Fecha**: `2026-09-22` (creada el 2026-09-21; revisada tras la revisión QA, revisión QA cerrada)
-- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-22; revisiones R-1 y R-2 del 2026-09-22 durante el plan y aclaraciones R-3 a R-5 durante la implementación, ver §5.1)
+- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-22; revisiones R-1 y R-2 del 2026-09-22 durante el plan y aclaraciones R-3 a R-5 durante la implementación; cambios C-4 a C-10, C-12 y C-13 de la spec 003 aplicados el 2026-09-23; ver §5.1)
 
 ---
 
@@ -46,6 +46,7 @@ Alcance temporal: detalle completo de la **temporada actual** y, de temporadas a
 ### 2.1 Temporada actual
 
 * **RF-1 (Ubicuo)**: EL SISTEMA mantendrá eventos, partidos, mapas, estadísticas, posiciones y rosters de equipos únicamente de la temporada actual, sin contar los rosters del historial de campeonatos (RF-6).
+  * *Nota (2026-09-23, cambio C-4 de la spec 003):* excepción: se mantiene también el calendario de la próxima temporada, sin mostrarlo, hasta que pase a ser la actual (RF-14 y RF-15 de la 003). Sin él no se podría detectar el cambio de temporada (RF-3).
 * **RF-80 (Ubicuo)**: EL SISTEMA mantendrá las franquicias, sus identidades y los jugadores que aparezcan en la temporada actual o en el historial de campeonatos.
 * **RF-52 (Ubicuo)**: EL SISTEMA identificará cada temporada por el año con el que la liga la nombra oficialmente (ej. `CDL 2026`), aunque su primer partido se juegue el año anterior.
 * **RF-53 (Ubicuo)**: EL SISTEMA considerará partido oficial de una temporada cualquier partido de un evento de esa temporada, incluidos los Qualifiers.
@@ -53,6 +54,7 @@ Alcance temporal: detalle completo de la **temporada actual** y, de temporadas a
 * **RF-3 (Dirigido por evento)**: CUANDO el primer partido oficial de una nueva temporada pase a `en vivo`, EL SISTEMA pasará a considerarla la temporada actual.
 * **RF-123 (Ubicuo)**: EL SISTEMA no volverá a considerar actual una temporada anterior una vez que la nueva haya pasado a ser la actual, aunque se cancele el partido que provocó el cambio.
   * *Nota (2026-09-22, decisión C-8, aplica a RF-3):* el cambio automático es el comportamiento definitivo. Hasta que exista la spec 003, RF-3 se cumple con un valor mantenido a mano (decisión P-6 de la spec 001), que hay que cambiar el mismo día en que empiece la nueva temporada. La spec 003 debe hacer el cambio automático.
+  * *Nota (2026-09-23, cambio C-5 de la spec 003):* cumplido por la spec 003 (RF-72 de la 003). El cambio de temporada es automático y se retira el valor manual. El cambio en el código lo hará la implementación de la 003.
 
 ### 2.2 Historial de campeonatos mundiales
 
@@ -76,6 +78,7 @@ Alcance temporal: detalle completo de la **temporada actual** y, de temporadas a
 * **RF-10 (Ubicuo)**: EL SISTEMA reconocerá como una misma franquicia a un equipo que haya cambiado de nombre.
 * **RF-11 (Ubicuo)**: EL SISTEMA mantendrá para cada identidad de una franquicia un nombre corto (ej. `FaZe VGS`), una abreviatura (ej. `VGS`), un logo, un color primario y un color secundario.
 * **RF-73 (Dirigido por evento)**: CUANDO una franquicia cambie su nombre corto, su abreviatura, su logo, su color primario o su color secundario, EL SISTEMA registrará una nueva identidad de esa franquicia.
+  * *Nota (2026-09-23, cambio C-7 de la spec 003):* el cambio se mide sobre el resultado de combinar las fuentes campo a campo (RF-62 y RF-63 de la 003), no sobre lo que publica cada fuente por separado.
 * **RF-74 (Ubicuo)**: EL SISTEMA registrará para cada identidad la fecha y hora desde la que está vigente.
 * **RF-12 (Ubicuo)**: EL SISTEMA asociará a cada partido la identidad que cada franquicia tenía vigente en la fecha y hora de inicio programadas del partido, cualquiera que sea su estado.
 * **RF-13 (Ubicuo)**: EL SISTEMA asociará a cada registro del historial de campeonatos la identidad que la franquicia tenía vigente en la fecha de esa final.
@@ -93,6 +96,7 @@ Alcance temporal: detalle completo de la **temporada actual** y, de temporadas a
 * **RF-18 (Ubicuo)**: EL SISTEMA reconocerá como la misma persona a un jugador de la temporada actual y a un jugador del historial de campeonatos que usó cualquiera de sus gamertags.
 * **RF-19 (Ubicuo)**: EL SISTEMA distinguirá como personas diferentes a dos jugadores que hayan usado el mismo gamertag.
 * **RF-131 (Ubicuo)**: EL SISTEMA considerará la misma persona a dos registros de jugador solo si una fuente los relaciona, según la prioridad de RF-67, o si Retake los une a mano.
+  * *Nota (2026-09-23, cambio C-9 de la spec 003):* la misma regla vale para partidos, eventos y franquicias (RF-54 de la 003). Un registro sin enlazar se retiene sin mostrarlo si una fuente de mayor prioridad publica registros de ese tipo (RF-55 y RF-56 de la 003).
 * **RF-132 (Ubicuo)**: EL SISTEMA no considerará la misma persona a dos registros de jugador solo porque coincida su gamertag.
 * **RF-133 (Dirigido por evento)**: CUANDO Retake separe a mano dos registros de jugador que una fuente relaciona, EL SISTEMA los tratará como personas distintas.
 * **RF-113 (No deseado)**: SI ninguna fuente relaciona dos registros de jugador y Retake no los ha unido, ENTONCES EL SISTEMA los tratará como personas distintas.
@@ -104,6 +108,7 @@ Alcance temporal: detalle completo de la **temporada actual** y, de temporadas a
 * **RF-60 (Ubicuo)**: EL SISTEMA mantendrá el nombre real, el país y la edad tanto de los jugadores de la temporada actual como de los que solo figuran en el historial de campeonatos.
 * **RF-77 (Ubicuo)**: EL SISTEMA solo mantendrá los datos personales de un jugador (nombre real, país y fecha o año de nacimiento) que estén publicados en alguna de las fuentes de RF-66.
 * **RF-78 (Dirigido por evento)**: CUANDO un jugador o su representante pida retirar sus datos personales, EL SISTEMA dejará de mantenerlos y los tratará como no registrados (RF-25).
+  * *Nota (2026-09-23, cambio C-10 de la spec 003):* una vez retirados, no se vuelven a registrar aunque las fuentes los sigan publicando, mientras Retake no revierta la retirada a mano (RF-60 de la 003).
 * **RF-26 (Ubicuo)**: EL SISTEMA mantendrá para cada jugador de la temporada actual como máximo un rol, `SMG` o `AR`, asignado a mano por Retake.
 * **RF-76 (Dirigido por evento)**: CUANDO Retake cambie el rol de un jugador, EL SISTEMA sustituirá el rol anterior por el nuevo para toda la temporada actual, sin guardar historial de roles.
 * **RF-27 (No deseado)**: SI Retake no ha asignado el rol de un jugador, ENTONCES EL SISTEMA registrará a ese jugador como `Sin rol`.
@@ -121,6 +126,7 @@ Alcance temporal: detalle completo de la **temporada actual** y, de temporadas a
 * **RF-30 (Ubicuo)**: EL SISTEMA asignará cada partido de la temporada actual a un evento (ej. Major 2 Qualifiers, Major 2, Champs).
 * **RF-61 (Ubicuo)**: EL SISTEMA registrará el nombre de cada evento tal como lo publica la fuente, sin limitarlo a una lista fija.
 * **RF-31 (Ubicuo)**: EL SISTEMA asignará a cada partido como máximo una de estas fases: semana, grupo, winners bracket, losers bracket o gran final.
+  * *Nota (2026-09-23, cambio C-13 de la spec 003):* si la fuente no publica la semana de un partido de clasificatorio, EL SISTEMA la calculará como el orden de la semana (de lunes a domingo, hora de Ciudad de México) entre las semanas con partidos de ese evento. Es una excepción a RF-45.
 * **RF-134 (No deseado)**: SI la fuente publica para un partido una fase distinta de las cinco de RF-31, ENTONCES EL SISTEMA registrará el partido sin fase.
 * **RF-32 (Ubicuo)**: EL SISTEMA registrará para cada partido los dos equipos que lo disputan, en cuanto se conozcan.
 * **RF-84 (Opcional)**: DONDE un equipo de un partido aún no se conozca, EL SISTEMA registrará su origen como ganador o perdedor de otro partido registrado.
@@ -152,7 +158,9 @@ Alcance temporal: detalle completo de la **temporada actual** y, de temporadas a
 * **RF-43 (Opcional)**: DONDE el modo del mapa sea Search & Destroy, EL SISTEMA registrará además los first bloods, first deaths, plants y defuses de cada jugador.
 * **RF-44 (Opcional)**: DONDE el modo del mapa sea Overload, EL SISTEMA registrará además las zone captures y los overloads de cada jugador.
 * **RF-79 (Ubicuo)**: EL SISTEMA registrará el K/D de cada jugador tal como lo publica la fuente, sin calcularlo a partir de kills y deaths.
+  * *Nota (2026-09-23, cambio C-12 de la spec 003):* si ninguna fuente publica el K/D, EL SISTEMA lo calculará como kills ÷ deaths con 2 decimales; con 0 deaths, K/D = kills; si falta kills o deaths, el K/D queda ausente. Un K/D publicado manda sobre el calculado. Es una excepción a RF-45.
 * **RF-45 (Ubicuo)**: EL SISTEMA registrará únicamente las estadísticas que publica la fuente, sin métricas derivadas.
+  * *Nota (2026-09-23, cambios C-12 y C-13 de la spec 003):* excepciones: el K/D calculado (RF-79) y la semana calculada de los clasificatorios (RF-31).
 * **RF-65 (Ubicuo)**: EL SISTEMA distinguirá una estadística ausente en la fuente de una estadística con valor 0.
 * **RF-46**, **RF-47** y **RF-48**: trasladados a §2.9 (reglas comunes de presentación).
 
@@ -168,6 +176,7 @@ Alcance temporal: detalle completo de la **temporada actual** y, de temporadas a
 
 * **RF-66 (Ubicuo)**: EL SISTEMA tomará los datos de la liga de tres fuentes: BreakingPoint.gg, Call of Duty Esports Wiki (Fandom) y la web oficial de la CDL.
 * **RF-67 (No deseado)**: SI dos fuentes publican valores distintos para el mismo dato, ENTONCES EL SISTEMA usará el de BreakingPoint.gg, en su defecto el de Call of Duty Esports Wiki y en último lugar el de la web oficial de la CDL, salvo en la tabla de posiciones (RF-75).
+  * *Nota (2026-09-23, cambio C-6 de la spec 003):* segunda excepción: mientras un partido está `en vivo`, vale el marcador más avanzado que publique cualquier fuente, y nunca retrocede (RF-57 a RF-59 de la 003). El marcador final de un partido `finalizado` vuelve a seguir esta prioridad.
 
 **Seguridad de los datos recibidos**
 
@@ -177,6 +186,12 @@ Alcance temporal: detalle completo de la **temporada actual** y, de temporadas a
 **Correcciones y valores no válidos**
 
 * **RF-96 (Dirigido por evento)**: CUANDO la fuente cambie un dato ya registrado de un partido `finalizado` o del historial de campeonatos, EL SISTEMA registrará el valor nuevo.
+  * *Nota (2026-09-23, cambio C-8 de la spec 003):* las correcciones solo llegan dentro de los plazos de revisión de la 003:
+    - partidos `finalizado`: hasta 7 días después de tener todas sus estadísticas (RF-19 a RF-21 de la 003);
+    - historial: con las relecturas de cada Champs (RF-30 a RF-33 de la 003);
+    - en ambos casos, también cuando lo pida el administrador (RF-100 y RF-102 de la 003).
+
+    Una corrección publicada fuera de esos plazos no llega sola.
 * **RF-97 (Dirigido por evento)**: CUANDO ocurra un cambio de RF-96, EL SISTEMA marcará como corregido el dato concreto que cambió, sin guardar el valor anterior.
 * **RF-98 (Ubicuo)**: EL SISTEMA no considerará corrección el primer registro de un dato que nunca había llegado de la fuente (ej. estadísticas pendientes, RF-48).
 * **RF-101 (Ubicuo)**: EL SISTEMA considerará imposible cualquier estadística, marcador, K/D o premio negativo, un porcentaje de la bolsa menor que 0 o mayor que 100, y un número de mapas ganados por un equipo mayor que el necesario para ganar un partido al mejor de N.
@@ -437,6 +452,22 @@ Revisiones decididas con Hugo el 2026-09-22 al redactar el plan y al implementar
 | R-3 | Aclaración de RF-3 (fase F2 de la implementación) | Un partido cuenta como empezado si llega a `en vivo` o más allá, también si la fuente lo publica directamente como `finalizado`; un partido decidido por forfeit no cuenta, porque no se juega | RF-3 |
 | R-4 | Aclaración de RF-12 (fase F2) | Si un partido es anterior a todas las identidades conocidas de su franquicia, se usa la más antigua | RF-12 |
 | R-5 | Aclaración de RF-13 (fase F2) | Con fecha de final, vale la identidad vigente al terminar ese día: un cambio el mismo día de la final ya cuenta | RF-13 |
+
+Cambios derivados de la spec 003, aprobados por Hugo uno a uno antes de aprobar la 003 (su decisión Q-17) y aplicados el 2026-09-23 (la spec sigue aprobada):
+
+| # | Cambio | Requisitos |
+|---|---|---|
+| C-4 | Se mantiene el calendario de la próxima temporada, sin mostrarlo, hasta que sea la actual | RF-1 |
+| C-5 | El cambio automático de temporada lo cumple la 003; se retira el valor manual | RF-3 (nota) |
+| C-6 | En vivo vale el marcador más avanzado de cualquier fuente | RF-67 |
+| C-7 | Una identidad nueva nace del cambio del resultado combinado de las fuentes | RF-73 |
+| C-8 | Las correcciones llegan dentro de los plazos de revisión de la 003 o a petición del administrador | RF-96 |
+| C-9 | La regla de "misma persona" se extiende a partidos, eventos y franquicias, con retención de lo que no se enlaza | RF-131 |
+| C-10 | Unos datos personales retirados no vuelven a registrarse desde las fuentes | RF-78 |
+| C-12 | Si ninguna fuente publica el K/D, se calcula como kills ÷ deaths (surgió en la fase F0 de la 003; aprobado y aplicado el 2026-09-23) | RF-45, RF-79 |
+| C-13 | Si la fuente no publica la semana de un clasificatorio, se calcula por el orden de la semana con partidos (surgió en la fase F0 de la 003; aprobado y aplicado el 2026-09-23) | RF-31, RF-45 |
+
+Los cambios C-1 a C-3 y C-11 afectan a la spec 001 (su §5.4).
 
 ### 5.2 Pendientes
 

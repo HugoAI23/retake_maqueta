@@ -2,7 +2,7 @@
 
 - **ID**: `001-core-layout-and-nav`
 - **Fecha**: `2026-09-22` (creada el 2026-09-21; revisada tras la auditoría QA)
-- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-22) · **Implementada y cerrada** (cierre aprobado por Hugo el 2026-09-22)
+- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-22) · **Implementada y cerrada** (cierre aprobado por Hugo el 2026-09-22) · cambios C-1 a C-3 y C-11 de la spec 003 aplicados el 2026-09-23 (ver §5.4)
 
 ---
 
@@ -116,7 +116,7 @@ Se entiende por **bloque** cada uno de los huecos con contenido de la liga: la c
 * **RF-56 (Ubicuo)**: EL SISTEMA mostrará en el pie de página el nombre Retake.
 * **RF-57 (Ubicuo)**: EL SISTEMA mostrará en el pie de página un aviso de que Retake es un proyecto escolar sin afiliación oficial con la Call of Duty League.
 * **RF-58 (Ubicuo)**: EL SISTEMA mostrará en el pie de página el año de la temporada actual, tal como la define la spec 002 (RF-2 y RF-3 de esa spec).
-  * *Nota (2026-09-22, decisión P-6 del plan):* hasta que exista la spec 003, el año es un valor provisional que se actualiza a mano en cada cambio de temporada.
+  * *Nota (2026-09-23, cambio C-2 de la spec 003, sustituye a la nota de la decisión P-6):* el año sale del cálculo automático de la temporada actual de la spec 003 (RF-72 a RF-78 de la 003), y se retira el valor provisional que se actualizaba a mano. El cambio en el código lo hará la implementación de la 003; hasta entonces sigue el valor provisional.
 
 ### 2.10 Idioma de la interfaz
 
@@ -125,6 +125,7 @@ Se entiende por **bloque** cada uno de los huecos con contenido de la liga: la c
 * **RF-61 (Ubicuo)**: EL SISTEMA tratará cualquier variante regional del español (ej. `es-MX`) como español y cualquier variante regional del inglés (ej. `en-GB`) como inglés.
 * **RF-62 (No deseado)**: SI la lista de preferencias del navegador no contiene español ni inglés, ENTONCES EL SISTEMA mostrará la interfaz en español.
 * **RF-63 (Dirigido por evento)**: CUANDO el usuario elija un idioma en el selector, EL SISTEMA mostrará todos los textos de la interfaz en ese idioma.
+  * *Nota (2026-09-23, cambio C-3 de la spec 003):* excepción: los mensajes de error recibidos de las fuentes se muestran sin traducir en la página de administración (RF-118 de la 003). Son datos, no textos de la interfaz, igual que los nombres propios de RF-72. El texto que los rodea sí se traduce.
 * **RF-64 (Dirigido por evento)**: CUANDO el usuario elija un idioma en el selector, EL SISTEMA conservará la página, la posición de scroll y el estado del panel en que se encontraba.
 * **RF-65 (Dirigido por evento)**: CUANDO el usuario vuelva a Retake desde el mismo navegador, EL SISTEMA mostrará la interfaz en el último idioma que eligió.
 * **RF-66 (Ubicuo)**: EL SISTEMA recordará el idioma elegido sin fecha de caducidad.
@@ -216,9 +217,11 @@ Mientras ningún bloque tenga su spec de contenido implementada, las reglas de c
 * Tema claro.
 * Búsqueda global.
 * Cuentas de usuario, inicio de sesión y perfiles.
+  * *Nota (2026-09-23, cambio C-1 de la spec 003):* excepto el acceso del administrador a la página de administración, que define la spec 003 (RF-97 a RF-139 de la 003). Las cuentas del público siguen fuera de alcance.
 * Idiomas distintos del español y el inglés.
 * Traducción del contenido de las noticias.
 * Redes sociales, enlaces legales y enlaces de contacto en el pie de página.
+  * *Nota (2026-09-23, cambio C-11 de la spec 003):* excepto la atribución de las fuentes de datos, con un enlace a cada una, que exige la spec 003 (RF-160, revisión R-1).
 * Cómo se obtienen y actualizan los datos de la liga (spec 003).
 
 ---
@@ -271,6 +274,17 @@ Mientras ningún bloque tenga su spec de contenido implementada, las reglas de c
 ### 5.3 Pendientes
 
 Ninguna.
+
+### 5.4 Cambios derivados de la spec 003 (2026-09-23)
+
+Aprobados por Hugo uno a uno antes de aprobar la spec 003 (su decisión Q-17) y aplicados el 2026-09-23. No reabren la 001: sus efectos en el código los implementa la 003.
+
+| # | Cambio | Requisitos |
+|---|---|---|
+| C-1 | El acceso del administrador queda fuera de la exclusión de "inicio de sesión" | §4 |
+| C-2 | El año del pie sale del cálculo automático de la temporada de la 003; se retira el valor provisional (P-6) | RF-58 |
+| C-3 | Los mensajes de error de las fuentes no se traducen | RF-63 |
+| C-11 | La atribución de las fuentes de datos, con un enlace a cada una, queda fuera de la exclusión de enlaces del pie (surgió con la revisión R-1 de la 003; aprobado y aplicado el 2026-09-23) | §4 |
 
 ---
 
