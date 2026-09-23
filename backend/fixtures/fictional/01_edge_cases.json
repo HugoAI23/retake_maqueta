@@ -1,0 +1,1028 @@
+{
+ "description": "Registros ficticios para cada caso límite de la spec 002 (§3). Todos llevan fictional: true y nombres que empiezan por [FICTICIO]. Viven en la temporada 2026 y nunca empiezan una temporada nueva.",
+ "cases": {
+  "logo no válido": [
+   "franchise bp:fx-B",
+   "identity bp:fx-B#1"
+  ],
+  "identidad sin logo (abreviatura sobre color primario)": [
+   "franchise bp:fx-NoLogo",
+   "identity bp:fx-NoLogo#1"
+  ],
+  "identidad sin logo ni color (color neutro)": [
+   "franchise bp:fx-NoColor",
+   "identity bp:fx-NoColor#1"
+  ],
+  "identidad antigua con logo y reciente sin logo": [
+   "franchise bp:fx-Old",
+   "identity bp:fx-Old#1",
+   "identity bp:fx-Old#2"
+  ],
+  "franquicia que sale de la liga (se borra en el siguiente cambio de temporada)": [
+   "franchise bp:fx-Leaving",
+   "identity bp:fx-Leaving#1"
+  ],
+  "suplente": [
+   "player bp:fx-Sub",
+   "player_map_stats bp:fx-main-1-Sub"
+  ],
+  "agente libre": [
+   "player bp:fx-Free",
+   "roster bp:fx-roster-Free",
+   "player_map_stats bp:fx-main-1-Free"
+  ],
+  "solo año de nacimiento": [
+   "player bp:fx-Year"
+  ],
+  "solo edad (año aproximado)": [
+   "player bp:fx-Age"
+  ],
+  "jugador retirado": [
+   "player bp:fx-Retired"
+  ],
+  "mismo gamertag en dos personas": [
+   "player bp:fx-Twin1",
+   "player wiki:Twin_2"
+  ],
+  "gamertag con HTML": [
+   "player bp:fx-Html"
+  ],
+  "retirada de datos personales (curación)": [
+   "player bp:fx-Removed"
+  ],
+  "unión por curación": [
+   "player bp:fx-MergeA",
+   "player wiki:Merge_B"
+  ],
+  "separación por curación": [
+   "player bp:fx-SplitA",
+   "player wiki:Split_B"
+  ],
+  "mapa repetido": [
+   "match_map bp:fx-main-2-voided",
+   "match_map bp:fx-main-2"
+  ],
+  "mapas no jugados": [
+   "match_map bp:fx-main-4",
+   "match_map bp:fx-main-5"
+  ],
+  "valor imposible": [
+   "player_map_stats bp:fx-main-2-A1"
+  ],
+  "estadísticas pendientes (jugador sin ninguna estadística)": [
+   "player_map_stats bp:fx-main-3-B1"
+  ],
+  "corrección tras finalizar": [
+   "match_map bp:fx-main-1"
+  ],
+  "forfeit": [
+   "match bp:fx-forfeit"
+  ],
+  "aplazamiento": [
+   "match bp:fx-postponed",
+   "match bp:fx-postponed"
+  ],
+  "cancelación": [
+   "match bp:fx-cancelled",
+   "match bp:fx-cancelled"
+  ],
+  "equipo por decidir con origen": [
+   "match bp:fx-tbd-origin"
+  ],
+  "equipo por decidir sin origen": [
+   "match bp:fx-tbd-none"
+  ],
+  "en vivo sin marcador": [
+   "match bp:fx-live"
+  ],
+  "fase desconocida y modo desconocido": [
+   "match bp:fx-unknown",
+   "match_map bp:fx-unknown-1",
+   "player_map_stats bp:fx-unknown-1-A1"
+  ],
+  "empate en la tabla": [
+   "standing bp:fx-standing-A",
+   "standing bp:fx-standing-B"
+  ],
+  "campeonato sin fecha de final (identidad por nombre y a fin de año)": [
+   "championship bp:fx-champ-2014",
+   "placement bp:fx-champ-2014-Old",
+   "placement bp:fx-champ-2014-A"
+  ]
+ },
+ "records": [
+  {
+   "kind": "event",
+   "source": "bp",
+   "source_id": "fx-event",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "season_year": 2026,
+   "name": "[FICTICIO] Evento de casos límite"
+  },
+  {
+   "kind": "franchise",
+   "source": "bp",
+   "source_id": "fx-A",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true
+  },
+  {
+   "kind": "identity",
+   "source": "bp",
+   "source_id": "fx-A#1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "franchise_ref": "bp:fx-A",
+   "short_name": "[FICTICIO] Equipo A",
+   "abbreviation": "FXA",
+   "logo_url": "https://static.example.test/logos/fx-a.png",
+   "primary_color": "#0b3d91",
+   "secondary_color": "#ffffff",
+   "valid_from": "2025-11-01T00:00:00Z"
+  },
+  {
+   "kind": "franchise",
+   "source": "bp",
+   "source_id": "fx-B",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true
+  },
+  {
+   "kind": "identity",
+   "source": "bp",
+   "source_id": "fx-B#1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "franchise_ref": "bp:fx-B",
+   "short_name": "[FICTICIO] Equipo B",
+   "abbreviation": "FXB",
+   "logo_url": "javascript:alert(1)",
+   "primary_color": "#8b0000",
+   "valid_from": "2025-11-01T00:00:00Z"
+  },
+  {
+   "kind": "franchise",
+   "source": "bp",
+   "source_id": "fx-NoLogo",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true
+  },
+  {
+   "kind": "identity",
+   "source": "bp",
+   "source_id": "fx-NoLogo#1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "franchise_ref": "bp:fx-NoLogo",
+   "short_name": "[FICTICIO] Sin Logo",
+   "abbreviation": "FSL",
+   "primary_color": "#f5d90a"
+  },
+  {
+   "kind": "franchise",
+   "source": "bp",
+   "source_id": "fx-NoColor",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true
+  },
+  {
+   "kind": "identity",
+   "source": "bp",
+   "source_id": "fx-NoColor#1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "franchise_ref": "bp:fx-NoColor",
+   "short_name": "[FICTICIO] Sin Color",
+   "abbreviation": "FSC"
+  },
+  {
+   "kind": "franchise",
+   "source": "bp",
+   "source_id": "fx-Old",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true
+  },
+  {
+   "kind": "identity",
+   "source": "bp",
+   "source_id": "fx-Old#1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "franchise_ref": "bp:fx-Old",
+   "short_name": "[FICTICIO] Nombre Antiguo",
+   "abbreviation": "FNA",
+   "logo_url": "https://static.example.test/logos/fx-old.png",
+   "primary_color": "#222222",
+   "valid_from": "2013-01-01T00:00:00Z"
+  },
+  {
+   "kind": "identity",
+   "source": "bp",
+   "source_id": "fx-Old#2",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "franchise_ref": "bp:fx-Old",
+   "short_name": "[FICTICIO] Nombre Nuevo",
+   "abbreviation": "FNN",
+   "primary_color": "#5b2c83",
+   "valid_from": "2024-01-01T00:00:00Z"
+  },
+  {
+   "kind": "franchise",
+   "source": "bp",
+   "source_id": "fx-Leaving",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true
+  },
+  {
+   "kind": "identity",
+   "source": "bp",
+   "source_id": "fx-Leaving#1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "franchise_ref": "bp:fx-Leaving",
+   "short_name": "[FICTICIO] Se Va",
+   "abbreviation": "FSV"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-A1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] A1"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-A2",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] A2"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-A3",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] A3"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-A4",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] A4"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-B1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] B1"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-B2",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] B2"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-B3",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] B3"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-B4",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] B4"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-Sub",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] Suplente"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-Free",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] Libre"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-Year",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] Solo Año",
+   "birth_year": 2003
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-Age",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] Solo Edad",
+   "age": 21
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-Retired",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] Retirado",
+   "retired": true,
+   "previous_gamertags": [
+    "[FICTICIO] Nombre De Antes"
+   ]
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-Twin1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] Gemelo"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Twin_2",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] Gemelo"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-Html",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] <img src=x onerror=\"alert(1)\">"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-Removed",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] Retirada",
+   "real_name": "[FICTICIO] Nombre Real",
+   "country": "[FICTICIO] País",
+   "birth_date": "2000-01-01"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-MergeA",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] Unido"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Merge_B",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] Unido"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "fx-SplitA",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] Separado A"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Split_B",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "gamertag": "[FICTICIO] Separado B",
+   "same_as": [
+    "bp:fx-SplitA"
+   ]
+  },
+  {
+   "kind": "roster",
+   "source": "bp",
+   "source_id": "fx-roster-A1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "season_year": 2026,
+   "franchise_ref": "bp:fx-A",
+   "player_ref": "bp:fx-A1",
+   "from": "2025-11-01T00:00:00Z"
+  },
+  {
+   "kind": "roster",
+   "source": "bp",
+   "source_id": "fx-roster-A2",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "season_year": 2026,
+   "franchise_ref": "bp:fx-A",
+   "player_ref": "bp:fx-A2",
+   "from": "2025-11-01T00:00:00Z"
+  },
+  {
+   "kind": "roster",
+   "source": "bp",
+   "source_id": "fx-roster-A3",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "season_year": 2026,
+   "franchise_ref": "bp:fx-A",
+   "player_ref": "bp:fx-A3",
+   "from": "2025-11-01T00:00:00Z"
+  },
+  {
+   "kind": "roster",
+   "source": "bp",
+   "source_id": "fx-roster-A4",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "season_year": 2026,
+   "franchise_ref": "bp:fx-A",
+   "player_ref": "bp:fx-A4",
+   "from": "2025-11-01T00:00:00Z"
+  },
+  {
+   "kind": "roster",
+   "source": "bp",
+   "source_id": "fx-roster-B1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "season_year": 2026,
+   "franchise_ref": "bp:fx-B",
+   "player_ref": "bp:fx-B1",
+   "from": "2025-11-01T00:00:00Z"
+  },
+  {
+   "kind": "roster",
+   "source": "bp",
+   "source_id": "fx-roster-B2",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "season_year": 2026,
+   "franchise_ref": "bp:fx-B",
+   "player_ref": "bp:fx-B2",
+   "from": "2025-11-01T00:00:00Z"
+  },
+  {
+   "kind": "roster",
+   "source": "bp",
+   "source_id": "fx-roster-B3",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "season_year": 2026,
+   "franchise_ref": "bp:fx-B",
+   "player_ref": "bp:fx-B3",
+   "from": "2025-11-01T00:00:00Z"
+  },
+  {
+   "kind": "roster",
+   "source": "bp",
+   "source_id": "fx-roster-Free",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "season_year": 2026,
+   "franchise_ref": "bp:fx-B",
+   "player_ref": "bp:fx-Free",
+   "from": "2025-11-01T00:00:00Z",
+   "to": "2026-02-01T00:00:00Z"
+  },
+  {
+   "kind": "match",
+   "source": "bp",
+   "source_id": "fx-main",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "event_ref": "bp:fx-event",
+   "phase": "winners_bracket",
+   "best_of": 5,
+   "status": "finished",
+   "scheduled_at": "2026-01-15T20:00:00Z",
+   "slots": [
+    {
+     "franchise_ref": "bp:fx-A"
+    },
+    {
+     "franchise_ref": "bp:fx-B"
+    }
+   ],
+   "maps_won": [
+    3,
+    0
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "match_map",
+   "source": "bp",
+   "source_id": "fx-main-1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "match_ref": "bp:fx-main",
+   "position": 1,
+   "mode": "Hardpoint",
+   "map_name": "[FICTICIO] Mapa 1",
+   "status": "played",
+   "score": [
+    250,
+    180
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "match_map",
+   "source": "bp",
+   "source_id": "fx-main-2-voided",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "match_ref": "bp:fx-main",
+   "position": 2,
+   "mode": "Search and Destroy",
+   "map_name": "[FICTICIO] Mapa 2",
+   "status": "voided"
+  },
+  {
+   "kind": "match_map",
+   "source": "bp",
+   "source_id": "fx-main-2",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "match_ref": "bp:fx-main",
+   "position": 2,
+   "mode": "Search and Destroy",
+   "map_name": "[FICTICIO] Mapa 2",
+   "status": "played",
+   "score": [
+    6,
+    2
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "match_map",
+   "source": "bp",
+   "source_id": "fx-main-3",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "match_ref": "bp:fx-main",
+   "position": 3,
+   "mode": "Overload",
+   "map_name": "[FICTICIO] Mapa 3",
+   "status": "played",
+   "score": [
+    5,
+    1
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "match_map",
+   "source": "bp",
+   "source_id": "fx-main-4",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "match_ref": "bp:fx-main",
+   "position": 4,
+   "mode": "Hardpoint",
+   "map_name": "[FICTICIO] Mapa 4",
+   "status": "not_played"
+  },
+  {
+   "kind": "match_map",
+   "source": "bp",
+   "source_id": "fx-main-5",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "match_ref": "bp:fx-main",
+   "position": 5,
+   "mode": "Search and Destroy",
+   "map_name": "[FICTICIO] Mapa 5",
+   "status": "not_played"
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "bp",
+   "source_id": "fx-main-1-A1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "map_ref": "bp:fx-main-1",
+   "player_ref": "bp:fx-A1",
+   "franchise_ref": "bp:fx-A",
+   "kills": 21,
+   "deaths": 18,
+   "kd": 1.17,
+   "damage": 3001,
+   "assists": 5,
+   "hill_time": 61
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "bp",
+   "source_id": "fx-main-1-A2",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "map_ref": "bp:fx-main-1",
+   "player_ref": "bp:fx-A2",
+   "franchise_ref": "bp:fx-A",
+   "kills": 22,
+   "deaths": 18,
+   "kd": 1.22,
+   "damage": 3002,
+   "assists": 5,
+   "hill_time": 62
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "bp",
+   "source_id": "fx-main-1-A3",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "map_ref": "bp:fx-main-1",
+   "player_ref": "bp:fx-A3",
+   "franchise_ref": "bp:fx-A",
+   "kills": 23,
+   "deaths": 18,
+   "kd": 1.28,
+   "damage": 3003,
+   "assists": 5,
+   "hill_time": 63
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "bp",
+   "source_id": "fx-main-1-A4",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "map_ref": "bp:fx-main-1",
+   "player_ref": "bp:fx-A4",
+   "franchise_ref": "bp:fx-A",
+   "kills": 24,
+   "deaths": 18,
+   "kd": 1.33,
+   "damage": 3004,
+   "assists": 5,
+   "hill_time": 64
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "bp",
+   "source_id": "fx-main-2-A1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "map_ref": "bp:fx-main-2",
+   "player_ref": "bp:fx-A1",
+   "franchise_ref": "bp:fx-A",
+   "kills": -3,
+   "deaths": 5,
+   "kd": 1.2,
+   "plants": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "bp",
+   "source_id": "fx-main-1-Sub",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "map_ref": "bp:fx-main-1",
+   "player_ref": "bp:fx-Sub",
+   "franchise_ref": "bp:fx-B",
+   "kills": 15,
+   "deaths": 22,
+   "kd": 0.68,
+   "hill_time": 40
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "bp",
+   "source_id": "fx-main-1-Free",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "map_ref": "bp:fx-main-1",
+   "player_ref": "bp:fx-Free",
+   "franchise_ref": "bp:fx-B",
+   "kills": 17,
+   "deaths": 21,
+   "kd": 0.81,
+   "hill_time": 55
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "bp",
+   "source_id": "fx-main-3-B1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "map_ref": "bp:fx-main-3",
+   "player_ref": "bp:fx-B1",
+   "franchise_ref": "bp:fx-B"
+  },
+  {
+   "kind": "match_map",
+   "source": "bp",
+   "source_id": "fx-main-1",
+   "observed_at": "2026-09-22T01:00:00Z",
+   "fictional": true,
+   "match_ref": "bp:fx-main",
+   "position": 1,
+   "mode": "Hardpoint",
+   "map_name": "[FICTICIO] Mapa 1",
+   "status": "played",
+   "score": [
+    250,
+    185
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "match",
+   "source": "bp",
+   "source_id": "fx-forfeit",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "event_ref": "bp:fx-event",
+   "phase": "losers_bracket",
+   "best_of": 5,
+   "status": "forfeit",
+   "scheduled_at": "2026-01-16T20:00:00Z",
+   "slots": [
+    {
+     "franchise_ref": "bp:fx-A"
+    },
+    {
+     "franchise_ref": "bp:fx-B"
+    }
+   ],
+   "maps_won": [
+    3,
+    0
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "match",
+   "source": "bp",
+   "source_id": "fx-postponed",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "event_ref": "bp:fx-event",
+   "phase": "group",
+   "best_of": 5,
+   "status": "scheduled",
+   "scheduled_at": "2026-10-01T18:00:00Z",
+   "slots": [
+    {
+     "franchise_ref": "bp:fx-A"
+    },
+    {
+     "franchise_ref": "bp:fx-B"
+    }
+   ]
+  },
+  {
+   "kind": "match",
+   "source": "bp",
+   "source_id": "fx-postponed",
+   "observed_at": "2026-09-22T01:00:00Z",
+   "fictional": true,
+   "event_ref": "bp:fx-event",
+   "status": "postponed",
+   "scheduled_at": "2026-10-02T18:00:00Z"
+  },
+  {
+   "kind": "match",
+   "source": "bp",
+   "source_id": "fx-cancelled",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "event_ref": "bp:fx-event",
+   "phase": "group",
+   "best_of": 5,
+   "status": "scheduled",
+   "scheduled_at": "2026-10-03T18:00:00Z",
+   "slots": [
+    {
+     "franchise_ref": "bp:fx-A"
+    },
+    {
+     "franchise_ref": "bp:fx-B"
+    }
+   ]
+  },
+  {
+   "kind": "match",
+   "source": "bp",
+   "source_id": "fx-cancelled",
+   "observed_at": "2026-09-22T01:00:00Z",
+   "fictional": true,
+   "event_ref": "bp:fx-event",
+   "status": "cancelled"
+  },
+  {
+   "kind": "match",
+   "source": "bp",
+   "source_id": "fx-tbd-origin",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "event_ref": "bp:fx-event",
+   "phase": "grand_final",
+   "best_of": 7,
+   "status": "scheduled",
+   "scheduled_at": "2026-10-04T18:00:00Z",
+   "slots": [
+    {
+     "origin": {
+      "match_ref": "bp:fx-main",
+      "outcome": "winner"
+     }
+    },
+    {
+     "origin": {
+      "match_ref": "bp:fx-forfeit",
+      "outcome": "loser"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "match",
+   "source": "bp",
+   "source_id": "fx-tbd-none",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "event_ref": "bp:fx-event",
+   "phase": "losers_bracket",
+   "best_of": 5,
+   "status": "scheduled",
+   "scheduled_at": "2026-10-05T18:00:00Z",
+   "slots": [
+    null,
+    null
+   ]
+  },
+  {
+   "kind": "match",
+   "source": "bp",
+   "source_id": "fx-live",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "event_ref": "bp:fx-event",
+   "phase": "week",
+   "best_of": 5,
+   "status": "live",
+   "scheduled_at": "2026-09-22T00:00:00Z",
+   "slots": [
+    {
+     "franchise_ref": "bp:fx-NoLogo"
+    },
+    {
+     "franchise_ref": "bp:fx-NoColor"
+    }
+   ]
+  },
+  {
+   "kind": "match",
+   "source": "bp",
+   "source_id": "fx-unknown",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "event_ref": "bp:fx-event",
+   "phase": "play-in",
+   "best_of": 3,
+   "status": "finished",
+   "scheduled_at": "2026-01-17T20:00:00Z",
+   "slots": [
+    {
+     "franchise_ref": "bp:fx-A"
+    },
+    {
+     "franchise_ref": "bp:fx-B"
+    }
+   ],
+   "maps_won": [
+    2,
+    0
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "match_map",
+   "source": "bp",
+   "source_id": "fx-unknown-1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "match_ref": "bp:fx-unknown",
+   "position": 1,
+   "mode": "Control",
+   "map_name": "[FICTICIO] Mapa Control",
+   "status": "played",
+   "score": [
+    3,
+    1
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "bp",
+   "source_id": "fx-unknown-1-A1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "map_ref": "bp:fx-unknown-1",
+   "player_ref": "bp:fx-A1",
+   "franchise_ref": "bp:fx-A",
+   "kills": 22,
+   "deaths": 19,
+   "kd": 1.16,
+   "zone_captures": 4,
+   "hill_time": 12
+  },
+  {
+   "kind": "standing",
+   "source": "bp",
+   "source_id": "fx-standing-A",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "season_year": 2026,
+   "franchise_ref": "bp:fx-A",
+   "position": 13,
+   "points": 0
+  },
+  {
+   "kind": "standing",
+   "source": "bp",
+   "source_id": "fx-standing-B",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "season_year": 2026,
+   "franchise_ref": "bp:fx-B",
+   "position": 13,
+   "points": 0
+  },
+  {
+   "kind": "championship",
+   "source": "bp",
+   "source_id": "fx-champ-2014",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "year": 2014,
+   "competition": "[FICTICIO] Campeonato sin fecha de final",
+   "completed": true
+  },
+  {
+   "kind": "placement",
+   "source": "bp",
+   "source_id": "fx-champ-2014-Old",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "championship_ref": "bp:fx-champ-2014",
+   "franchise_ref": "bp:fx-Old",
+   "published_team_name": "[FICTICIO] Nombre Antiguo",
+   "place": "1",
+   "prize_usd": 100000,
+   "pool_percent": 50,
+   "roster": [
+    {
+     "player_ref": "bp:fx-Retired",
+     "gamertag_at_final": "[FICTICIO] Nombre De Antes"
+    }
+   ]
+  },
+  {
+   "kind": "placement",
+   "source": "bp",
+   "source_id": "fx-champ-2014-A",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "fictional": true,
+   "championship_ref": "bp:fx-champ-2014",
+   "franchise_ref": "bp:fx-A",
+   "published_team_name": "[FICTICIO] Nombre que no coincide",
+   "place": "DQ"
+  }
+ ]
+}

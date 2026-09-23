@@ -448,6 +448,32 @@ Hugo pidió implementar la spec completa de una vez, así que las guías manuale
 
 ---
 
+## Ajuste tras aprobar la spec 002 (2026-09-22)
+
+Tareas pedidas por Hugo para aplicar la lista de §5.2 de la spec 002 aprobada.
+
+- [x] **T-084** Sustituir en los diccionarios `es` y `en` la fase `final` por `grandFinal` ("gran final" / "grand final").
+  - **RF:** RF-70 (y RF-31 de la 002)
+  - **Hecho cuando:** los diccionarios tienen exactamente las cinco fases de la 002.
+- [x] **T-085** Añadir a los diccionarios las etiquetas de §2.9 de la 002: `toBeDecided`, `winnerOf`, `loserOf`, `notPlayed`, `corrected`, `freeAgent` y `standingsUnavailable`.
+  - **RF:** RF-70
+  - **Dep.:** T-084
+  - **Hecho cuando:** las siete claves existen en `es` y `en` y no están vacías.
+- [x] **T-086** Ampliar la prueba de diccionarios: claves nuevas, las cinco fases exactas y ninguna traducción para `DQ`, `SMG` y `AR`.
+  - **RF:** RF-70 (y RF-125 de la 002)
+  - **Dep.:** T-085
+  - **Hecho cuando:** la prueba pasa, y falla si vuelve la fase `final` o si se añade una traducción de una sigla.
+- [x] **T-087** Sincronizar la spec (nota en RF-70), el plan (riesgo cerrado e I-12) y la guía de verificación.
+  - **RF:** RF-70
+  - **Dep.:** T-086
+  - **Hecho cuando:** spec, plan, guía y código coinciden.
+
+- [x] **T-088** Corregir `PageTransition` para que la primera carga no se anime tampoco bajo `StrictMode` (plan I-13), con una prueba de componente que lo reproduzca.
+  - **RF:** RF-85, RF-88 (y RF-73: la auditoría WCAG de desarrollo ya no falla)
+  - **Hecho cuando:** la prueba nueva pasa y `npm run test:e2e` queda en verde en varias ejecuciones seguidas.
+
+---
+
 ## Trazabilidad RF → tareas
 
 | RF | Tareas |
@@ -469,12 +495,12 @@ Hugo pidió implementar la spec completa de una vez, así que las guías manuale
 | RF-54, RF-55 | T-026, T-027, T-032 |
 | RF-56 a RF-58 | T-030, T-031 |
 | RF-59 a RF-69 | T-011 a T-013, T-017, T-018, T-020, T-077 |
-| RF-70, RF-71 | T-015, T-016, T-019 |
+| RF-70, RF-71 | T-015, T-016, T-019, T-084 a T-087 |
 | RF-72 | T-061, T-064 |
 | RF-73, RF-74 | T-008, T-074 |
 | RF-75 a RF-77 | T-073 |
 | RF-78 a RF-80 | T-020, T-035, T-042, T-059, T-075 |
 | RF-81 | T-076 |
 | RF-82, RF-83 | T-046, T-047 |
-| RF-84 a RF-88 | T-038, T-066 a T-071 |
+| RF-84 a RF-88 | T-038, T-066 a T-071, T-088 |
 | RF-89 a RF-95 | T-061 a T-064 |

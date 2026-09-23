@@ -132,6 +132,7 @@ Se entiende por **bloque** cada uno de los huecos con contenido de la liga: la c
 * **RF-68 (Estado)**: MIENTRAS una pestaña de Retake permanezca abierta sin recargarse, EL SISTEMA mantendrá en ella su idioma aunque el usuario elija otro en una pestaña distinta.
 * **RF-69 (No deseado)**: SI no se puede recuperar el idioma que el usuario eligió anteriormente, ENTONCES EL SISTEMA aplicará la regla de primera visita (RF-60 a RF-62).
 * **RF-70 (Ubicuo)**: EL SISTEMA traducirá las etiquetas de estado y de fase definidas en la spec 002 (ej. `en vivo`, `No disponible`, `Sin rol`, "Estadísticas pendientes", "semana").
+  * *Nota (2026-09-22, aprobación de la spec 002):* la lista de etiquetas es la de la spec 002 aprobada: las fases son semana, grupo, winners bracket, losers bracket y gran final (RF-31 de la 002; "final" desaparece), y se añaden las etiquetas de su §2.9 (`Por definir`, "Ganador de", "Perdedor de", `No jugado`, `Corregido`, `Agente libre` y el aviso de tabla de posiciones no disponible). Las siglas `DQ`, `SMG` y `AR` no se traducen (RF-125 de la 002). La 001 se aprobó con una versión provisional de la 002; esta nota cierra esa excepción (decisión K-4 de la 002).
 * **RF-71 (Ubicuo)**: EL SISTEMA mostrará las fechas y horas con el formato propio del idioma activo.
 * **RF-72 (Ubicuo)**: EL SISTEMA mostrará sin traducir los nombres propios de la liga (franquicias, gamertags, eventos, mapas y modos de juego).
 

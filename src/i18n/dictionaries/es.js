@@ -67,12 +67,21 @@ export default {
     notAvailable: 'No disponible',
     noRole: 'Sin rol',
     statsPending: 'Estadísticas pendientes',
+    // Etiquetas añadidas al aprobar la spec 002 (§2.9). Las siglas DQ, SMG y AR
+    // no pasan por el diccionario: se muestran igual en todos los idiomas (RF-125).
+    toBeDecided: 'Por definir',
+    winnerOf: 'Ganador de {{match}}',
+    loserOf: 'Perdedor de {{match}}',
+    notPlayed: 'No jugado',
+    corrected: 'Corregido',
+    freeAgent: 'Agente libre',
+    standingsUnavailable: 'La tabla de posiciones todavía no está disponible',
     phase: {
       week: 'semana',
       group: 'grupo',
       winnersBracket: 'winners bracket',
       losersBracket: 'losers bracket',
-      final: 'final',
+      grandFinal: 'gran final',
     },
   },
 }

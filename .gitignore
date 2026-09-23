@@ -27,3 +27,9 @@ dist-ssr
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# Backend (spec 002)
+backend/.env
+backend/.venv
+__pycache__/
+.pytest_cache/

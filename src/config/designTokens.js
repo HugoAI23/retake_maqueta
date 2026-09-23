@@ -17,6 +17,9 @@ export const colors = {
   'on-ml': '#ffffff',
   focus: '#ffd166',
   danger: '#ff7b7b',
+  // Fondo del escudo de un equipo sin logo ni color primario (spec 002, RF-118).
+  // El texto encima es blanco o negro según el contraste (RF-127, RF-128).
+  'team-neutral': '#3a4252',
 }
 
 /**

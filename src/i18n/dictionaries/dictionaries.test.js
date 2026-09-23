@@ -33,13 +33,43 @@ describe('diccionarios (RF-63, RF-70)', () => {
       'league.notAvailable',
       'league.noRole',
       'league.statsPending',
+      'league.toBeDecided',
+      'league.winnerOf',
+      'league.loserOf',
+      'league.notPlayed',
+      'league.corrected',
+      'league.freeAgent',
+      'league.standingsUnavailable',
       'league.phase.week',
       'league.phase.group',
       'league.phase.winnersBracket',
       'league.phase.losersBracket',
-      'league.phase.final',
+      'league.phase.grandFinal',
     ]) {
       expect(keys).toContain(key)
+    }
+  })
+
+  it('las fases son exactamente las cinco de la spec 002 (RF-31)', () => {
+    const phases = esEntries
+      .map(([k]) => k)
+      .filter((k) => k.startsWith('league.phase.'))
+      .sort()
+    expect(phases).toEqual(
+      [
+        'league.phase.grandFinal',
+        'league.phase.group',
+        'league.phase.losersBracket',
+        'league.phase.week',
+        'league.phase.winnersBracket',
+      ].sort(),
+    )
+  })
+
+  it('las siglas DQ, SMG y AR no pasan por el diccionario (spec 002, RF-125)', () => {
+    const values = [...esEntries, ...enEntries].map(([, v]) => v)
+    for (const acronym of ['DQ', 'SMG', 'AR']) {
+      expect(values).not.toContain(acronym)
     }
   })
 })

@@ -1,0 +1,19 @@
+# Curación manual de Retake (spec 002, plan §2.2 y P-4).
+# Solo referencias externas y motivos: nunca datos personales.
+# Se aplica con `uv run retake apply-curation` y con `uv run retake load-fixtures`.
+#
+# Roles de los jugadores reales: pendientes de confirmación de Hugo (tasks.md, dependencia de T-046).
+# Mientras tanto, esos jugadores quedan como "Sin rol" (RF-27).
+
+roles:
+  - {player: "bp:fx-A1", role: SMG, reason: "[FICTICIO] Datos de prueba: rol asignado"}
+  - {player: "bp:fx-A2", role: AR, reason: "[FICTICIO] Datos de prueba: rol asignado"}
+
+player_merges:
+  - {players: ["bp:fx-MergeA", "wiki:Merge_B"], reason: "[FICTICIO] Datos de prueba: misma persona sin enlace en las fuentes"}
+
+player_splits:
+  - {players: ["bp:fx-SplitA", "wiki:Split_B"], reason: "[FICTICIO] Datos de prueba: la fuente los enlaza por error"}
+
+personal_data_removals:
+  - {player: "bp:fx-Removed", requested_on: 2026-09-22}

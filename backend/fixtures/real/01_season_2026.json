@@ -1,0 +1,1797 @@
+{
+ "consulted": [
+  {
+   "source": "wiki",
+   "url": "https://cod-esports.fandom.com/wiki/Call_of_Duty_League/2026_Season",
+   "date": "2026-09-22",
+   "used_for": "temporada, tabla de posiciones y nombres de los equipos"
+  },
+  {
+   "source": "wiki",
+   "url": "https://cod-esports.fandom.com/wiki/Call_of_Duty_League_Championship_2026",
+   "date": "2026-09-22",
+   "used_for": "evento, abreviaturas y rosters"
+  },
+  {
+   "source": "wiki",
+   "url": "https://cod-esports.fandom.com/wiki/Call_of_Duty_League_Championship_2026/Scoreboards/Grand_Finals",
+   "date": "2026-09-22",
+   "used_for": "gran final: mapas, marcadores y estadísticas"
+  },
+  {
+   "source": "wiki",
+   "url": "https://cod-esports.fandom.com/wiki/FaZe_Vegas",
+   "date": "2026-09-22",
+   "used_for": "creación (2025-09-19), predecesora y nombres reales"
+  },
+  {
+   "source": "wiki",
+   "url": "https://cod-esports.fandom.com/wiki/OpTic_Texas",
+   "date": "2026-09-22",
+   "used_for": "creación (2021-11-08), predecesora y nombres reales"
+  },
+  {
+   "source": "wiki",
+   "url": "https://cod-esports.fandom.com/wiki/Atlanta_FaZe",
+   "date": "2026-09-22",
+   "used_for": "creación (2019-05-02)"
+  },
+  {
+   "source": "wiki",
+   "url": "https://cod-esports.fandom.com/wiki/Dallas_Empire",
+   "date": "2026-09-22",
+   "used_for": "creación (2019-05-02)"
+  },
+  {
+   "source": "wiki",
+   "url": "https://cod-esports.fandom.com/wiki/Vancouver_Surge",
+   "date": "2026-09-22",
+   "used_for": "creación (2024-08-11)"
+  },
+  {
+   "source": "cdl",
+   "url": "https://www.callofdutyleague.com/en-us/standings",
+   "date": "2026-09-22",
+   "used_for": "resultado y hora de la gran final (la tabla de la temporada regular no se mostraba)"
+  },
+  {
+   "source": "bp",
+   "url": "https://www.breakingpoint.gg/players/simp",
+   "date": "2026-09-22",
+   "used_for": "nombre real, fecha de nacimiento y gamertag anterior de Simp"
+  }
+ ],
+ "notes": [
+  "source_id de la Wiki: nombre de la página o nombre visible en la Wiki.",
+  "Rosters: solo los cuatro primeros nombres de cada equipo en la tabla de premios; los siguientes aparecen separados y son entrenadores o suplentes (confirmado para FaZe Vegas: Crowder y RJ son entrenadores).",
+  "Las fuentes no publican logos ni colores en las páginas consultadas: quedan ausentes.",
+  "Abreviaturas: solo las que aparecen en los cuadros de la Wiki; si no aparecen, quedan ausentes."
+ ],
+ "records": [
+  {
+   "kind": "season",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League/2026_Season",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "year": 2026,
+   "name": "Call of Duty League 2026"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "Atlanta_FaZe",
+   "observed_at": "2026-09-22T00:00:00Z"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "Atlanta_FaZe#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:Atlanta_FaZe",
+   "short_name": "ATL FaZe",
+   "abbreviation": "ATL",
+   "valid_from": "2019-05-02T00:00:00Z"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "Dallas_Empire",
+   "observed_at": "2026-09-22T00:00:00Z"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "Dallas_Empire#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:Dallas_Empire",
+   "short_name": "DAL Empire",
+   "valid_from": "2019-05-02T00:00:00Z"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "OpTic_Texas",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "predecessor": "wiki:Dallas_Empire"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "OpTic_Texas#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "short_name": "OpTic TEX",
+   "abbreviation": "TEX",
+   "valid_from": "2021-11-08T00:00:00Z"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "Los_Angeles_Thieves",
+   "observed_at": "2026-09-22T00:00:00Z"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "Los_Angeles_Thieves#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:Los_Angeles_Thieves",
+   "short_name": "LA Thieves",
+   "abbreviation": "LAT"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "FaZe_Vegas",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "predecessor": "wiki:Atlanta_FaZe"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "FaZe_Vegas#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "short_name": "FaZe VGS",
+   "abbreviation": "VGS",
+   "valid_from": "2025-09-19T00:00:00Z"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "Paris_Gentle_Mates",
+   "observed_at": "2026-09-22T00:00:00Z"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "Paris_Gentle_Mates#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:Paris_Gentle_Mates",
+   "short_name": "PAR Gentle Mates",
+   "abbreviation": "PAR"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "Toronto_KOI",
+   "observed_at": "2026-09-22T00:00:00Z"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "Toronto_KOI#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:Toronto_KOI",
+   "short_name": "TOR KOI",
+   "abbreviation": "TOR"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "G2_Minnesota",
+   "observed_at": "2026-09-22T00:00:00Z"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "G2_Minnesota#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:G2_Minnesota",
+   "short_name": "G2 MIN",
+   "abbreviation": "MIN"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "Riyadh_Falcons",
+   "observed_at": "2026-09-22T00:00:00Z"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "Riyadh_Falcons#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:Riyadh_Falcons",
+   "short_name": "RYD Falcons",
+   "abbreviation": "RYD"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "Miami_Heretics",
+   "observed_at": "2026-09-22T00:00:00Z"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "Miami_Heretics#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:Miami_Heretics",
+   "short_name": "MIA Heretics",
+   "abbreviation": "MIA"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "Carolina_Royal_Ravens",
+   "observed_at": "2026-09-22T00:00:00Z"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "Carolina_Royal_Ravens#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:Carolina_Royal_Ravens",
+   "short_name": "CAR Royal Ravens",
+   "abbreviation": "CAR"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "Boston_Breach",
+   "observed_at": "2026-09-22T00:00:00Z"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "Boston_Breach#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:Boston_Breach",
+   "short_name": "BOS Breach",
+   "abbreviation": "BOS"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "Vancouver_Surge",
+   "observed_at": "2026-09-22T00:00:00Z"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "Vancouver_Surge#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:Vancouver_Surge",
+   "short_name": "VAN Surge",
+   "abbreviation": "VAN",
+   "valid_from": "2024-08-11T00:00:00Z"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "Cloud9_New_York",
+   "observed_at": "2026-09-22T00:00:00Z"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "Cloud9_New_York#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:Cloud9_New_York",
+   "short_name": "Cloud9 NY"
+  },
+  {
+   "kind": "franchise",
+   "source": "wiki",
+   "source_id": "Fariko_Impact",
+   "observed_at": "2026-09-22T00:00:00Z"
+  },
+  {
+   "kind": "identity",
+   "source": "wiki",
+   "source_id": "Fariko_Impact#identity",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "franchise_ref": "wiki:Fariko_Impact",
+   "short_name": "Fariko Impact"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Simp",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Simp",
+   "real_name": "Chris Lehr"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Drazah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Drazah",
+   "real_name": "Zack Jordan"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "04",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "04",
+   "real_name": "Jovan Rodriguez"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Abuzah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Abuzah",
+   "real_name": "Jordan François"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Shotzzy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Shotzzy",
+   "real_name": "Anthony Cuevas-Castro"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Dashy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Dashy",
+   "real_name": "Brandon Otell"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Huke",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Huke",
+   "real_name": "Cuyler Garland"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Mercules",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Mercules",
+   "real_name": "Mason Ramsey"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Exnid",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Exnid"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Cellium",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Cellium"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "KiSMET",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "KiSMET"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Alluka",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Alluka"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Ghosty",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Ghosty"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Sib",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Sib"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Estreal",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Estreal"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "JoeDeceives",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "JoeDeceives"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "MettalZ",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "MettalZ"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "RenKoR",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "RenKoR"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "SupeR",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "SupeR"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "ReeaL",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "ReeaL"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Kremp",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Kremp"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Skyz",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Skyz"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Envoy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Envoy"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Nastie",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Nastie"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "CleanX",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "CleanX"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Insight",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Insight"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Kips",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Kips"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Abe",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Abe"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Scrap",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Scrap"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "HyDra",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "HyDra"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "aBeZy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "aBeZy"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Nium",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Nium"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Neptune",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Neptune"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Arcitys",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Arcitys"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Clayster",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Clayster"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "iLLeY",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "iLLeY"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Karma",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Karma"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "KiLLa",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "KiLLa"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "MiRx",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "MiRx"
+  },
+  {
+   "kind": "player",
+   "source": "wiki",
+   "source_id": "Parasite",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Parasite"
+  },
+  {
+   "kind": "player",
+   "source": "bp",
+   "source_id": "simp",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "gamertag": "Simp",
+   "real_name": "Chris Lehr",
+   "birth_date": "2001-02-06",
+   "previous_gamertags": [
+    "Simplicity"
+   ],
+   "same_as": [
+    "wiki:Simp"
+   ]
+  },
+  {
+   "kind": "roster",
+   "source": "wiki",
+   "source_id": "2026/FaZe_Vegas/Simp",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "player_ref": "wiki:Simp"
+  },
+  {
+   "kind": "roster",
+   "source": "wiki",
+   "source_id": "2026/FaZe_Vegas/Drazah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "player_ref": "wiki:Drazah"
+  },
+  {
+   "kind": "roster",
+   "source": "wiki",
+   "source_id": "2026/FaZe_Vegas/04",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "player_ref": "wiki:04"
+  },
+  {
+   "kind": "roster",
+   "source": "wiki",
+   "source_id": "2026/FaZe_Vegas/Abuzah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "player_ref": "wiki:Abuzah"
+  },
+  {
+   "kind": "roster",
+   "source": "wiki",
+   "source_id": "2026/OpTic_Texas/Shotzzy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:OpTic_Texas",
+   "player_ref": "wiki:Shotzzy"
+  },
+  {
+   "kind": "roster",
+   "source": "wiki",
+   "source_id": "2026/OpTic_Texas/Dashy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:OpTic_Texas",
+   "player_ref": "wiki:Dashy"
+  },
+  {
+   "kind": "roster",
+   "source": "wiki",
+   "source_id": "2026/OpTic_Texas/Huke",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:OpTic_Texas",
+   "player_ref": "wiki:Huke"
+  },
+  {
+   "kind": "roster",
+   "source": "wiki",
+   "source_id": "2026/OpTic_Texas/Mercules",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:OpTic_Texas",
+   "player_ref": "wiki:Mercules"
+  },
+  {
+   "kind": "event",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "name": "Call of Duty League Championship 2026"
+  },
+  {
+   "kind": "match",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "event_ref": "wiki:Call_of_Duty_League_Championship_2026",
+   "phase": "grand_final",
+   "best_of": 9,
+   "status": "finished",
+   "scheduled_at": "2026-07-19T22:00:00Z",
+   "slots": [
+    {
+     "franchise_ref": "wiki:FaZe_Vegas"
+    },
+    {
+     "franchise_ref": "wiki:OpTic_Texas"
+    }
+   ],
+   "maps_won": [
+    5,
+    2
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "match",
+   "source": "cdl",
+   "source_id": "cdl-champs-2026-grand-finals",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "same_as": [
+    "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals"
+   ],
+   "event_ref": "wiki:Call_of_Duty_League_Championship_2026",
+   "phase": "grand_final",
+   "best_of": 9,
+   "status": "finished",
+   "scheduled_at": "2026-07-19T22:00:00Z",
+   "slots": [
+    {
+     "franchise_ref": "wiki:FaZe_Vegas"
+    },
+    {
+     "franchise_ref": "wiki:OpTic_Texas"
+    }
+   ],
+   "maps_won": [
+    5,
+    2
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "match_map",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "match_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals",
+   "position": 1,
+   "mode": "Hardpoint",
+   "map_name": "Colossus",
+   "status": "played",
+   "score": [
+    216,
+    250
+   ],
+   "winner_side": 2
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1/04",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1",
+   "player_ref": "wiki:04",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 28,
+   "deaths": 32,
+   "kd": 0.88,
+   "hill_time": 66
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1/Abuzah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1",
+   "player_ref": "wiki:Abuzah",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 34,
+   "deaths": 29,
+   "kd": 1.17,
+   "hill_time": 89
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1/Drazah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1",
+   "player_ref": "wiki:Drazah",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 32,
+   "deaths": 32,
+   "kd": 1.0,
+   "hill_time": 42
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1/Simp",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1",
+   "player_ref": "wiki:Simp",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 31,
+   "deaths": 28,
+   "kd": 1.11,
+   "hill_time": 72
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1/Dashy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1",
+   "player_ref": "wiki:Dashy",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 29,
+   "deaths": 32,
+   "kd": 0.91,
+   "hill_time": 132
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1/Huke",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1",
+   "player_ref": "wiki:Huke",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 26,
+   "deaths": 31,
+   "kd": 0.84,
+   "hill_time": 58
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1/Mercules",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1",
+   "player_ref": "wiki:Mercules",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 34,
+   "deaths": 30,
+   "kd": 1.12,
+   "hill_time": 85
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1/Shotzzy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_1",
+   "player_ref": "wiki:Shotzzy",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 31,
+   "deaths": 32,
+   "kd": 0.97,
+   "hill_time": 51
+  },
+  {
+   "kind": "match_map",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "match_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals",
+   "position": 2,
+   "mode": "Search and Destroy",
+   "map_name": "Raid",
+   "status": "played",
+   "score": [
+    6,
+    5
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2/04",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2",
+   "player_ref": "wiki:04",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 12,
+   "deaths": 7,
+   "kd": 1.71,
+   "plants": 0,
+   "defuses": 1,
+   "first_bloods": 1,
+   "first_deaths": 3
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2/Abuzah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2",
+   "player_ref": "wiki:Abuzah",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 5,
+   "deaths": 5,
+   "kd": 1.0,
+   "plants": 1,
+   "defuses": 0,
+   "first_bloods": 0,
+   "first_deaths": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2/Drazah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2",
+   "player_ref": "wiki:Drazah",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 7,
+   "deaths": 9,
+   "kd": 0.78,
+   "plants": 0,
+   "defuses": 1,
+   "first_bloods": 1,
+   "first_deaths": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2/Simp",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2",
+   "player_ref": "wiki:Simp",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 8,
+   "deaths": 6,
+   "kd": 1.33,
+   "plants": 0,
+   "defuses": 2,
+   "first_bloods": 3,
+   "first_deaths": 2
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2/Dashy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2",
+   "player_ref": "wiki:Dashy",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 1,
+   "deaths": 8,
+   "kd": 0.13,
+   "plants": 0,
+   "defuses": 0,
+   "first_bloods": 0,
+   "first_deaths": 3
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2/Huke",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2",
+   "player_ref": "wiki:Huke",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 3,
+   "deaths": 7,
+   "kd": 0.43,
+   "plants": 5,
+   "defuses": 0,
+   "first_bloods": 0,
+   "first_deaths": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2/Mercules",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2",
+   "player_ref": "wiki:Mercules",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 12,
+   "deaths": 7,
+   "kd": 1.71,
+   "plants": 0,
+   "defuses": 0,
+   "first_bloods": 1,
+   "first_deaths": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2/Shotzzy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_2",
+   "player_ref": "wiki:Shotzzy",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 9,
+   "deaths": 10,
+   "kd": 0.9,
+   "plants": 1,
+   "defuses": 0,
+   "first_bloods": 5,
+   "first_deaths": 0
+  },
+  {
+   "kind": "match_map",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "match_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals",
+   "position": 3,
+   "mode": "Overload",
+   "map_name": "Scar",
+   "status": "played",
+   "score": [
+    4,
+    3
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3/04",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3",
+   "player_ref": "wiki:04",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 21,
+   "deaths": 25,
+   "kd": 0.84,
+   "overloads": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3/Abuzah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3",
+   "player_ref": "wiki:Abuzah",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 42,
+   "deaths": 20,
+   "kd": 2.1,
+   "overloads": 2
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3/Drazah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3",
+   "player_ref": "wiki:Drazah",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 32,
+   "deaths": 23,
+   "kd": 1.39,
+   "overloads": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3/Simp",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3",
+   "player_ref": "wiki:Simp",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 21,
+   "deaths": 25,
+   "kd": 0.84,
+   "overloads": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3/Dashy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3",
+   "player_ref": "wiki:Dashy",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 23,
+   "deaths": 28,
+   "kd": 0.82,
+   "overloads": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3/Huke",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3",
+   "player_ref": "wiki:Huke",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 24,
+   "deaths": 26,
+   "kd": 0.92,
+   "overloads": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3/Mercules",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3",
+   "player_ref": "wiki:Mercules",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 21,
+   "deaths": 30,
+   "kd": 0.7,
+   "overloads": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3/Shotzzy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_3",
+   "player_ref": "wiki:Shotzzy",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 23,
+   "deaths": 32,
+   "kd": 0.72,
+   "overloads": 1
+  },
+  {
+   "kind": "match_map",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "match_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals",
+   "position": 4,
+   "mode": "Hardpoint",
+   "map_name": "Scar",
+   "status": "played",
+   "score": [
+    250,
+    194
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4/04",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4",
+   "player_ref": "wiki:04",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 31,
+   "deaths": 23,
+   "kd": 1.35,
+   "hill_time": 57
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4/Abuzah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4",
+   "player_ref": "wiki:Abuzah",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 31,
+   "deaths": 23,
+   "kd": 1.35,
+   "hill_time": 112
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4/Drazah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4",
+   "player_ref": "wiki:Drazah",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 39,
+   "deaths": 26,
+   "kd": 1.5,
+   "hill_time": 24
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4/Simp",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4",
+   "player_ref": "wiki:Simp",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 31,
+   "deaths": 25,
+   "kd": 1.24,
+   "hill_time": 76
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4/Dashy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4",
+   "player_ref": "wiki:Dashy",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 21,
+   "deaths": 29,
+   "kd": 0.72,
+   "hill_time": 59
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4/Huke",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4",
+   "player_ref": "wiki:Huke",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 24,
+   "deaths": 33,
+   "kd": 0.73,
+   "hill_time": 47
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4/Mercules",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4",
+   "player_ref": "wiki:Mercules",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 29,
+   "deaths": 32,
+   "kd": 0.91,
+   "hill_time": 73
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4/Shotzzy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_4",
+   "player_ref": "wiki:Shotzzy",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 22,
+   "deaths": 38,
+   "kd": 0.57,
+   "hill_time": 38
+  },
+  {
+   "kind": "match_map",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "match_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals",
+   "position": 5,
+   "mode": "Search and Destroy",
+   "map_name": "Den",
+   "status": "played",
+   "score": [
+    6,
+    5
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5/04",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5",
+   "player_ref": "wiki:04",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 9,
+   "deaths": 5,
+   "kd": 1.8,
+   "plants": 2,
+   "defuses": 2,
+   "first_bloods": 4,
+   "first_deaths": 3
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5/Abuzah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5",
+   "player_ref": "wiki:Abuzah",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 8,
+   "deaths": 5,
+   "kd": 1.6,
+   "plants": 0,
+   "defuses": 0,
+   "first_bloods": 0,
+   "first_deaths": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5/Drazah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5",
+   "player_ref": "wiki:Drazah",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 7,
+   "deaths": 8,
+   "kd": 0.88,
+   "plants": 0,
+   "defuses": 0,
+   "first_bloods": 0,
+   "first_deaths": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5/Simp",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5",
+   "player_ref": "wiki:Simp",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 14,
+   "deaths": 6,
+   "kd": 2.33,
+   "plants": 1,
+   "defuses": 0,
+   "first_bloods": 3,
+   "first_deaths": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5/Dashy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5",
+   "player_ref": "wiki:Dashy",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 7,
+   "deaths": 8,
+   "kd": 0.88,
+   "plants": 0,
+   "defuses": 1,
+   "first_bloods": 0,
+   "first_deaths": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5/Huke",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5",
+   "player_ref": "wiki:Huke",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 5,
+   "deaths": 8,
+   "kd": 0.63,
+   "plants": 5,
+   "defuses": 0,
+   "first_bloods": 0,
+   "first_deaths": 2
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5/Mercules",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5",
+   "player_ref": "wiki:Mercules",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 3,
+   "deaths": 11,
+   "kd": 0.27,
+   "plants": 0,
+   "defuses": 0,
+   "first_bloods": 0,
+   "first_deaths": 2
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5/Shotzzy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_5",
+   "player_ref": "wiki:Shotzzy",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 8,
+   "deaths": 11,
+   "kd": 0.73,
+   "plants": 0,
+   "defuses": 1,
+   "first_bloods": 4,
+   "first_deaths": 2
+  },
+  {
+   "kind": "match_map",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "match_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals",
+   "position": 6,
+   "mode": "Overload",
+   "map_name": "Den",
+   "status": "played",
+   "score": [
+    3,
+    4
+   ],
+   "winner_side": 2
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6/04",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6",
+   "player_ref": "wiki:04",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 31,
+   "deaths": 25,
+   "kd": 1.24,
+   "overloads": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6/Abuzah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6",
+   "player_ref": "wiki:Abuzah",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 26,
+   "deaths": 21,
+   "kd": 1.24,
+   "overloads": 2
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6/Drazah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6",
+   "player_ref": "wiki:Drazah",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 24,
+   "deaths": 25,
+   "kd": 0.96,
+   "overloads": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6/Simp",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6",
+   "player_ref": "wiki:Simp",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 16,
+   "deaths": 27,
+   "kd": 0.59,
+   "overloads": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6/Dashy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6",
+   "player_ref": "wiki:Dashy",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 27,
+   "deaths": 23,
+   "kd": 1.17,
+   "overloads": 2
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6/Huke",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6",
+   "player_ref": "wiki:Huke",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 22,
+   "deaths": 22,
+   "kd": 1.0,
+   "overloads": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6/Mercules",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6",
+   "player_ref": "wiki:Mercules",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 22,
+   "deaths": 28,
+   "kd": 0.79,
+   "overloads": 2
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6/Shotzzy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_6",
+   "player_ref": "wiki:Shotzzy",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 26,
+   "deaths": 26,
+   "kd": 1.0,
+   "overloads": 0
+  },
+  {
+   "kind": "match_map",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "match_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals",
+   "position": 7,
+   "mode": "Search and Destroy",
+   "map_name": "Hacienda",
+   "status": "played",
+   "score": [
+    6,
+    5
+   ],
+   "winner_side": 1
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7/04",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7",
+   "player_ref": "wiki:04",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 9,
+   "deaths": 7,
+   "kd": 1.29,
+   "plants": 1,
+   "defuses": 0,
+   "first_bloods": 1,
+   "first_deaths": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7/Abuzah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7",
+   "player_ref": "wiki:Abuzah",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 5,
+   "deaths": 8,
+   "kd": 0.63,
+   "plants": 0,
+   "defuses": 0,
+   "first_bloods": 0,
+   "first_deaths": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7/Drazah",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7",
+   "player_ref": "wiki:Drazah",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 12,
+   "deaths": 8,
+   "kd": 1.5,
+   "plants": 1,
+   "defuses": 0,
+   "first_bloods": 2,
+   "first_deaths": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7/Simp",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7",
+   "player_ref": "wiki:Simp",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "kills": 6,
+   "deaths": 7,
+   "kd": 0.86,
+   "plants": 1,
+   "defuses": 0,
+   "first_bloods": 0,
+   "first_deaths": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7/Dashy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7",
+   "player_ref": "wiki:Dashy",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 3,
+   "deaths": 8,
+   "kd": 0.38,
+   "plants": 0,
+   "defuses": 0,
+   "first_bloods": 1,
+   "first_deaths": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7/Huke",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7",
+   "player_ref": "wiki:Huke",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 12,
+   "deaths": 8,
+   "kd": 1.5,
+   "plants": 3,
+   "defuses": 0,
+   "first_bloods": 2,
+   "first_deaths": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7/Mercules",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7",
+   "player_ref": "wiki:Mercules",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 5,
+   "deaths": 8,
+   "kd": 0.63,
+   "plants": 0,
+   "defuses": 0,
+   "first_bloods": 2,
+   "first_deaths": 0
+  },
+  {
+   "kind": "player_map_stats",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7/Shotzzy",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "map_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals/Game_7",
+   "player_ref": "wiki:Shotzzy",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "kills": 10,
+   "deaths": 8,
+   "kd": 1.25,
+   "plants": 0,
+   "defuses": 0,
+   "first_bloods": 3,
+   "first_deaths": 0
+  },
+  {
+   "kind": "match_map",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_8",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "match_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals",
+   "position": 8,
+   "mode": "Hardpoint",
+   "map_name": "Gridlock",
+   "status": "not_played"
+  },
+  {
+   "kind": "match_map",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Grand_Finals/Game_9",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "match_ref": "wiki:Call_of_Duty_League_Championship_2026/Grand_Finals",
+   "position": 9,
+   "mode": "Search and Destroy",
+   "map_name": "Sake",
+   "status": "not_played"
+  },
+  {
+   "kind": "standing",
+   "source": "wiki",
+   "source_id": "2026/standings/OpTic_Texas",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:OpTic_Texas",
+   "position": 1,
+   "points": 575
+  },
+  {
+   "kind": "standing",
+   "source": "wiki",
+   "source_id": "2026/standings/Los_Angeles_Thieves",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:Los_Angeles_Thieves",
+   "position": 2,
+   "points": 500
+  },
+  {
+   "kind": "standing",
+   "source": "wiki",
+   "source_id": "2026/standings/FaZe_Vegas",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "position": 3,
+   "points": 440
+  },
+  {
+   "kind": "standing",
+   "source": "wiki",
+   "source_id": "2026/standings/Paris_Gentle_Mates",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:Paris_Gentle_Mates",
+   "position": 4,
+   "points": 380
+  },
+  {
+   "kind": "standing",
+   "source": "wiki",
+   "source_id": "2026/standings/Toronto_KOI",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:Toronto_KOI",
+   "position": 5,
+   "points": 290
+  },
+  {
+   "kind": "standing",
+   "source": "wiki",
+   "source_id": "2026/standings/G2_Minnesota",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:G2_Minnesota",
+   "position": 6,
+   "points": 250
+  },
+  {
+   "kind": "standing",
+   "source": "wiki",
+   "source_id": "2026/standings/Riyadh_Falcons",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:Riyadh_Falcons",
+   "position": 7,
+   "points": 240
+  },
+  {
+   "kind": "standing",
+   "source": "wiki",
+   "source_id": "2026/standings/Miami_Heretics",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:Miami_Heretics",
+   "position": 8,
+   "points": 235
+  },
+  {
+   "kind": "standing",
+   "source": "wiki",
+   "source_id": "2026/standings/Carolina_Royal_Ravens",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:Carolina_Royal_Ravens",
+   "position": 9,
+   "points": 150
+  },
+  {
+   "kind": "standing",
+   "source": "wiki",
+   "source_id": "2026/standings/Boston_Breach",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:Boston_Breach",
+   "position": 10,
+   "points": 115
+  },
+  {
+   "kind": "standing",
+   "source": "wiki",
+   "source_id": "2026/standings/Vancouver_Surge",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:Vancouver_Surge",
+   "position": 11,
+   "points": 95
+  },
+  {
+   "kind": "standing",
+   "source": "wiki",
+   "source_id": "2026/standings/Cloud9_New_York",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "season_year": 2026,
+   "franchise_ref": "wiki:Cloud9_New_York",
+   "position": 12,
+   "points": 30
+  }
+ ]
+}

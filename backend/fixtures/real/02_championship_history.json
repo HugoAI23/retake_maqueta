@@ -1,0 +1,491 @@
+{
+ "consulted": [
+  {
+   "source": "wiki",
+   "url": "https://cod-esports.fandom.com/wiki/Call_of_Duty_League_Championship_2026",
+   "date": "2026-09-22",
+   "used_for": "clasificación, premios y rosters"
+  },
+  {
+   "source": "wiki",
+   "url": "https://cod-esports.fandom.com/wiki/Call_of_Duty_League_Championship_2025",
+   "date": "2026-09-22",
+   "used_for": "clasificación (1.º y 2.º), premios y rosters"
+  },
+  {
+   "source": "wiki",
+   "url": "https://cod-esports.fandom.com/wiki/Call_of_Duty_League_Championship_2021",
+   "date": "2026-09-22",
+   "used_for": "campeón, premio y roster"
+  },
+  {
+   "source": "wiki",
+   "url": "https://cod-esports.fandom.com/wiki/Call_of_Duty_League_Championship_2020",
+   "date": "2026-09-22",
+   "used_for": "campeón, premio y roster"
+  },
+  {
+   "source": "wiki",
+   "url": "https://cod-esports.fandom.com/wiki/Call_of_Duty_Championship_2013",
+   "date": "2026-09-22",
+   "used_for": "campeón, premio y roster"
+  }
+ ],
+ "notes": [
+  "source_id de la Wiki: nombre de la página o nombre visible en la Wiki.",
+  "Rosters: solo los cuatro primeros nombres de cada equipo en la tabla de premios; los siguientes aparecen separados y son entrenadores o suplentes (confirmado para FaZe Vegas: Crowder y RJ son entrenadores).",
+  "Nombre oficial y abreviatura del juego: la Wiki publica el nombre corto (p. ej. 'Black Ops 7'); el nombre completo y la abreviatura siguen la forma habitual de Activision y deben revisarse."
+ ],
+ "records": [
+  {
+   "kind": "championship",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "year": 2026,
+   "competition": "Call of Duty League Championship",
+   "game_name": "Call of Duty: Black Ops 7",
+   "game_abbreviation": "BO7",
+   "final_date": "2026-07-19",
+   "completed": true
+  },
+  {
+   "kind": "championship",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2025",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "year": 2025,
+   "competition": "Call of Duty League Championship",
+   "game_name": "Call of Duty: Black Ops 6",
+   "game_abbreviation": "BO6",
+   "final_date": "2025-06-29",
+   "completed": true
+  },
+  {
+   "kind": "championship",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2021",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "year": 2021,
+   "competition": "Call of Duty League Championship",
+   "game_name": "Call of Duty: Black Ops Cold War",
+   "game_abbreviation": "BOCW",
+   "final_date": "2021-08-22",
+   "completed": true
+  },
+  {
+   "kind": "championship",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2020",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "year": 2020,
+   "competition": "Call of Duty League Championship",
+   "game_name": "Call of Duty: Modern Warfare",
+   "game_abbreviation": "MW",
+   "final_date": "2020-08-30",
+   "completed": true
+  },
+  {
+   "kind": "championship",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_Championship_2013",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "year": 2013,
+   "competition": "Call of Duty Championship",
+   "game_name": "Call of Duty: Black Ops II",
+   "game_abbreviation": "BO2",
+   "final_date": "2013-04-07",
+   "completed": true
+  },
+  {
+   "kind": "placement",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/FaZe_Vegas",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "championship_ref": "wiki:Call_of_Duty_League_Championship_2026",
+   "franchise_ref": "wiki:FaZe_Vegas",
+   "published_team_name": "FaZe VGS",
+   "place": "1",
+   "prize_usd": 800000,
+   "pool_percent": 40,
+   "roster": [
+    {
+     "player_ref": "wiki:Simp",
+     "gamertag_at_final": "Simp"
+    },
+    {
+     "player_ref": "wiki:Drazah",
+     "gamertag_at_final": "Drazah"
+    },
+    {
+     "player_ref": "wiki:04",
+     "gamertag_at_final": "04"
+    },
+    {
+     "player_ref": "wiki:Abuzah",
+     "gamertag_at_final": "Abuzah"
+    }
+   ]
+  },
+  {
+   "kind": "placement",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/OpTic_Texas",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "championship_ref": "wiki:Call_of_Duty_League_Championship_2026",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "published_team_name": "OpTic TEX",
+   "place": "2",
+   "prize_usd": 480000,
+   "pool_percent": 24,
+   "roster": [
+    {
+     "player_ref": "wiki:Shotzzy",
+     "gamertag_at_final": "Shotzzy"
+    },
+    {
+     "player_ref": "wiki:Dashy",
+     "gamertag_at_final": "Dashy"
+    },
+    {
+     "player_ref": "wiki:Huke",
+     "gamertag_at_final": "Huke"
+    },
+    {
+     "player_ref": "wiki:Mercules",
+     "gamertag_at_final": "Mercules"
+    }
+   ]
+  },
+  {
+   "kind": "placement",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Riyadh_Falcons",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "championship_ref": "wiki:Call_of_Duty_League_Championship_2026",
+   "franchise_ref": "wiki:Riyadh_Falcons",
+   "published_team_name": "RYD Falcons",
+   "place": "3",
+   "prize_usd": 320000,
+   "pool_percent": 16,
+   "roster": [
+    {
+     "player_ref": "wiki:Exnid",
+     "gamertag_at_final": "Exnid"
+    },
+    {
+     "player_ref": "wiki:Cellium",
+     "gamertag_at_final": "Cellium"
+    },
+    {
+     "player_ref": "wiki:KiSMET",
+     "gamertag_at_final": "KiSMET"
+    },
+    {
+     "player_ref": "wiki:Alluka",
+     "gamertag_at_final": "Alluka"
+    }
+   ]
+  },
+  {
+   "kind": "placement",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Paris_Gentle_Mates",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "championship_ref": "wiki:Call_of_Duty_League_Championship_2026",
+   "franchise_ref": "wiki:Paris_Gentle_Mates",
+   "published_team_name": "PAR Gentle Mates",
+   "place": "4",
+   "prize_usd": 160000,
+   "pool_percent": 8,
+   "roster": [
+    {
+     "player_ref": "wiki:Ghosty",
+     "gamertag_at_final": "Ghosty"
+    },
+    {
+     "player_ref": "wiki:Sib",
+     "gamertag_at_final": "Sib"
+    },
+    {
+     "player_ref": "wiki:Estreal",
+     "gamertag_at_final": "Estreal"
+    },
+    {
+     "player_ref": "wiki:JoeDeceives",
+     "gamertag_at_final": "JoeDeceives"
+    }
+   ]
+  },
+  {
+   "kind": "placement",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Miami_Heretics",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "championship_ref": "wiki:Call_of_Duty_League_Championship_2026",
+   "franchise_ref": "wiki:Miami_Heretics",
+   "published_team_name": "MIA Heretics",
+   "place": "5-6",
+   "prize_usd": 80000,
+   "pool_percent": 4,
+   "roster": [
+    {
+     "player_ref": "wiki:MettalZ",
+     "gamertag_at_final": "MettalZ"
+    },
+    {
+     "player_ref": "wiki:RenKoR",
+     "gamertag_at_final": "RenKoR"
+    },
+    {
+     "player_ref": "wiki:SupeR",
+     "gamertag_at_final": "SupeR"
+    },
+    {
+     "player_ref": "wiki:ReeaL",
+     "gamertag_at_final": "ReeaL"
+    }
+   ]
+  },
+  {
+   "kind": "placement",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/G2_Minnesota",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "championship_ref": "wiki:Call_of_Duty_League_Championship_2026",
+   "franchise_ref": "wiki:G2_Minnesota",
+   "published_team_name": "G2 MIN",
+   "place": "5-6",
+   "prize_usd": 80000,
+   "pool_percent": 4,
+   "roster": [
+    {
+     "player_ref": "wiki:Kremp",
+     "gamertag_at_final": "Kremp"
+    },
+    {
+     "player_ref": "wiki:Skyz",
+     "gamertag_at_final": "Skyz"
+    },
+    {
+     "player_ref": "wiki:Envoy",
+     "gamertag_at_final": "Envoy"
+    },
+    {
+     "player_ref": "wiki:Nastie",
+     "gamertag_at_final": "Nastie"
+    }
+   ]
+  },
+  {
+   "kind": "placement",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Toronto_KOI",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "championship_ref": "wiki:Call_of_Duty_League_Championship_2026",
+   "franchise_ref": "wiki:Toronto_KOI",
+   "published_team_name": "TOR KOI",
+   "place": "7-8",
+   "prize_usd": 40000,
+   "pool_percent": 2,
+   "roster": [
+    {
+     "player_ref": "wiki:CleanX",
+     "gamertag_at_final": "CleanX"
+    },
+    {
+     "player_ref": "wiki:Insight",
+     "gamertag_at_final": "Insight"
+    },
+    {
+     "player_ref": "wiki:Kips",
+     "gamertag_at_final": "Kips"
+    },
+    {
+     "player_ref": "wiki:Abe",
+     "gamertag_at_final": "Abe"
+    }
+   ]
+  },
+  {
+   "kind": "placement",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2026/Los_Angeles_Thieves",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "championship_ref": "wiki:Call_of_Duty_League_Championship_2026",
+   "franchise_ref": "wiki:Los_Angeles_Thieves",
+   "published_team_name": "LA Thieves",
+   "place": "7-8",
+   "prize_usd": 40000,
+   "pool_percent": 2,
+   "roster": [
+    {
+     "player_ref": "wiki:Scrap",
+     "gamertag_at_final": "Scrap"
+    },
+    {
+     "player_ref": "wiki:HyDra",
+     "gamertag_at_final": "HyDra"
+    },
+    {
+     "player_ref": "wiki:aBeZy",
+     "gamertag_at_final": "aBeZy"
+    },
+    {
+     "player_ref": "wiki:Nium",
+     "gamertag_at_final": "Nium"
+    }
+   ]
+  },
+  {
+   "kind": "placement",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2025/OpTic_Texas",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "championship_ref": "wiki:Call_of_Duty_League_Championship_2025",
+   "franchise_ref": "wiki:OpTic_Texas",
+   "published_team_name": "OpTic TEX",
+   "place": "1",
+   "prize_usd": 800000,
+   "pool_percent": 40,
+   "roster": [
+    {
+     "player_ref": "wiki:Shotzzy",
+     "gamertag_at_final": "Shotzzy"
+    },
+    {
+     "player_ref": "wiki:Dashy",
+     "gamertag_at_final": "Dashy"
+    },
+    {
+     "player_ref": "wiki:Huke",
+     "gamertag_at_final": "Huke"
+    },
+    {
+     "player_ref": "wiki:Mercules",
+     "gamertag_at_final": "Mercules"
+    }
+   ]
+  },
+  {
+   "kind": "placement",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2025/Vancouver_Surge",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "championship_ref": "wiki:Call_of_Duty_League_Championship_2025",
+   "franchise_ref": "wiki:Vancouver_Surge",
+   "published_team_name": "VAN Surge",
+   "place": "2",
+   "prize_usd": 480000,
+   "pool_percent": 24,
+   "roster": [
+    {
+     "player_ref": "wiki:Abuzah",
+     "gamertag_at_final": "Abuzah"
+    },
+    {
+     "player_ref": "wiki:04",
+     "gamertag_at_final": "04"
+    },
+    {
+     "player_ref": "wiki:Nastie",
+     "gamertag_at_final": "Nastie"
+    },
+    {
+     "player_ref": "wiki:Neptune",
+     "gamertag_at_final": "Neptune"
+    }
+   ]
+  },
+  {
+   "kind": "placement",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2021/Atlanta_FaZe",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "championship_ref": "wiki:Call_of_Duty_League_Championship_2021",
+   "franchise_ref": "wiki:Atlanta_FaZe",
+   "published_team_name": "ATL FaZe",
+   "place": "1",
+   "prize_usd": 1200000,
+   "pool_percent": 48,
+   "roster": [
+    {
+     "player_ref": "wiki:aBeZy",
+     "gamertag_at_final": "aBeZy"
+    },
+    {
+     "player_ref": "wiki:Simp",
+     "gamertag_at_final": "Simp"
+    },
+    {
+     "player_ref": "wiki:Cellium",
+     "gamertag_at_final": "Cellium"
+    },
+    {
+     "player_ref": "wiki:Arcitys",
+     "gamertag_at_final": "Arcitys"
+    }
+   ]
+  },
+  {
+   "kind": "placement",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_League_Championship_2020/Dallas_Empire",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "championship_ref": "wiki:Call_of_Duty_League_Championship_2020",
+   "franchise_ref": "wiki:Dallas_Empire",
+   "published_team_name": "DAL Empire",
+   "place": "1",
+   "prize_usd": 1500000,
+   "pool_percent": 32.61,
+   "roster": [
+    {
+     "player_ref": "wiki:Clayster",
+     "gamertag_at_final": "Clayster"
+    },
+    {
+     "player_ref": "wiki:Shotzzy",
+     "gamertag_at_final": "Shotzzy"
+    },
+    {
+     "player_ref": "wiki:Huke",
+     "gamertag_at_final": "Huke"
+    },
+    {
+     "player_ref": "wiki:iLLeY",
+     "gamertag_at_final": "iLLeY"
+    }
+   ]
+  },
+  {
+   "kind": "placement",
+   "source": "wiki",
+   "source_id": "Call_of_Duty_Championship_2013/Fariko_Impact",
+   "observed_at": "2026-09-22T00:00:00Z",
+   "championship_ref": "wiki:Call_of_Duty_Championship_2013",
+   "franchise_ref": "wiki:Fariko_Impact",
+   "published_team_name": "Fariko Impact",
+   "place": "1",
+   "prize_usd": 400000,
+   "pool_percent": 40,
+   "roster": [
+    {
+     "player_ref": "wiki:Karma",
+     "gamertag_at_final": "Karma"
+    },
+    {
+     "player_ref": "wiki:KiLLa",
+     "gamertag_at_final": "KiLLa"
+    },
+    {
+     "player_ref": "wiki:MiRx",
+     "gamertag_at_final": "MiRx"
+    },
+    {
+     "player_ref": "wiki:Parasite",
+     "gamertag_at_final": "Parasite"
+    }
+   ]
+  }
+ ]
+}

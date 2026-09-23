@@ -148,7 +148,7 @@ npm run test:e2e
 | RF-67 | Con EN elegido | Poner español primero en Chrome y recargar. | Sigue en inglés. |
 | RF-68 | Dos pestañas de Retake | En la segunda elegir el otro idioma. | La primera no cambia hasta recargarla. |
 | RF-69 | Local storage | Cambiar `retake.locale` a `xx` y recargar. | Se aplica la regla de primera visita. |
-| RF-70 | — | Revisar las claves `league.*` de `src/i18n/dictionaries/es.js` y `en.js`. | Existen las etiquetas de la spec 002 en los dos idiomas. Se verán en pantalla cuando las usen las specs de contenido. |
+| RF-70 | — | Revisar las claves `league.*` de `src/i18n/dictionaries/es.js` y `en.js`. | Existen las etiquetas de la spec 002 aprobada en los dos idiomas: las cinco fases (semana, grupo, winners bracket, losers bracket y gran final, sin "final") y las etiquetas `Por definir`, "Ganador de…", "Perdedor de…", `No jugado`, `Corregido`, `Agente libre` y el aviso de tabla no disponible. No hay traducción para `DQ`, `SMG` ni `AR`. Se verán en pantalla cuando las usen las specs de contenido. |
 | RF-71 | Demostración, escenario "Carga correcta" | Cambiar de idioma. | "21 de septiembre de 2026 a las 18:30" pasa a "September 21, 2026 at 6:30 PM". |
 | RF-72 | Demostración, partido cargado | Cambiar de idioma. | "FaZe VGS", "OpTic Texas", "Major 2 Qualifiers", "Hardpoint" y "Vault" no cambian. |
 
