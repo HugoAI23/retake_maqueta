@@ -92,3 +92,15 @@ def test_una_correccion_en_el_historial_se_marca(session, ingest):
     assert placement.prize_usd == Decimal("120")
     assert placement.corrected_fields == ["prize_usd"]
     assert entity_for(session, "championship", "wiki:C2020") == placement.championship_id
+
+
+def test_un_cambio_en_un_campeonato_completado_se_registra_sin_marca_de_correccion(session, ingest):
+    # La tabla de campeonatos no lleva marca de corrección (plan de la 002): el cambio se registra
+    # sin más. Fallo encontrado al importar los archivos de la Wiki sobre los datos de prueba (T-099).
+    ingest([rec("championship", "C2021", source="wiki", year=2021, game_name="Call of Duty: Black Ops Cold War",
+                game_abbreviation="BOCW", final_date="2021-08-22", completed=True)])
+    ingest([rec("championship", "C2021", source="wiki", hours=1, year=2021, game_name="Call of Duty: Black Ops Cold War",
+                game_abbreviation="CW", final_date="2021-08-23", completed=True)])
+    session.expire_all()
+    championship = session.scalars(select(Championship)).one()
+    assert (championship.game_abbreviation, str(championship.final_date)) == ("CW", "2021-08-23")

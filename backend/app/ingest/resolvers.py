@@ -753,10 +753,11 @@ def resolve_championship(ctx: IngestContext, ref: ExternalRef) -> None:
     if is_new:
         championship = _new_row(ctx, Championship, year=year)
     _, index = _link(ctx, ref, championship)
-    closed = championship.completed
+    # La tabla de campeonatos no lleva marca de corrección (plan de la 002): los cambios se
+    # registran sin ella. Las correcciones del historial se marcan en las clasificaciones.
     for attr in ("competition", "game_name", "game_abbreviation"):
-        set_field(ctx, championship, attr, index.value(attr), closed=closed, index=index, is_new=is_new)
-    set_field(ctx, championship, "final_date", to_date(index.value("final_date")), closed=closed, index=index, is_new=is_new)
+        setattr(championship, attr, index.value(attr))
+    championship.final_date = to_date(index.value("final_date"))
     if index.has("completed"):
         championship.completed = bool(index.value("completed"))
     session.flush()
