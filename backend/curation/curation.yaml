@@ -17,3 +17,11 @@ player_splits:
 
 personal_data_removals:
   - {player: "bp:fx-Removed", requested_on: 2026-09-22}
+
+# Spec 003 (RF-54 a RF-56): uniones de partidos, eventos y franquicias sin enlace en las fuentes,
+# y registros retenidos que son de verdad objetos nuevos. `retake list-retained` sugiere candidatos.
+merges: []
+
+confirmed_new:
+  - {kind: player, ref: "wiki:Twin_2", reason: "[FICTICIO] Datos de prueba: mismo gamertag, pero es otra persona"}
+  - {kind: player, ref: "wiki:Split_B", reason: "[FICTICIO] Datos de prueba: separado de bp:fx-SplitA; es otra persona"}

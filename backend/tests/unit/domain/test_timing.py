@@ -25,14 +25,10 @@ def test_plazos_de_revision_desaparicion_y_conservacion():
 
 
 def test_pausas_minimas_por_fuente():
-    # Plan §1.2 e I-2: 2 s en BreakingPoint y la CDL; 10 s en la Wiki.
-    assert v.MIN_PAUSE == {"bp": timedelta(seconds=2), "wiki": timedelta(seconds=10), "cdl": timedelta(seconds=2)}
-    assert set(v.MIN_PAUSE) == set(v.SOURCES)
-
-
-def test_relecturas_del_historial_tras_el_champs():
-    # RF-30 y RF-31: 1 h y después 24, 48 … 168 h.
-    assert v.HISTORY_REREAD_OFFSETS == (timedelta(hours=1),) + tuple(timedelta(hours=24 * d) for d in range(1, 8))
+    # Plan §1.2: 2 s en BreakingPoint y la CDL.
+    # Spec 003, C-18: la Wiki no se consulta, así que no tiene pausa mínima (I-26).
+    assert v.MIN_PAUSE == {"bp": timedelta(seconds=2), "cdl": timedelta(seconds=2)}
+    assert set(v.MIN_PAUSE) == set(v.SOURCES) - {"wiki"}
 
 
 def test_acceso_del_administrador_y_zona_del_resumen():

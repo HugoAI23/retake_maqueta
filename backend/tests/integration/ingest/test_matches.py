@@ -128,6 +128,20 @@ def test_estadisticas_por_modo_y_kd_publicado(session, ingest):
     assert (control.kills, control.zone_captures, control.hill_time) == (8, None, None)
 
 
+def test_kd_calculado_si_ninguna_fuente_lo_publica(session, ingest):
+    """T-091 (C-12): kills ÷ deaths con 2 decimales; con 0 deaths, K/D = kills; si falta alguno, ausente."""
+    ingest([*maps_base(),
+            rec("player", "p2", gamertag="[FICTICIO] Dos"), rec("player", "p3", gamertag="[FICTICIO] Tres"),
+            rec("match_map", "mp1", match_ref="bp:m1", position=1, mode="Hardpoint", status="played", score=[250, 1], winner_side=1),
+            rec("player_map_stats", "a", map_ref="bp:mp1", player_ref="bp:p1", franchise_ref="bp:t1", kills=20, deaths=17),
+            rec("player_map_stats", "b", map_ref="bp:mp1", player_ref="bp:p2", franchise_ref="bp:t1", kills=6, deaths=0),
+            rec("player_map_stats", "c", map_ref="bp:mp1", player_ref="bp:p3", franchise_ref="bp:t1", deaths=9)])
+    kd = {s.player_id: s.kd for s in session.scalars(select(PlayerMapStats))}
+    assert kd[entity_for(session, "player", "bp:p1")] == Decimal("1.18")
+    assert kd[entity_for(session, "player", "bp:p2")] == Decimal("6")
+    assert kd[entity_for(session, "player", "bp:p3")] is None
+
+
 def test_estadisticas_en_el_equipo_del_partido_y_suplente_marcado(session, ingest):
     ingest([*maps_base(),
             rec("player", "p2", gamertag="[FICTICIO] Suplente"),

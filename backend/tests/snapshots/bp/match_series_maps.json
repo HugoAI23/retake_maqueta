@@ -3,66 +3,131 @@
     "source": "bp",
     "url": "https://breakingpoint.gg/match/214835",
     "date": "2026-09-23",
-    "used_for": "Mapas previstos de la serie (fetchGameBans, en el JSON incrustado) para registrar los mapas no jugados"
+    "used_for": "Mapas previstos de la serie (consulta matches.fetchGameBans del JSON incrustado) para los mapas no jugados"
   },
   "notes": [
     "Partido al mejor de 5 terminado 0-3: los mapas 4 y 5 no se jugaron.",
-    "fetchGameBans da map_id y mode_id; los nombres salen de los mapas jugados (aquí o en otros partidos) y de season_modes.",
-    "mapPicks.fetchMapPicksAndVetoes (vetos) existe pero la 002 no lo usa."
+    "Estructura original; sin estadísticas de jugadores (no hacen falta aquí)."
   ],
   "content": {
-    "best_of": 5,
-    "team_1_score": 0,
-    "team_2_score": 3,
-    "played_games": [
-      {
-        "game_num": 1,
-        "map_id": 69,
-        "mode_id": 1,
-        "map": "Exposure",
-        "mode": "Hardpoint"
+    "initialMatchState": {
+      "id": 214835,
+      "event_id": 100,
+      "datetime": "2026-01-25T23:00:00+00:00",
+      "best_of": 5,
+      "status": "complete",
+      "team_1_id": 3,
+      "team_2_id": 1,
+      "team_1_score": 0,
+      "team_2_score": 3,
+      "winner_id": 1,
+      "round": {
+        "name": "Major Qualifier",
+        "stage": "qualifier",
+        "bracket_side": "none"
       },
-      {
-        "game_num": 2,
-        "map_id": 67,
-        "mode_id": 2,
-        "map": "Colossus",
-        "mode": "Search & Destroy"
-      },
-      {
-        "game_num": 3,
-        "map_id": 68,
-        "mode_id": 5,
-        "map": "Den",
-        "mode": "Overload"
+      "games": [
+        {
+          "game_num": 1,
+          "map_id": 69,
+          "mode_id": 1,
+          "team_1_id": 3,
+          "team_2_id": 1,
+          "winner_id": 1,
+          "team_1_score": 151,
+          "team_2_score": 250,
+          "maps": {
+            "name": "Exposure"
+          },
+          "modes": {
+            "name": "Hardpoint"
+          },
+          "player_stats": []
+        },
+        {
+          "game_num": 2,
+          "map_id": 67,
+          "mode_id": 2,
+          "team_1_id": 3,
+          "team_2_id": 1,
+          "winner_id": 1,
+          "team_1_score": 3,
+          "team_2_score": 6,
+          "maps": {
+            "name": "Colossus"
+          },
+          "modes": {
+            "name": "Search & Destroy"
+          },
+          "player_stats": []
+        },
+        {
+          "game_num": 3,
+          "map_id": 68,
+          "mode_id": 5,
+          "team_1_id": 3,
+          "team_2_id": 1,
+          "winner_id": 1,
+          "team_1_score": 2,
+          "team_2_score": 6,
+          "maps": {
+            "name": "Den"
+          },
+          "modes": {
+            "name": "Overload"
+          },
+          "player_stats": []
+        }
+      ]
+    },
+    "trpcState": {
+      "json": {
+        "queries": [
+          {
+            "queryKey": [
+              [
+                "matches",
+                "fetchGameBans"
+              ],
+              {
+                "input": {
+                  "matchId": 214835
+                },
+                "type": "query"
+              }
+            ],
+            "state": {
+              "data": [
+                {
+                  "map_id": 69,
+                  "map_number": 1,
+                  "mode_id": 1
+                },
+                {
+                  "map_id": 67,
+                  "map_number": 4,
+                  "mode_id": 1
+                },
+                {
+                  "map_id": 67,
+                  "map_number": 2,
+                  "mode_id": 2
+                },
+                {
+                  "map_id": 68,
+                  "map_number": 5,
+                  "mode_id": 2
+                },
+                {
+                  "map_id": 68,
+                  "map_number": 3,
+                  "mode_id": 5
+                }
+              ]
+            }
+          }
+        ]
       }
-    ],
-    "fetchGameBans": [
-      {
-        "map_id": 69,
-        "map_number": 1,
-        "mode_id": 1
-      },
-      {
-        "map_id": 67,
-        "map_number": 4,
-        "mode_id": 1
-      },
-      {
-        "map_id": 67,
-        "map_number": 2,
-        "mode_id": 2
-      },
-      {
-        "map_id": 68,
-        "map_number": 5,
-        "mode_id": 2
-      },
-      {
-        "map_id": 68,
-        "map_number": 3,
-        "mode_id": 5
-      }
-    ]
+    }
   }
 }

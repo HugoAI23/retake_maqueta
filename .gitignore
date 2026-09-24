@@ -31,5 +31,7 @@ dist-ssr
 # Backend (spec 002)
 backend/.env
 backend/.venv
+# Spec 003 (I-26): archivos CSV de la Wiki, con nombres reales y fechas de nacimiento.
+backend/data/
 __pycache__/
 .pytest_cache/

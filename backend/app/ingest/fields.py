@@ -104,6 +104,7 @@ def match_fields(record: r.MatchRecord, session: Session) -> list[Field]:
     pairs = [
         ("event_ref", record.event_ref, True),
         ("phase", record.phase, True),
+        ("week", record.week, _valid_positive_int(record.week)),
         ("best_of", record.best_of, _valid_positive_int(record.best_of)),
         ("status", record.status, True),
         ("scheduled_at", record.scheduled_at, True),

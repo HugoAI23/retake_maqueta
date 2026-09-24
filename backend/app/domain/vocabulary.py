@@ -82,11 +82,9 @@ DISAPPEARED_AFTER = timedelta(hours=24)       # partido desaparecido (RF-50)
 LIVE_MISSING_AFTER = timedelta(seconds=60)    # partido en vivo que falta en las fuentes (RF-90)
 RETENTION = timedelta(days=7)                 # registro y resúmenes (RF-149, RF-154)
 
-# Relecturas del historial tras la final del Champs (RF-30, RF-31).
-HISTORY_REREAD_OFFSETS = (timedelta(hours=1),) + tuple(timedelta(hours=24 * day) for day in range(1, 8))
-
 # Pausa mínima entre dos consultas a la misma fuente (RF-39; plan §1.2 e I-2).
-MIN_PAUSE = {"bp": timedelta(seconds=2), "wiki": timedelta(seconds=10), "cdl": timedelta(seconds=2)}
+# La Wiki no se consulta (spec 003, C-18): sus datos llegan por archivos (plan I-26).
+MIN_PAUSE = {"bp": timedelta(seconds=2), "cdl": timedelta(seconds=2)}
 
 # Acceso del administrador (RF-127, RF-134) y zona horaria del resumen diario (RF-150).
 SESSION_DURATION = timedelta(hours=8)

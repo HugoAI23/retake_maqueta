@@ -9,10 +9,12 @@ Lo que no se puede recalcular se conserva en la propia fila: el estado del parti
 identidades y las correcciones.
 """
 
+import re
 import uuid
+from collections.abc import Callable, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from decimal import Decimal
 
 from sqlalchemy import delete, exists, select, update
@@ -41,25 +43,38 @@ from app.db.models import (
 )
 from app.db.models.matches import PLAYER_STAT_FIELDS
 from app.domain.ages import approx_birth_year
+from app.domain.cancellation import CANCEL, DISCREPANCY, cancellation_decision
 from app.domain.corrections import add_corrected_field, is_correction
 from app.domain.identities import (
     IdentityData,
     IdentityVersion,
     identity_at,
     identity_for_championship,
-    identity_valid_from,
     needs_new_identity,
 )
+from app.domain.identity_merge import DATA_FIELDS, SourceIdentity, identity_changed, merge_identities
+from app.domain.kd import kd_of
+from app.domain.live_score import LiveScore, SourceScore, most_advanced
 from app.domain.match_state import StatusChange, apply_source_status
 from app.domain.phases import normalize_phase
-from app.domain.priority import STANDINGS_PRIORITY
+from app.domain.priority import SOURCE_PRIORITY, STANDINGS_PRIORITY
 from app.domain.seasons import current_season_year
 from app.domain.validation import is_valid_maps_won
+from app.ingest.changes import touch
 from app.ingest.store import ObservationIndex, entity_for, refs_of_entity, require_entity
+from app.logos import InvalidLogo, store_logo
 
 
 class IngestError(ValueError):
     """Un registro no se puede aplicar (p. ej. falta un dato imprescindible)."""
+
+
+@dataclass(frozen=True)
+class Discrepancy:
+    """Contradicción entre fuentes que se anota como incidencia (spec 003, RF-146)."""
+
+    ref: str
+    reason: str
 
 
 # Datos personales de un jugador (RF-21 a RF-23, RF-77, RF-78).
@@ -93,6 +108,13 @@ class IngestContext:
     created: set[tuple[int, str]] = field(default_factory=set)
     detect_corrections: bool = True
     pending_rollover: int | None = None
+    discrepancies: list[Discrepancy] = field(default_factory=list)
+    untranslated_countries: list[Discrepancy] = field(default_factory=list)
+    # Spec 003 (RF-65 a RF-71): descargador de logos (dirección → bytes; lanza `InvalidLogo`),
+    # hora de la ingesta y logos ya descargados en esta ingesta.
+    logo_fetcher: Callable[[str], bytes] | None = None
+    now: datetime | None = None
+    logo_cache: dict[str, str | None] = field(default_factory=dict)
 
 
 @contextmanager
@@ -128,15 +150,20 @@ def to_date(value: object) -> date | None:
     return date.fromisoformat(str(value))
 
 
-def set_field(ctx, row, attr, new, *, closed: bool, index: ObservationIndex, is_new: bool) -> None:
-    """Asigna un campo y lo marca como corregido si procede (RF-96 a RF-98)."""
+def set_field(ctx, row, attr, new, *, closed: bool, index: ObservationIndex, is_new: bool,
+              derived_from: Sequence[str] = ()) -> None:
+    """Asigna un campo y lo marca como corregido si procede (RF-96 a RF-98).
+
+    `derived_from`: campos de los que se calcula un valor que ninguna fuente publica (spec 003,
+    C-12); cuenta como observado antes si alguno de ellos lo estaba.
+    """
     old = getattr(row, attr)
     if (
         not is_new
         and ctx.detect_corrections
         and is_correction(
             entity_closed=closed,
-            had_previous_observation=index.had_previous(attr, ctx.created),
+            had_previous_observation=any(index.had_previous(name, ctx.created) for name in (attr, *derived_from)),
             old_value=old,
             new_value=new,
         )
@@ -220,42 +247,182 @@ def franchise_identities(session: Session, franchise_id: uuid.UUID) -> list[Iden
     return [IdentityVersion(i.id, _identity_data(i), i.valid_from) for i in rows]
 
 
-def resolve_identity(ctx: IngestContext, ref: ExternalRef) -> None:
-    """Identidad de una franquicia (RF-11, RF-73, RF-74).
+def _source_identity(ref: ExternalRef, index: ObservationIndex) -> SourceIdentity:
+    """Identidad tal como la publica una fuente; los datos no válidos llegan ausentes."""
+    return SourceIdentity(ref.source, *(index.value(name) for name in DATA_FIELDS),
+                          valid_from=to_datetime(index.value("valid_from")))
 
-    Cualquier cambio de los cinco datos crea una identidad nueva. La misma identidad
-    publicada por otra fuente no se duplica: se enlaza con la vigente en esa fecha.
+
+def _identity_peers(session: Session, franchise_id: uuid.UUID, exclude: int) -> list[tuple[ExternalRef, Identity]]:
+    """Referencias de identidad de otras fuentes o versiones ya enlazadas a la franquicia."""
+    return list(session.execute(
+        select(ExternalRef, Identity).join(Identity, Identity.id == ExternalRef.entity_id)
+        .where(ExternalRef.kind == "identity", Identity.franchise_id == franchise_id, ExternalRef.id != exclude)
+    ).tuples())
+
+
+def _logo_copy(ctx: IngestContext, url: str | None, previous: Identity | None) -> str | None:
+    """Copia propia del logo (spec 003: RF-65 a RF-71).
+
+    Cada dirección se descarga una vez por ingesta. Si no se puede obtener o no es una imagen
+    admitida, el logo queda sin copia (RF-70), salvo que ya hubiera una copia de esa misma
+    dirección, que se conserva (RF-71). Sin descargador, se mantiene lo que hubiera.
+    """
+    kept = previous.logo_image_id if previous is not None and previous.logo_url == url else None
+    if url is None or ctx.logo_fetcher is None:
+        return kept
+    if url not in ctx.logo_cache:
+        try:
+            ctx.logo_cache[url] = store_logo(ctx.session, ctx.logo_fetcher(url), ctx.now or datetime.now(UTC))
+        except InvalidLogo:
+            ctx.logo_cache[url] = None
+    return ctx.logo_cache[url] or kept
+
+
+def _write_identity(row: Identity, data: IdentityData, logo_image_id: str | None) -> None:
+    for name, value in data._asdict().items():
+        setattr(row, name, value)
+    row.logo_image_id = logo_image_id
+
+
+def resolve_identity(ctx: IngestContext, ref: ExternalRef) -> None:
+    """Identidad de una franquicia (RF-11, RF-73, RF-74 de la 002; RF-61 a RF-71 de la 003).
+
+    Spec 003 (sustituye el ajuste I-15 de la 002): la identidad vigente combina, campo a campo y
+    por prioridad, la identidad más reciente de cada fuente, incluida la fecha de vigencia
+    (Q-45). Solo nace una identidad nueva si cambia el resultado combinado porque cambia lo que
+    publica una fuente que ya formaba parte de él, o si cambia la imagen del logo (RF-67). Una
+    fuente que se suma a la identidad vigente la completa sin crear otra. Las identidades
+    anteriores de una fuente siguen siendo historial, con sus propios datos.
     """
     session = ctx.session
     index = _own_index(ctx, ref)
     franchise_id = require_entity(session, "franchise", index.value("franchise_ref"))
-    data = IdentityData(
-        index.value("short_name"), index.value("abbreviation"), index.value("logo_url"),
-        index.value("primary_color"), index.value("secondary_color"),
-    )
-    current = session.get(Identity, ref.entity_id) if ref.entity_id else None
-    if current is not None and current.franchise_id == franchise_id and not needs_new_identity(_identity_data(current), data):
-        return
+    own = _source_identity(ref, index)
+    linked = session.get(Identity, ref.entity_id) if ref.entity_id else None
+    if linked is not None and linked.franchise_id != franchise_id:
+        linked = None
+    own_from = own.valid_from or (linked.valid_from if linked else None) or index.latest_seen()
+    peers = _identity_peers(session, franchise_id, ref.id)
+    peer_from = {peer.id: _source_identity(peer, _own_index(ctx, peer)).valid_from or row.valid_from for peer, row in peers}
 
-    valid_from = identity_valid_from(to_datetime(index.value("valid_from")), index.latest_seen())
-    same_start = session.scalar(
-        select(Identity).where(Identity.franchise_id == franchise_id, Identity.valid_from == valid_from)
-    )
-    in_effect = identity_at(franchise_identities(session, franchise_id), valid_from)
-    if same_start is not None:
-        target = same_start
-        for name, value in data._asdict().items():
-            setattr(target, name, value)
-    elif in_effect is not None and not needs_new_identity(in_effect.data, data):
-        target = session.get(Identity, in_effect.id)
+    if any(peer.source == ref.source and peer_from[peer.id] > own_from for peer, _ in peers):
+        target = _resolve_past_identity(ctx, franchise_id, own, own_from)
+        ref.entity_id = target.id
     else:
-        target = _new_row(ctx, Identity, franchise_id=franchise_id, valid_from=valid_from, **data._asdict())
-    ref.entity_id = target.id
+        target, group = _resolve_current_identity(ctx, ref, index, franchise_id, own, own_from, peers, peer_from)
+        for member in group:
+            member.entity_id = target.id
+        session.flush()
+        # Las versiones anteriores de las fuentes del grupo vuelven a sus propios datos.
+        for peer, row in peers:
+            if row.id != target.id and peer not in group:
+                resolve_identity(ctx, peer)
     session.flush()
     reresolve_placements(ctx, Placement.franchise_id == franchise_id)
 
 
+def _resolve_past_identity(ctx: IngestContext, franchise_id, own: SourceIdentity, valid_from: datetime) -> Identity:
+    """Identidad anterior de una fuente: se compara con la vigente en su fecha (como en la 002)."""
+    session = ctx.session
+    data = IdentityData(*(getattr(own, name) for name in DATA_FIELDS))
+    same_start = session.scalar(select(Identity).where(Identity.franchise_id == franchise_id, Identity.valid_from == valid_from))
+    in_effect = identity_at(franchise_identities(session, franchise_id), valid_from)
+    if same_start is not None:
+        _write_identity(same_start, data, _logo_copy(ctx, data.logo_url, same_start))
+        return same_start
+    if in_effect is not None and not needs_new_identity(in_effect.data, data):
+        return session.get(Identity, in_effect.id)
+    return _new_row(ctx, Identity, franchise_id=franchise_id, valid_from=valid_from, **data._asdict(),
+                    logo_image_id=_logo_copy(ctx, data.logo_url, None))
+
+
+def _resolve_current_identity(ctx, ref, index, franchise_id, own, own_from, peers, peer_from):
+    """Identidad vigente combinada. Devuelve la fila y las referencias que la forman."""
+    session = ctx.session
+    latest: dict[str, tuple[ExternalRef, Identity]] = {}
+    for peer, row in peers:
+        if peer.source != ref.source and (peer.source not in latest or peer_from[peer.id] > peer_from[latest[peer.source][0].id]):
+            latest[peer.source] = (peer, row)
+    group = [ref, *(peer for peer, _ in latest.values())]
+    merged = merge_identities([own, *(_source_identity(peer, _own_index(ctx, peer)) for peer, _ in latest.values())])
+
+    rows = sorted(session.scalars(select(Identity).where(Identity.franchise_id == franchise_id)), key=lambda i: i.valid_from)
+    current = rows[-1] if rows else None
+    logo_id = _logo_copy(ctx, merged.data.logo_url, current)
+    if current is None:
+        target = _new_row(ctx, Identity, franchise_id=franchise_id, valid_from=merged.valid_from or own_from,
+                          **merged.data._asdict(), logo_image_id=logo_id)
+        return target, group
+
+    new_image = (current.logo_image_id is not None and logo_id is not None and logo_id != current.logo_image_id)
+    changed = identity_changed(_identity_data(current), merged.data) or new_image
+    own_source_in_current = ref.entity_id == current.id or any(
+        peer.source == ref.source and row.id == current.id for peer, row in peers)
+    if not changed:
+        target = current
+        target.logo_image_id = logo_id
+    elif own_source_in_current:
+        # Cambia lo que publica una fuente de la identidad vigente: identidad nueva (RF-63, RF-73).
+        start = own.valid_from or index.latest_seen()
+        target = next((row for row in rows if row.valid_from == start), None)
+        if target is None:
+            target = _new_row(ctx, Identity, franchise_id=franchise_id, valid_from=start, **merged.data._asdict(),
+                              logo_image_id=logo_id)
+            return target, group
+        _write_identity(target, merged.data, logo_id)
+        return target, group
+    else:
+        # Una fuente se suma a la identidad vigente: la completa, sin crear otra (RF-61).
+        target = current
+        _write_identity(target, merged.data, logo_id)
+
+    # La fecha de vigencia es un campo más (Q-45), sin saltar por encima de la identidad anterior.
+    if merged.valid_from is not None and merged.valid_from != target.valid_from:
+        before = [row for row in rows if row.valid_from < target.valid_from and row.id != target.id]
+        taken = any(row.valid_from == merged.valid_from for row in rows)
+        if not taken and (not before or merged.valid_from > before[-1].valid_from):
+            target.valid_from = merged.valid_from
+    return target, group
+
+
 # --- Jugadores y rosters -------------------------------------------------------------------
+
+
+BP_COUNTRY = re.compile(r"^bp:(\d+)$")
+
+
+def _country(ctx: IngestContext, ref: ExternalRef, index: ObservationIndex) -> str | None:
+    """País del jugador (RF-22 de la 002); el número de BreakingPoint se traduce con la curación (I-6).
+
+    Un número sin traducir es un dato no entendido: cede el turno a otra fuente (RF-48 de la 003)
+    y, si ninguna publica el país, queda ausente y se anota la incidencia. Si ninguna lo publica
+    de forma legible, se conserva el último valor entendido (RF-49).
+    """
+    by_source = index.by_source("country")
+    candidates = [by_source[source] for source in SOURCE_PRIORITY if source in by_source] or [index.value("country")]
+    untranslated = None
+    for value in candidates:
+        match = BP_COUNTRY.match(value) if isinstance(value, str) else None
+        if match is None:
+            if value is not None:
+                return value
+            continue
+        name = ctx.curation.countries.get(int(match.group(1)))
+        if name is not None:
+            return name
+        untranslated = match.group(1)
+    if untranslated is not None:
+        own = next((r for r in refs_of_entity(ctx.session, "player", ref.entity_id) if r.source == "bp"), ref)
+        ctx.untranslated_countries.append(
+            Discrepancy(f"{own.source}:{own.source_id}", f"país de BreakingPoint sin traducir: {untranslated}"))
+    return None
+
+
+def removal_requested(ctx: IngestContext, refs: Sequence[ExternalRef]) -> bool:
+    """La curación vigente pide retirar los datos personales de alguna de estas referencias."""
+    requested = {(entry.player.source, entry.player.source_id) for entry in ctx.curation.personal_data_removals}
+    return any((r.source, r.source_id) in requested for r in refs)
 
 
 def resolve_player(ctx: IngestContext, ref: ExternalRef) -> None:
@@ -263,20 +430,24 @@ def resolve_player(ctx: IngestContext, ref: ExternalRef) -> None:
     session = ctx.session
     refs = refs_of_entity(session, "player", ref.entity_id)
     player = session.get(Player, ref.entity_id)
-    if player is not None and player.personal_data_removed:
-        # Los datos personales retirados no se vuelven a guardar (RF-78).
+    removed = (player is not None and player.personal_data_removed) or removal_requested(ctx, refs)
+    if removed:
+        # Los datos personales retirados no se vuelven a guardar (RF-78), ni un instante:
+        # también cuando la ingesta llega antes que la curación o se enlaza otra fuente (RF-60).
         session.execute(delete(Observation).where(
             Observation.ref_id.in_([r.id for r in refs]), Observation.field.in_(PERSONAL_FIELDS)))
     index = ObservationIndex(session, refs)
     if player is None:
         player = _new_row(ctx, Player, id=ref.entity_id, current_gamertag=index.value("gamertag"))
+    if removed:
+        player.personal_data_removed = True
 
     player.current_gamertag = index.value("gamertag") or player.current_gamertag
     if index.has("retired"):
         player.retired = bool(index.value("retired"))
 
     player.real_name = index.value("real_name")
-    player.country = index.value("country")
+    player.country = _country(ctx, ref, index)
     player.birth_date = to_date(index.value("birth_date"))
     player.birth_year = to_int(index.value("birth_year"))
     player.birth_year_is_approx = False
@@ -286,6 +457,10 @@ def resolve_player(ctx: IngestContext, ref: ExternalRef) -> None:
         player.birth_year_is_approx = True
 
     previous = [tag for tag in dict.fromkeys(index.value("previous_gamertags") or []) if tag != player.current_gamertag]
+    stored = session.scalars(select(PlayerGamertag.gamertag).where(PlayerGamertag.player_id == player.id)
+                             .order_by(PlayerGamertag.position)).all()
+    if list(stored) != previous:
+        touch(session, player)  # spec 003: cambio aunque solo se borren gamertags (RF-157)
     session.execute(delete(PlayerGamertag).where(PlayerGamertag.player_id == player.id))
     for position, tag in enumerate(previous, start=1):
         session.add(PlayerGamertag(player_id=player.id, gamertag=tag, position=position))
@@ -330,7 +505,20 @@ def resolve_match(ctx: IngestContext, ref: ExternalRef) -> None:
     is_new = match is None
     old_status = None if is_new else match.status
 
-    source_status = index.value("status")
+    # Spec 003 (RF-53): una cancelación solo vale si la publica la fuente de mayor prioridad
+    # entre las que publican el partido; si no, se ignora y se anota la discrepancia.
+    statuses = index.by_source("status")
+    decision = cancellation_decision(statuses)
+    if decision == CANCEL:
+        source_status = "cancelled"
+    elif decision == DISCREPANCY:
+        top = next(src for src in SOURCE_PRIORITY if src in statuses)
+        top_ref = next((r for r in refs if r.source == top), refs[0])
+        others = ", ".join(sorted(src for src, st in statuses.items() if st == "cancelled"))
+        ctx.discrepancies.append(Discrepancy(f"{top_ref.source}:{top_ref.source_id}", f"cancelación publicada solo por {others}"))
+        source_status = next((statuses[src] for src in SOURCE_PRIORITY if src in statuses and statuses[src] != "cancelled"), None)
+    else:
+        source_status = index.value("status")
     change = (
         apply_source_status(old_status, source_status)
         if source_status is not None
@@ -372,21 +560,16 @@ def resolve_match(ctx: IngestContext, ref: ExternalRef) -> None:
         if index.has(f"slot_{side}"):
             _resolve_slot(session, match.id, side, index.value(f"slot_{side}") or {})
 
-    if change.status in ("live", "finished"):
+    if change.status == "live":
+        _resolve_live_score(match, index)
+    elif change.status == "finished":
         maps_won = [to_int(index.value(f"maps_won_{side}")) for side in (1, 2)]
         maps_won = [v if v is None or is_valid_maps_won(v, match.best_of) else None for v in maps_won]
-        if change.status == "live" and maps_won == [None, None]:
-            maps_won = [0, 0]  # RF-89: en vivo sin marcador publicado
         set_field(ctx, match, "maps_won_1", maps_won[0], closed=closed, index=index, is_new=is_new)
         set_field(ctx, match, "maps_won_2", maps_won[1], closed=closed, index=index, is_new=is_new)
+        match.live_mode = match.live_score_1 = match.live_score_2 = None
     else:
         match.maps_won_1 = match.maps_won_2 = None
-
-    if change.status == "live":
-        match.live_mode = index.value("live_mode")
-        match.live_score_1 = to_int(index.value("live_score_1"))
-        match.live_score_2 = to_int(index.value("live_score_2"))
-    else:
         match.live_mode = match.live_score_1 = match.live_score_2 = None
 
     winner = to_int(index.value("winner_side")) if change.status == "finished" else None
@@ -398,6 +581,39 @@ def resolve_match(ctx: IngestContext, ref: ExternalRef) -> None:
     session.flush()
     if match.went_live_at is not None:
         _start_season(ctx, match)
+
+
+def _resolve_live_score(match: Match, index: ObservationIndex) -> None:
+    """Marcador de un partido en vivo (spec 003: RF-57 a RF-59; RF-89 y RF-91 de la 002).
+
+    Vale el más avanzado que publique cualquier fuente, y nunca uno menos avanzado que el
+    registrado. Sin ningún marcador publicado, 0-0.
+    """
+    won = [index.by_source(f"maps_won_{side}") for side in (1, 2)]
+    live = [index.by_source(f"live_score_{side}") for side in (1, 2)]
+    modes = index.by_source("live_mode")
+    candidates = []
+    for source in set(won[0]) & set(won[1]):
+        maps = (to_int(won[0][source]), to_int(won[1][source]))
+        if not all(is_valid_maps_won(v, match.best_of) for v in maps):
+            continue
+        in_progress = (to_int(live[0][source]), to_int(live[1][source])) \
+            if source in live[0] and source in live[1] else None
+        candidates.append(SourceScore(source, LiveScore(maps, in_progress)))
+
+    registered = None
+    if match.maps_won_1 is not None and match.maps_won_2 is not None:
+        stored_live = (match.live_score_1, match.live_score_2) if match.live_score_1 is not None else None
+        registered = LiveScore((match.maps_won_1, match.maps_won_2), stored_live)
+
+    chosen = most_advanced(candidates, registered)
+    if chosen is None:
+        chosen = LiveScore((0, 0), None)  # RF-89 de la 002: en vivo sin marcador publicado
+    if chosen != registered:
+        source = next((c.source for c in candidates if c.score == chosen), None)
+        match.live_mode = modes.get(source) if source else match.live_mode
+    match.maps_won_1, match.maps_won_2 = chosen.maps_won
+    match.live_score_1, match.live_score_2 = chosen.live_score if chosen.live_score else (None, None)
 
 
 def _resolve_slot(session: Session, match_id: uuid.UUID, side: int, value: dict) -> None:
@@ -497,10 +713,13 @@ def resolve_player_map_stats(ctx: IngestContext, ref: ExternalRef) -> None:
     match = session.get(Match, game_map.match_id)
     closed = match.status == "finished"
     relevant = COMMON_STATS + MODE_STATS.get(mode_key(game_map.mode), ())
+    values = {attr: (index.value(attr) if attr in relevant else None) for attr in PLAYER_STAT_FIELDS}
+    values = {attr: to_decimal(raw) if attr == "kd" else to_int(raw) for attr, raw in values.items()}
+    derived = {"kd": ("kills", "deaths")} if values["kd"] is None else {}
+    values["kd"] = kd_of(values["kd"], values["kills"], values["deaths"])  # spec 003, C-12
     for attr in PLAYER_STAT_FIELDS:
-        raw = index.value(attr) if attr in relevant else None
-        value = to_decimal(raw) if attr == "kd" else to_int(raw)
-        set_field(ctx, stats, attr, value, closed=closed, index=index, is_new=is_new)
+        set_field(ctx, stats, attr, values[attr], closed=closed, index=index, is_new=is_new,
+                  derived_from=derived.get(attr, ()))
 
     stats.franchise_id = require_entity(session, "franchise", index.value("franchise_ref"))
     stats.is_substitute = _is_substitute(session, match, player_id, stats.franchise_id)
@@ -574,6 +793,8 @@ def resolve_placement(ctx: IngestContext, ref: ExternalRef) -> None:
     placement.identity_id = identity.id if identity else None
 
     if index.has("roster"):
+        before = session.execute(select(PlacementRoster.player_id, PlacementRoster.gamertag_at_final)
+                                 .where(PlacementRoster.placement_id == placement.id)).all()
         session.execute(delete(PlacementRoster).where(PlacementRoster.placement_id == placement.id))
         seen = set()
         for entry in index.value("roster") or []:
@@ -582,6 +803,11 @@ def resolve_placement(ctx: IngestContext, ref: ExternalRef) -> None:
                 seen.add(player_id)
                 session.add(PlacementRoster(placement_id=placement.id, player_id=player_id,
                                             gamertag_at_final=entry.get("gamertag_at_final")))
+        session.flush()
+        after = session.execute(select(PlacementRoster.player_id, PlacementRoster.gamertag_at_final)
+                                .where(PlacementRoster.placement_id == placement.id)).all()
+        if sorted(map(tuple, before), key=str) != sorted(map(tuple, after), key=str):
+            touch(session, placement)
     session.flush()
 
 

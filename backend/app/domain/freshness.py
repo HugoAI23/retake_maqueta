@@ -24,6 +24,10 @@ def is_stale(dataset: str, last_success_at: datetime | None, now: datetime) -> b
     return now - last_success_at > stale_threshold(dataset)
 
 
+# Fuentes sin ciclo: sus datos solo llegan cuando Hugo los importa (spec 003, C-15 a C-19).
+MANUAL_SOURCES = ("wiki",)
+
+
 def shortest_cycle(source: str, live_active: bool) -> timedelta:
     """Ciclo más corto vigente de una fuente: 60 s si consulta partidos en vivo, 1 h si no."""
     return LIVE_CYCLE if live_active and source in LIVE_SOURCES else REST_CYCLE
@@ -32,8 +36,11 @@ def shortest_cycle(source: str, live_active: bool) -> timedelta:
 def is_source_stopped(source: str, last_attempt_at: datetime | None, now: datetime, live_active: bool) -> bool:
     """Fuente parada: más del doble de su ciclo más corto sin ninguna consulta (RF-114).
 
-    Una fuente que nunca se ha consultado también está parada.
+    Una fuente que nunca se ha consultado también está parada. La Wiki nunca lo está: no tiene
+    ciclo, porque sus datos llegan por la importación manual de archivos (spec 003, C-19).
     """
+    if source in MANUAL_SOURCES:
+        return False
     if last_attempt_at is None:
         return True
     return now - last_attempt_at > 2 * shortest_cycle(source, live_active)

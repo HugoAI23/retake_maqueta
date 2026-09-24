@@ -2,7 +2,7 @@
 
 - **ID**: `003-league-data-sync`
 - **Fecha**: `2026-09-23` (borrador, segunda ronda de pendientes y resolución de la revisión QA, el mismo día)
-- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-23; revisión R-1 del mismo día, durante el plan)
+- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-23; revisión R-1 del mismo día, durante el plan; cambios C-15 a C-21 del mismo día: la Wiki entra por archivos CSV)
 
 > **Numeración:** tras la revisión QA, la spec se renumeró de principio a fin, porque aún no estaba aprobada y ninguna otra spec cita sus números. Las tablas del §5 usan ya los números nuevos.
 
@@ -37,6 +37,7 @@ Además, cierra tres deudas de specs anteriores:
 | **Registrar** | Que un dato nuevo o cambiado quede guardado en Retake y disponible para la web (mismo verbo que en la 002). |
 | **Datos en vivo** | De un partido `en vivo`: su estado, su marcador (mapas ganados y marcador del mapa en curso, RF-36 y RF-37 de la 002) y, de cada mapa ya terminado de ese partido, su marcador final, su ganador y las estadísticas de sus jugadores. |
 | **Resto de datos** | Cualquier otro dato de la temporada actual de la 002. Por ejemplo: calendario y horarios, eventos, fases, partidos finalizados, jugadores, rosters, franquicias, identidades, tabla de posiciones y correcciones. |
+| **Archivos de la Wiki** | Archivos CSV con datos de la Wiki que el administrador prepara y actualiza fuera de Retake: el historial de campeonatos, los nombres y fechas de nacimiento de los jugadores y los rosters por temporada con el país (cambio C-15). |
 | **Historial** | El historial de campeonatos mundiales de la 002 (§2.2 de la 002), incluidos los datos personales de los jugadores que solo figuran en él. |
 | **Próxima temporada** | La temporada siguiente a la actual, desde que una fuente publica su calendario hasta que pasa a ser la actual (RF-3 de la 002). |
 | **Ciclo** | Tiempo máximo entre dos consultas de un mismo dato: 60 segundos para los datos en vivo y 1 hora para el resto de datos, salvo las excepciones de §2.2. |
@@ -55,11 +56,16 @@ Además, cierra tres deudas de specs anteriores:
 
 ### 2.1 Origen de los datos, carga inicial y entornos
 
-* **RF-1 (Ubicuo)**: EL SISTEMA obtendrá de las tres fuentes, sin intervención manual, todos los datos de la liga definidos en la spec 002, salvo los datos de Retake.
+* **RF-1 (Ubicuo)**: EL SISTEMA obtendrá de BreakingPoint.gg y de la web oficial de la CDL, sin intervención manual, todos los datos de la liga definidos en la spec 002, salvo los datos de Retake y los datos de la Wiki, que llegarán solo por la importación de RF-4.
+  * *Nota (2026-09-23, cambio C-15, sustituye a "obtendrá de las tres fuentes, sin intervención manual"):* la Wiki bloquea el acceso automático de Retake (403 de Cloudflare) y sus condiciones exigen permiso por escrito. Hugo decide que sus datos entren por archivos CSV que él prepara y actualiza (glosario, "Archivos de la Wiki").
 * **RF-2 (Ubicuo)**: EL SISTEMA aplicará a cada dato obtenido de una fuente las reglas de la spec 002 (prioridad de fuentes, validación, correcciones y datos de Retake).
 * **RF-3 (Dirigido por evento)**: CUANDO Retake se ponga en marcha sin datos de la liga, EL SISTEMA obtendrá todos los datos de la temporada actual, incluidos los partidos ya finalizados.
-* **RF-4 (Dirigido por evento)**: CUANDO Retake se ponga en marcha sin datos de la liga, EL SISTEMA obtendrá el historial completo.
-* **RF-5 (Ubicuo)**: EL SISTEMA completará la carga inicial de la temporada actual antes de empezar la del historial.
+* **RF-4 (Dirigido por evento)**: CUANDO el administrador ejecute en la terminal la importación de los archivos de la Wiki, EL SISTEMA registrará el historial completo que contienen y los datos personales de sus jugadores.
+  * *Nota (2026-09-23, cambio C-16, sustituye a "CUANDO Retake se ponga en marcha sin datos de la liga, EL SISTEMA obtendrá el historial completo").*
+* **RF-4a (Ubicuo)**: EL SISTEMA solo registrará los datos personales de los jugadores que figuran en el historial o en los rosters de los archivos de la Wiki.
+* **RF-4b (Dirigido por evento)**: CUANDO termine la importación de RF-4, EL SISTEMA mostrará en la terminal su resultado (éxito, parcial o fallo) y sus incidencias, y lo anotará en el registro.
+* **RF-4c (No deseado)**: SI falta un archivo de la Wiki o no tiene las columnas esperadas, ENTONCES EL SISTEMA no registrará nada de la importación e indicará qué archivo falla.
+* **RF-5**: sin efecto (cambio C-16, 2026-09-23): el historial ya no forma parte de la carga automática.
 * **RF-6 (No deseado)**: SI Retake se pone en marcha sin datos mientras no se juega ninguna temporada, ENTONCES EL SISTEMA cargará como temporada actual la última que tuvo partidos oficiales (RF-2 de la 002).
 * **RF-7 (Estado)**: MIENTRAS dure la carga inicial, EL SISTEMA mostrará los datos ya cargados.
 * **RF-8 (Estado)**: MIENTRAS dure la carga inicial, EL SISTEMA tratará los datos aún no cargados como datos inexistentes, no como un fallo de carga.
@@ -75,7 +81,8 @@ Además, cierra tres deudas de specs anteriores:
 
 * **RF-16 (Estado)**: MIENTRAS un partido esté `en vivo`, EL SISTEMA consultará sus datos en vivo al menos cada 60 segundos.
 * **RF-17 (Estado)**: MIENTRAS un partido `programado` esté a 1 hora o menos de su hora de inicio programada, o la haya pasado sin pasar a `en vivo`, EL SISTEMA consultará su estado al menos cada 60 segundos.
-* **RF-18 (Ubicuo)**: EL SISTEMA consultará el resto de datos al menos cada hora, salvo los partidos finalizados, que siguen RF-19 a RF-21.
+* **RF-18 (Ubicuo)**: EL SISTEMA consultará el resto de datos al menos cada hora, salvo los partidos finalizados, que siguen RF-19 a RF-21, y los datos de la Wiki (RF-32).
+  * *Nota (2026-09-23, cambio C-17):* se añade la excepción de los datos de la Wiki.
 * **RF-19 (Estado)**: MIENTRAS un partido `finalizado` tenga el aviso "Estadísticas pendientes" (RF-47 de la 002), EL SISTEMA lo consultará al menos cada hora.
 * **RF-20 (Dirigido por evento)**: CUANDO un partido `finalizado` tenga registradas todas sus estadísticas, EL SISTEMA lo seguirá consultando al menos cada hora durante 7 días.
 * **RF-21 (Ubicuo)**: EL SISTEMA no consultará un partido `finalizado` fuera de los plazos de RF-19 y RF-20, salvo cuando el administrador lo pida (RF-100).
@@ -91,13 +98,10 @@ Además, cierra tres deudas de specs anteriores:
 
 ### 2.3 Historial de campeonatos
 
-* **RF-30 (Dirigido por evento)**: CUANDO EL SISTEMA registre como `finalizado` la final del campeonato mundial de la temporada actual, volverá a obtener el historial completo como máximo 1 hora después.
-* **RF-31 (Dirigido por evento)**: CUANDO pasen 24, 48, 72, 96, 120, 144 y 168 horas desde que EL SISTEMA registró como `finalizado` esa final, volverá a obtener el historial completo.
-  * *Nota:* la Wiki puede tardar horas o días en publicar la clasificación final y los premios. Mientras no estén completos, el campeonato se registra con los datos disponibles (RF-119 de la 002).
-* **RF-32 (Ubicuo)**: EL SISTEMA solo consultará el historial en la carga inicial (RF-4), en las relecturas de RF-30 y RF-31, en los reintentos de RF-33 y cuando lo pida el administrador (RF-102).
-  * *Nota:* con esta regla, las correcciones del historial de años anteriores (RF-96 de la 002) llegan con las relecturas de cada Champs o con una relectura pedida por el administrador (ver §5.3).
-* **RF-33 (No deseado)**: SI una relectura del historial falla o no se pudo hacer cuando tocaba, ENTONCES EL SISTEMA la reintentará cada hora hasta completarla.
-* **RF-34 (Ubicuo)**: EL SISTEMA solo consultará los datos personales de los jugadores que figuran únicamente en el historial cuando consulte el historial.
+* **RF-30**, **RF-31** y **RF-33**: eliminados (cambio C-17, 2026-09-23). Eran las relecturas automáticas del historial tras el Champs y sus reintentos.
+* **RF-32 (Ubicuo)**: EL SISTEMA solo registrará datos de la Wiki cuando el administrador ejecute la importación de RF-4.
+  * *Nota (2026-09-23, cambio C-17, sustituye a la consulta del historial en la carga inicial, en las relecturas y a petición del administrador):* la importación se hace tras cada Champs, cuando el administrador actualiza los archivos; si la Wiki aún no ha publicado la clasificación completa, se vuelve a importar más tarde. Las correcciones del historial de años anteriores (RF-96 de la 002) llegan con cada importación.
+* **RF-34**: sin efecto (cambio C-16, 2026-09-23): los datos personales de los jugadores del historial llegan con la importación de RF-4 y RF-4a.
 
 ### 2.4 Buen uso de las fuentes
 
@@ -105,7 +109,8 @@ Además, cierra tres deudas de specs anteriores:
 * **RF-36 (Ubicuo)**: EL SISTEMA obtendrá los datos de cada fuente a través de su API pública cuando exista y, si no existe, leyendo sus páginas públicas.
   * *Nota (2026-09-23, revisión R-1, sustituye a "cumplirá las condiciones de uso de cada fuente"):* al revisar las condiciones de uso (regla P-2), las tres fuentes resultaron exigir permiso por escrito para el acceso automático (§5.2). Por la regla P-1, Hugo decidió acceder sin ese permiso, como en su proyecto `CDL-data-analysis`: API donde exista y lectura de páginas públicas donde no. A cambio, Retake limita su carga (RF-37 a RF-42) y cita las fuentes (RF-160).
 * **RF-37 (Ubicuo)**: EL SISTEMA se identificará como Retake en cada consulta.
-* **RF-38 (Ubicuo)**: EL SISTEMA consultará la Wiki solo a través del canal de acceso para programas que la propia Wiki ofrece, nunca a través de sus páginas web.
+* **RF-38 (Ubicuo)**: EL SISTEMA no consultará la Wiki.
+  * *Nota (2026-09-23, cambio C-18, sustituye a "consultará la Wiki solo a través del canal de acceso para programas… nunca a través de sus páginas web"):* sus datos llegan por la importación de RF-4. RF-35 a RF-42 se aplican a BreakingPoint.gg y a la web oficial de la CDL.
 * **RF-39 (Ubicuo)**: EL SISTEMA dejará pasar entre dos consultas seguidas a la misma fuente al menos una pausa mínima, cuyo valor fija el plan tras revisar las condiciones de uso de esa fuente.
 * **RF-40 (Ubicuo)**: EL SISTEMA respetará los límites de frecuencia de consulta que publique cada fuente.
 * **RF-41 (Ubicuo)**: EL SISTEMA aplicará RF-39 y RF-40 también a las actualizaciones pedidas por el administrador.
@@ -130,6 +135,7 @@ Además, cierra tres deudas de specs anteriores:
 
 * **RF-54 (Ubicuo)**: EL SISTEMA considerará el mismo partido, evento, franquicia o jugador a dos registros de fuentes distintas solo si una fuente los relaciona o Retake los une a mano.
 * **RF-55 (No deseado)**: SI un registro de una fuente no está enlazado con ninguno existente y una fuente de mayor prioridad publica registros de ese mismo tipo, ENTONCES EL SISTEMA lo retendrá sin mostrarlo.
+  * *Nota (2026-09-23, cambio C-14, aprobado por Hugo durante la fase F4):* retener significa no mostrarlo en los datos de la temporada actual (listas de jugadores, equipos y partidos). El historial de campeonatos sí lo usa: la fuente de mayor prioridad (BreakingPoint) no publica historial, así que no puede duplicarlo. Sin esta nota, todo el historial de la Wiki quedaría oculto hasta confirmarlo registro a registro.
 * **RF-56 (Dirigido por evento)**: CUANDO Retake una a mano un registro retenido con uno existente, o lo confirme como nuevo, EL SISTEMA dejará de retenerlo.
 * **RF-57 (Estado)**: MIENTRAS un partido esté `en vivo`, EL SISTEMA tomará como marcador el más avanzado que publique cualquier fuente, sin aplicar la prioridad de RF-67 de la 002.
 * **RF-58 (Ubicuo)**: EL SISTEMA considerará más avanzado el marcador con más mapas terminados y, si empatan, el que sume más puntos, rondas u overloads entre los dos equipos en el mapa en curso.
@@ -174,6 +180,7 @@ Además, cierra tres deudas de specs anteriores:
 * **RF-87 (No deseado)**: SI falla la actualización automática de un bloque que ya muestra datos, ENTONCES EL SISTEMA no mostrará en él el aviso de error ni el botón "Reintentar" de la 001 (RF-41 de la 001).
 * **RF-88 (No deseado)**: SI falla la actualización automática de un bloque que ya muestra datos, ENTONCES EL SISTEMA lo volverá a intentar en el siguiente ciclo de la página.
 * **RF-89 (No deseado)**: SI los datos de un bloque llevan más tiempo que su umbral de desactualización sin poder actualizarse, porque falla la conexión entre la página y Retake o la fuente de alguno de esos datos, ENTONCES EL SISTEMA mostrará en el bloque un aviso discreto de datos sin actualizar.
+  * *Nota (2026-09-23, cambio C-20):* no se aplica a los bloques que solo muestran datos de la Wiki, como el historial: esos datos solo cambian al importar (RF-32).
 * **RF-90 (No deseado)**: SI un partido `en vivo` lleva más de 60 segundos sin aparecer en ninguna consulta con éxito de las fuentes que lo publicaban, ENTONCES EL SISTEMA mostrará el aviso de RF-89 en los bloques que lo muestran.
 * **RF-91 (Ubicuo)**: EL SISTEMA mostrará el aviso de RF-89 sin retirar el contenido del bloque.
 * **RF-92 (Dirigido por evento)**: CUANDO un bloque con el aviso de RF-89 vuelva a actualizarse con éxito, EL SISTEMA retirará el aviso.
@@ -188,20 +195,24 @@ Además, cierra tres deudas de specs anteriores:
 * **RF-98 (Ubicuo)**: EL SISTEMA mostrará la página de administración y su pantalla de acceso dentro del marco común de la 001, sin ninguna entrada del menú activa.
 * **RF-99 (Ubicuo)**: EL SISTEMA no mostrará en el menú ninguna entrada que lleve a la página de administración.
 * **RF-100 (Dirigido por evento)**: CUANDO el administrador pida actualizar una fuente, EL SISTEMA iniciará, sin esperar al siguiente ciclo, una consulta de todos los datos de la temporada actual que publica esa fuente.
+  * *Nota (2026-09-23, cambio C-19):* la Wiki no está entre las fuentes que se pueden actualizar; sus datos llegan por la importación de RF-4.
 * **RF-101 (Ubicuo)**: EL SISTEMA no incluirá el historial en la actualización de una fuente pedida por el administrador.
-* **RF-102 (Dirigido por evento)**: CUANDO el administrador pida releer el historial, EL SISTEMA volverá a obtener el historial completo.
+* **RF-102**: eliminado (cambio C-19, 2026-09-23). Releer el historial desde la página de administración; lo sustituye la importación de RF-4.
 * **RF-103 (Estado)**: MIENTRAS una actualización pedida por el administrador esté en curso, EL SISTEMA lo indicará en la página de administración.
 * **RF-104 (Dirigido por evento)**: CUANDO termine una actualización pedida por el administrador, EL SISTEMA mostrará su resultado: éxito, parcial o fallo.
 * **RF-105 (Ubicuo)**: EL SISTEMA considerará una actualización como éxito si no tuvo incidencias, como parcial si tuvo alguna consulta con éxito y alguna incidencia, y como fallo si ninguna consulta tuvo éxito.
 * **RF-106 (Dirigido por evento)**: CUANDO termine una actualización pedida por el administrador, EL SISTEMA mostrará su número de incidencias con acceso al detalle de cada una en el registro.
 * **RF-107 (No deseado)**: SI el administrador pide actualizar una fuente que ya se está actualizando, ENTONCES EL SISTEMA mantendrá una única actualización en curso para esa fuente.
-* **RF-108 (No deseado)**: SI el administrador pide releer el historial mientras hay una relectura en curso, ENTONCES EL SISTEMA no iniciará otra.
-* **RF-109 (No deseado)**: SI se da el caso de RF-107 o de RF-108, ENTONCES EL SISTEMA indicará en la página de administración que ya hay una en curso.
+* **RF-108**: eliminado (cambio C-19, 2026-09-23).
+* **RF-109 (No deseado)**: SI se da el caso de RF-107, ENTONCES EL SISTEMA indicará en la página de administración que ya hay una en curso.
+  * *Nota (2026-09-23, cambio C-19):* se quita el caso de RF-108, eliminado.
 * **RF-110 (No deseado)**: SI el administrador pide una actualización que las normas de la fuente prohíben en ese momento (RF-40, RF-42), ENTONCES EL SISTEMA no la hará.
 * **RF-111 (No deseado)**: SI se da el caso de RF-110, ENTONCES EL SISTEMA indicará el motivo en la página de administración.
 * **RF-112 (Ubicuo)**: EL SISTEMA mostrará en la página de administración la hora de la última consulta a cada fuente.
 * **RF-113 (Ubicuo)**: EL SISTEMA mostrará en la página de administración la hora de la última consulta con éxito a cada fuente.
+  * *Nota (2026-09-23, cambio C-19):* para la Wiki, la hora de la última importación con éxito de sus archivos.
 * **RF-114 (No deseado)**: SI pasa más del doble del ciclo más corto que tenga una fuente en ese momento sin ninguna consulta a ella, ENTONCES EL SISTEMA la marcará como parada en la página de administración.
+  * *Nota (2026-09-23, cambio C-19):* no se aplica a la Wiki, que no tiene ciclo.
 * **RF-115 (Ubicuo)**: EL SISTEMA aplicará a cada parte de la página de administración las reglas de carga, error y conexión de los bloques de la 001 (RF-40 a RF-53 de la 001).
 * **RF-116 (Estado)**: MIENTRAS el dispositivo no tenga conexión, EL SISTEMA desactivará en la página de administración las peticiones de actualización.
 * **RF-117 (Ubicuo)**: EL SISTEMA aplicará a la página de administración y a su pantalla de acceso las reglas de idioma de la spec 001 (§2.10 de la 001).
@@ -273,12 +284,13 @@ Estas reglas rigen el desarrollo, no el comportamiento de la web, así que no ll
 ## 3. Casos Límite y Manejo de Errores
 
 1. **Datos vacíos o no disponibles**:
-   - Primera puesta en marcha → la temporada actual se carga antes que el historial. Mientras tanto, la web muestra lo ya cargado y trata lo demás como "sin datos", no como error (RF-3 a RF-8).
+   - Primera puesta en marcha → se carga la temporada actual; el historial llega cuando el administrador importa los archivos de la Wiki. Mientras tanto, la web muestra lo ya cargado y trata lo demás como "sin datos", no como error (RF-3, RF-4, RF-6 a RF-8; cambio C-21).
    - Primera puesta en marcha entre temporadas → se carga la última temporada con partidos oficiales (RF-6).
    - Dato que ninguna fuente publica de forma legible → ausente si nunca se registró; si ya estaba registrado, se conserva (RF-48, RF-49).
    - Logo que no se puede obtener, demasiado grande o en un formato que puede contener código → logo no registrado, con las reglas de la 002 (RF-68 a RF-70).
    - Pie sin temporada → sin año hasta obtenerla; si ya tenía año, lo mantiene (RF-76 a RF-78).
-   - Champs cuya clasificación la Wiki aún no ha publicado → entra con los datos disponibles y se completa con las relecturas diarias o con una pedida por el administrador (RF-31, RF-102).
+   - Champs cuya clasificación la Wiki aún no ha publicado → entra con los datos disponibles y se completa con una nueva importación cuando el administrador actualiza los archivos (RF-4, RF-32; cambio C-21).
+   - Archivo de la Wiki que falta o con otras columnas → no se registra nada de la importación y se indica qué archivo falla (RF-4c; cambio C-21).
    - Bloque sin datos → muestra igualmente la hora de la última actualización de lo que vigila (RF-155, RF-158).
 2. **Entradas no válidas**:
    - Respuesta entendida a medias → se registra lo que se entiende; lo ilegible cuenta como no publicado por esa fuente y se anota (RF-47, RF-48, RF-142).
@@ -291,7 +303,7 @@ Estas reglas rigen el desarrollo, no el comportamiento de la web, así que no ll
 3. **Peticiones lentas o interrumpidas**:
    - Fuente caída → se conservan sus datos, las demás siguen y se reintenta en el siguiente ciclo (RF-43 a RF-45). Pasado el umbral, los bloques afectados muestran un aviso discreto, sin decir qué falló (RF-89, RF-93).
    - Actualización automática fallida en una página abierta → el bloque conserva sus datos, sin error ni "Reintentar"; tras el umbral, aviso discreto (RF-86 a RF-92).
-   - Obtención automática detenida → al volver, los datos en vivo se ponen al día en 60 segundos y el resto en 1 hora, solo con su estado actual (RF-27 a RF-29). Las relecturas del historial que no se pudieron hacer se reintentan cada hora (RF-33). En la página de administración la fuente aparece como parada (RF-114).
+   - Obtención automática detenida → al volver, los datos en vivo se ponen al día en 60 segundos y el resto en 1 hora, solo con su estado actual (RF-27 a RF-29). En la página de administración la fuente aparece como parada (RF-114); la Wiki no, porque no tiene ciclo (cambio C-21).
    - Primera carga de un bloque que falla → sigue la regla de la 001 (aviso de error y "Reintentar"), que esta spec no cambia.
    - Pestaña en segundo plano o dispositivo en reposo → no se actualiza; al volver a verse, se pone al día en 5 segundos (RF-79 a RF-82).
    - Página de administración sin conexión o con el servidor caído → reglas de bloque de la 001 y peticiones de actualización desactivadas (RF-115, RF-116).
@@ -325,7 +337,8 @@ Estas reglas rigen el desarrollo, no el comportamiento de la web, así que no ll
 * Herramientas para asignar roles, unir o separar registros, confirmar registros retenidos y retirar datos personales (datos de Retake); siguen fuera de alcance, como en la 002.
 * Cuentas de usuario para el público, más cuentas de administrador y gestión de cuentas.
 * Cambiar o recuperar la contraseña del administrador desde la web (RF-123); se hace fuera de la web.
-* Consultar las páginas web de la Wiki (RF-38).
+* Consultar la Wiki (RF-38; cambio C-18).
+* Obtener y actualizar los archivos de la Wiki: los prepara el administrador fuera de Retake (cambio C-18).
 * Logos en formatos que pueden contener código (por ejemplo, SVG), y copias propias de imágenes distintas de los logos (como fotos de jugadores, que la 002 ya excluye).
 * Mostrar datos de la próxima temporada antes de que sea la actual (RF-15).
 * Diseño visual de la página de administración más allá de sus funciones.
@@ -461,7 +474,7 @@ Estas reglas rigen el desarrollo, no el comportamiento de la web, así que no ll
 
 | # | Decisión | Requisitos |
 |---|---|---|
-| F0-1 | La Wiki se consulta con `requests` y `action=parse` (rechaza httpx en Cloudflare); sin volcado. Nada de esquivar protecciones: si rechaza también `requests`, se aplica P-1. | RF-38 |
+| F0-1 | La Wiki se consulta con `requests` y `action=parse` (rechaza httpx en Cloudflare); sin volcado. Nada de esquivar protecciones: si rechaza también `requests`, se aplica P-1. *Revisión (2026-09-23, cambio C-18): la Wiki rechazó también `requests`; se aplicó P-1 y Hugo decidió importar sus datos desde archivos CSV. Se retira el acceso en vivo a la Wiki (conector, adaptador TLS y `sync-once --source wiki`).* | RF-38 |
 | F0-2 | Pausa de la Wiki: 10 s y espera creciente si responde `ratelimited`. BreakingPoint: 2 s. | RF-39, RF-40 |
 | F0-3 | Papeles: temporada actual de BreakingPoint (su API interna JSON y sus páginas); historial y gamertags anteriores de la Wiki. La web de la CDL queda **en reserva**, sin conector: **RF-75 de la 002 (la web oficial manda en la tabla) queda incumplido** mientras tanto y la tabla sale de BreakingPoint. | RF-1, RF-36; RF-75 de la 002 |
 | F0-4 | País de BreakingPoint mediante una tabla de países en la curación. | RF-22 de la 002 |
@@ -496,12 +509,20 @@ Por la decisión Q-17, cada cambio se presentó a Hugo y se aprobó por separado
 | C-11 | 001, fuera de alcance | Excepción a "sin enlaces en el pie": la atribución de las fuentes de datos, con un enlace a cada una (RF-160). Surgió con la revisión R-1 | R-1 | Aprobado · aplicado (2026-09-23) |
 | C-12 | 002, RF-79 | Si ninguna fuente publica el K/D, se calcula como kills ÷ deaths con 2 decimales (con 0 deaths, K/D = kills; si falta alguno, ausente). Única excepción a RF-45 junto con C-13 | Fase F0, hueco H-3 | Aprobado · aplicado (2026-09-23) |
 | C-13 | 002, RF-31 | Si la fuente no publica la semana de un partido de clasificatorio, se calcula como el orden de la semana (lunes a domingo, hora de Ciudad de México) entre las semanas con partidos de ese evento | Fase F0, hueco H-5 | Aprobado · aplicado (2026-09-23) |
+| C-14 | 003, RF-55 | Retener = no mostrar en la temporada actual; el historial sí usa los registros retenidos | Fase F4, T-043 | Aprobado · aplicado (2026-09-23) |
+| C-15 | 003, RF-1 y glosario | La Wiki no se obtiene automáticamente: sus datos entran por archivos CSV que prepara el administrador | Bloqueo de Cloudflare a la Wiki (P-1) | Aprobado · aplicado (2026-09-23) |
+| C-16 | 003, RF-4, RF-5, RF-34 | Importación manual desde la terminal (RF-4 a RF-4c): solo datos personales de jugadores del historial o de los rosters; todo o nada si falla un archivo | Ídem | Aprobado · aplicado (2026-09-23) |
+| C-17 | 003, RF-18, RF-30 a RF-33 | Sin relecturas automáticas del historial; solo se registran datos de la Wiki al importar | Ídem | Aprobado · aplicado (2026-09-23) |
+| C-18 | 003, RF-38, F0-1, fuera de alcance | Retake no consulta la Wiki; se retira el acceso en vivo (conector, adaptador TLS y `sync-once --source wiki`) | Ídem | Aprobado · aplicado (2026-09-23) |
+| C-19 | 003, RF-100, RF-102, RF-108, RF-109, RF-113, RF-114 | Sin releer el historial desde la página de administración; la Wiki muestra su última importación y nunca aparece como parada | Ídem | Aprobado · aplicado (2026-09-23) |
+| C-20 | 003, RF-89 | Los bloques con solo datos de la Wiki no muestran el aviso de datos sin actualizar | Ídem | Aprobado · aplicado (2026-09-23) |
+| C-21 | 003, §3 y §6 | Casos límite y criterios de finalización pasan de las relecturas a la importación | Ídem | Aprobado · aplicado (2026-09-23) |
 
 Además, **el ajuste I-15 del plan de la 002** queda resuelto por RF-61 a RF-64. Es un plan, no una spec, así que basta con anotarlo.
 
 ### 5.4 Pendientes
 
-No queda ningún `[NECESITA ACLARACIÓN]` abierto. Los cambios C-1 a C-13 están aprobados y aplicados. Limitación conocida: RF-75 de la 002 incumplido mientras la web de la CDL esté en reserva (F0-3).
+No queda ningún `[NECESITA ACLARACIÓN]` abierto. Los cambios C-1 a C-21 están aprobados y aplicados. Limitación conocida: RF-75 de la 002 incumplido mientras la web de la CDL esté en reserva (F0-3).
 
 ---
 
@@ -514,7 +535,7 @@ La spec 003 se da por terminada cuando se cumplan todas estas condiciones:
 3. Los ciclos en vivo y los márgenes de pantalla (RF-16, RF-17, RF-80) se han medido con al menos un partido real en vivo.
 4. Estos casos se han comprobado simulándolos en el entorno de desarrollo:
    - el cambio de temporada (RF-14, RF-15, RF-72 a RF-75);
-   - las relecturas tras un Champs (RF-30, RF-31, RF-33);
+   - la importación de los archivos de la Wiki, completa, parcial y con un archivo que falla (RF-4 a RF-4c, RF-32; cambio C-21);
    - los fallos de fuente, las respuestas vacías o a medias y los partidos desaparecidos (RF-43 a RF-53);
    - los marcadores contradictorios (RF-57 a RF-59);
    - varios partidos en vivo a la vez (RF-23 a RF-26);

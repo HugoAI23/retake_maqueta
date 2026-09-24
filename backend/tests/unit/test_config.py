@@ -74,3 +74,27 @@ def test_proxy_de_confianza_opcional():
 
 def test_proxy_de_confianza_vacio_equivale_a_ninguno():
     assert load_settings(database_url=URL, trusted_proxy="").trusted_proxy is None
+
+
+# --- Spec 003 (T-095, I-26): carpeta de los archivos de la Wiki ---
+
+
+def test_la_carpeta_de_los_csv_de_la_wiki_por_defecto_es_backend_data_wiki():
+    from app.config import BACKEND_DIR
+
+    assert load_settings(database_url=URL).wiki_csv_dir == BACKEND_DIR / "data" / "wiki"
+
+
+def test_la_carpeta_de_los_csv_de_la_wiki_se_puede_cambiar(tmp_path):
+    assert load_settings(database_url=URL, wiki_csv_dir=str(tmp_path)).wiki_csv_dir == tmp_path
+
+
+def test_los_csv_de_la_wiki_no_se_suben_a_git():
+    # Llevan nombres reales y fechas de nacimiento (I-26).
+    import subprocess
+
+    from app.config import BACKEND_DIR
+
+    result = subprocess.run(["git", "check-ignore", "-q", str(BACKEND_DIR / "data" / "wiki" / "players_birthday.csv")],
+                            cwd=BACKEND_DIR, check=False)
+    assert result.returncode == 0

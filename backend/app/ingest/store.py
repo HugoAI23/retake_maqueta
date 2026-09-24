@@ -122,24 +122,38 @@ def upsert_observation(
     is_valid: bool,
     observed_at: datetime,
     created: set[tuple[int, str]],
+    invalid_reason: str | None = None,
 ) -> None:
     """Guarda el último valor que publica una fuente para un campo.
 
     Una observación más antigua que la guardada se ignora, para que un dato atrasado
     no pise uno más reciente.
+
+    Spec 003 (plan D-8): una observación no válida lleva su razón. Si es `unreadable`, la
+    fuente publicó el dato pero no se entendió: se conserva el último valor que sí se entendió,
+    para poder mantenerlo si ninguna otra fuente lo publica de forma legible (RF-49).
     """
+    if not is_valid and invalid_reason is None:
+        invalid_reason = "impossible"
     json_value = to_jsonable_python(value)
     obs = session.scalar(select(Observation).where(Observation.ref_id == ref.id, Observation.field == field))
     if obs is None:
         session.add(
             Observation(
-                ref_id=ref.id, field=field, value=json_value, is_valid=is_valid,
+                ref_id=ref.id, field=field, value=None if invalid_reason == "unreadable" else json_value,
+                is_valid=is_valid, invalid_reason=invalid_reason if not is_valid else None,
                 first_seen_at=observed_at, last_seen_at=observed_at,
             )
         )
         created.add((ref.id, field))
     elif observed_at >= obs.last_seen_at:
-        obs.value, obs.is_valid, obs.last_seen_at = json_value, is_valid, observed_at
+        if invalid_reason == "unreadable":
+            keep = obs.value if obs.is_valid or obs.invalid_reason == "unreadable" else None
+            obs.value = keep
+        else:
+            obs.value = json_value
+        obs.is_valid, obs.last_seen_at = is_valid, observed_at
+        obs.invalid_reason = invalid_reason if not is_valid else None
 
 
 class ObservationIndex:
@@ -147,6 +161,8 @@ class ObservationIndex:
 
     def __init__(self, session: Session, refs: Sequence[ExternalRef]):
         self._by_field: dict[str, list[tuple[int, SourceValue]]] = defaultdict(list)
+        # Últimos valores entendidos de las observaciones que ahora son ilegibles (RF-49).
+        self._unreadable: dict[str, list[SourceValue]] = defaultdict(list)
         ids = [ref.id for ref in refs]
         if not ids:
             return
@@ -159,9 +175,30 @@ class ObservationIndex:
             self._by_field[obs.field].append(
                 (obs.ref_id, SourceValue(source, obs.value, obs.is_valid, obs.last_seen_at))
             )
+            if obs.invalid_reason == "unreadable" and obs.value is not None:
+                self._unreadable[obs.field].append(SourceValue(source, obs.value, True, obs.last_seen_at))
 
     def pick(self, field: str, order: Sequence[str] = SOURCE_PRIORITY) -> SourceValue | None:
-        return choose((value for _, value in self._by_field.get(field, [])), order)
+        """Valor válido de la fuente con más prioridad (RF-67 de la 002).
+
+        Un dato ilegible no cuenta para su fuente (RF-48); si ninguna fuente lo publica de forma
+        legible, se conserva el último valor entendido (RF-49).
+        """
+        winner = choose((value for _, value in self._by_field.get(field, [])), order)
+        if winner is None:
+            winner = choose(self._unreadable.get(field, []), order)
+        return winner
+
+    def by_source(self, field: str) -> dict[str, object]:
+        """Valor válido más reciente de cada fuente para un campo (spec 003: RF-53, RF-57)."""
+        latest: dict[str, SourceValue] = {}
+        for _, value in self._by_field.get(field, []):
+            if not value.is_valid or value.value is None:
+                continue
+            current = latest.get(value.source)
+            if current is None or value.last_seen_at >= current.last_seen_at:
+                latest[value.source] = value
+        return {source: value.value for source, value in latest.items()}
 
     def value(self, field: str, order: Sequence[str] = SOURCE_PRIORITY) -> object:
         winner = self.pick(field, order)

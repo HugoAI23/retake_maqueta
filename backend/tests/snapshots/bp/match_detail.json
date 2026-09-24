@@ -3,161 +3,193 @@
     "source": "bp",
     "url": "https://breakingpoint.gg/match/214853",
     "date": "2026-09-23",
-    "used_for": "Mapas, modos, marcadores y estadísticas por jugador de un partido (JSON incrustado, initialMatchState)"
+    "used_for": "Mapas, modos, marcadores y estadísticas por jugador de un partido (pageProps del JSON incrustado)"
   },
   "notes": [
+    "Estructura original de initialMatchState, recortada a 3 mapas, 2 jugadores por mapa y los campos usados.",
     "No publica K/D: solo kills y deaths.",
-    "Solo trae los mapas jugados: los no jugados no aparecen.",
-    "Recortado a 3 mapas y 2 jugadores por mapa."
+    "hill_time y contested_hill_time en segundos."
   ],
   "content": {
-    "id": 214853,
-    "status": "complete",
-    "best_of": 7,
-    "datetime": "2026-02-01T23:00:00+00:00",
-    "team_1_id": 4,
-    "team_2_id": 743,
-    "team_1_score": 3,
-    "team_2_score": 4,
-    "winner_id": 743,
-    "round": {
-      "name": "Grand Finals",
-      "stage": "playoffs",
-      "bracket_side": "grand_final"
+    "initialMatchState": {
+      "id": 214853,
+      "event_id": 101,
+      "datetime": "2026-02-01T23:00:00+00:00",
+      "best_of": 7,
+      "status": "complete",
+      "team_1_id": 4,
+      "team_2_id": 743,
+      "team_1_score": 3,
+      "team_2_score": 4,
+      "winner_id": 743,
+      "round": {
+        "name": "Grand Finals",
+        "stage": "playoffs",
+        "bracket_side": "grand_final"
+      },
+      "games": [
+        {
+          "game_num": 1,
+          "map_id": 67,
+          "mode_id": 1,
+          "team_1_id": 4,
+          "team_2_id": 743,
+          "winner_id": 743,
+          "team_1_score": 158,
+          "team_2_score": 250,
+          "maps": {
+            "name": "Colossus"
+          },
+          "modes": {
+            "name": "Hardpoint"
+          },
+          "player_stats": [
+            {
+              "player_id": 11,
+              "player_tag": "Dashy",
+              "team_id": 4,
+              "kills": 21,
+              "deaths": 32,
+              "damage": 3108,
+              "assists": 10,
+              "hill_time": 19,
+              "contested_hill_time": 0,
+              "first_blood_count": null,
+              "first_death_count": null,
+              "plant_count": null,
+              "defuse_count": null,
+              "zone_capture_count": null,
+              "overloads": null
+            },
+            {
+              "player_id": 39,
+              "player_tag": "Huke",
+              "team_id": 4,
+              "kills": 25,
+              "deaths": 32,
+              "damage": 3509,
+              "assists": 10,
+              "hill_time": 45,
+              "contested_hill_time": 0,
+              "first_blood_count": null,
+              "first_death_count": null,
+              "plant_count": null,
+              "defuse_count": null,
+              "zone_capture_count": null,
+              "overloads": null
+            }
+          ]
+        },
+        {
+          "game_num": 2,
+          "map_id": 73,
+          "mode_id": 2,
+          "team_1_id": 4,
+          "team_2_id": 743,
+          "winner_id": 743,
+          "team_1_score": 5,
+          "team_2_score": 6,
+          "maps": {
+            "name": "Raid"
+          },
+          "modes": {
+            "name": "Search & Destroy"
+          },
+          "player_stats": [
+            {
+              "player_id": 40,
+              "player_tag": "Ghosty",
+              "team_id": 743,
+              "kills": 7,
+              "deaths": 7,
+              "damage": 1009,
+              "assists": 1,
+              "hill_time": null,
+              "contested_hill_time": null,
+              "first_blood_count": 0,
+              "first_death_count": 0,
+              "plant_count": 0,
+              "defuse_count": 1,
+              "zone_capture_count": null,
+              "overloads": null
+            },
+            {
+              "player_id": 81,
+              "player_tag": "Neptune",
+              "team_id": 743,
+              "kills": 6,
+              "deaths": 8,
+              "damage": 1074,
+              "assists": 0,
+              "hill_time": null,
+              "contested_hill_time": null,
+              "first_blood_count": 4,
+              "first_death_count": 2,
+              "plant_count": 0,
+              "defuse_count": 0,
+              "zone_capture_count": null,
+              "overloads": null
+            }
+          ]
+        },
+        {
+          "game_num": 3,
+          "map_id": 74,
+          "mode_id": 5,
+          "team_1_id": 4,
+          "team_2_id": 743,
+          "winner_id": 4,
+          "team_1_score": 4,
+          "team_2_score": 3,
+          "maps": {
+            "name": "Scar"
+          },
+          "modes": {
+            "name": "Overload"
+          },
+          "player_stats": [
+            {
+              "player_id": 11,
+              "player_tag": "Dashy",
+              "team_id": 4,
+              "kills": 19,
+              "deaths": 33,
+              "damage": 3124,
+              "assists": 19,
+              "hill_time": null,
+              "contested_hill_time": null,
+              "first_blood_count": null,
+              "first_death_count": null,
+              "plant_count": null,
+              "defuse_count": null,
+              "zone_capture_count": null,
+              "overloads": 1
+            },
+            {
+              "player_id": 39,
+              "player_tag": "Huke",
+              "team_id": 4,
+              "kills": 26,
+              "deaths": 27,
+              "damage": 3104,
+              "assists": 11,
+              "hill_time": null,
+              "contested_hill_time": null,
+              "first_blood_count": null,
+              "first_death_count": null,
+              "plant_count": null,
+              "defuse_count": null,
+              "zone_capture_count": null,
+              "overloads": 0
+            }
+          ]
+        }
+      ]
     },
-    "games": [
-      {
-        "game_num": 1,
-        "mode": "Hardpoint",
-        "map": "Colossus",
-        "team_1_score": 158,
-        "team_2_score": 250,
-        "winner_id": 743,
-        "player_stats": [
-          {
-            "player_id": 11,
-            "player_tag": "Dashy",
-            "team_id": 4,
-            "kills": 21,
-            "deaths": 32,
-            "damage": 3108,
-            "assists": 10,
-            "hill_time": 19,
-            "contested_hill_time": 0,
-            "first_blood_count": null,
-            "first_death_count": null,
-            "plant_count": null,
-            "defuse_count": null,
-            "zone_capture_count": null,
-            "overloads": null
-          },
-          {
-            "player_id": 39,
-            "player_tag": "Huke",
-            "team_id": 4,
-            "kills": 25,
-            "deaths": 32,
-            "damage": 3509,
-            "assists": 10,
-            "hill_time": 45,
-            "contested_hill_time": 0,
-            "first_blood_count": null,
-            "first_death_count": null,
-            "plant_count": null,
-            "defuse_count": null,
-            "zone_capture_count": null,
-            "overloads": null
-          }
-        ]
-      },
-      {
-        "game_num": 2,
-        "mode": "Search & Destroy",
-        "map": "Raid",
-        "team_1_score": 5,
-        "team_2_score": 6,
-        "winner_id": 743,
-        "player_stats": [
-          {
-            "player_id": 40,
-            "player_tag": "Ghosty",
-            "team_id": 743,
-            "kills": 7,
-            "deaths": 7,
-            "damage": 1009,
-            "assists": 1,
-            "hill_time": null,
-            "contested_hill_time": null,
-            "first_blood_count": 0,
-            "first_death_count": 0,
-            "plant_count": 0,
-            "defuse_count": 1,
-            "zone_capture_count": null,
-            "overloads": null
-          },
-          {
-            "player_id": 81,
-            "player_tag": "Neptune",
-            "team_id": 743,
-            "kills": 6,
-            "deaths": 8,
-            "damage": 1074,
-            "assists": 0,
-            "hill_time": null,
-            "contested_hill_time": null,
-            "first_blood_count": 4,
-            "first_death_count": 2,
-            "plant_count": 0,
-            "defuse_count": 0,
-            "zone_capture_count": null,
-            "overloads": null
-          }
-        ]
-      },
-      {
-        "game_num": 3,
-        "mode": "Overload",
-        "map": "Scar",
-        "team_1_score": 4,
-        "team_2_score": 3,
-        "winner_id": 4,
-        "player_stats": [
-          {
-            "player_id": 11,
-            "player_tag": "Dashy",
-            "team_id": 4,
-            "kills": 19,
-            "deaths": 33,
-            "damage": 3124,
-            "assists": 19,
-            "hill_time": null,
-            "contested_hill_time": null,
-            "first_blood_count": null,
-            "first_death_count": null,
-            "plant_count": null,
-            "defuse_count": null,
-            "zone_capture_count": null,
-            "overloads": 1
-          },
-          {
-            "player_id": 39,
-            "player_tag": "Huke",
-            "team_id": 4,
-            "kills": 26,
-            "deaths": 27,
-            "damage": 3104,
-            "assists": 11,
-            "hill_time": null,
-            "contested_hill_time": null,
-            "first_blood_count": null,
-            "first_death_count": null,
-            "plant_count": null,
-            "defuse_count": null,
-            "zone_capture_count": null,
-            "overloads": 0
-          }
-        ]
+    "trpcState": {
+      "json": {
+        "queries": []
       }
-    ]
+    }
   }
 }

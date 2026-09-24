@@ -28,3 +28,21 @@ def test_apply_curation_con_error_sale_con_codigo_1(monkeypatch, capsys):
         cli.main(["apply-curation"])
     assert exit_info.value.code == 1
     assert "archivo roto" in capsys.readouterr().err
+
+
+def test_sync_once_bp(monkeypatch, capsys):
+    from app.sources.contract import ConsultaResult
+
+    dummy = ConsultaResult(source="bp", job="regular", outcome="success",
+                          records=[{"kind": "season", "source": "bp", "source_id": "2026"}])
+    monkeypatch.setattr("app.sources.bp.consult_regular", lambda client, now: dummy)
+    cli.main(["sync-once", "--source", "bp"])
+    out = capsys.readouterr().out
+    assert "Resultado: success" in out
+    assert "season: 1" in out
+
+
+def test_sync_once_ya_no_admite_la_wiki():
+    # Spec 003, C-18: la Wiki se importa con `retake import-wiki-csv` (I-26).
+    with pytest.raises(SystemExit):
+        cli.main(["sync-once", "--source", "wiki"])

@@ -50,14 +50,22 @@ def test_engine(test_database_url):
 @pytest.fixture
 def clean_db(test_engine, test_database_url):
     """Borra todo lo que haya en `retake_test` y aplica las migraciones desde cero."""
-    with test_engine.begin() as connection:
+    test_engine.dispose()
+    with test_engine.connect() as connection:
+        connection.rollback()
         connection.execute(text("DROP SCHEMA public CASCADE"))
         connection.execute(text("CREATE SCHEMA public"))
+        connection.commit()
+    test_engine.dispose()
     config = Config(str(BACKEND_DIR / "alembic.ini"))
     config.attributes["database_url"] = test_database_url
     config.attributes["configure_logger"] = False
     command.upgrade(config, "head")
-    return test_engine
+    test_engine.dispose()
+    yield test_engine
+    test_engine.dispose()
+
+
 
 
 @pytest.fixture

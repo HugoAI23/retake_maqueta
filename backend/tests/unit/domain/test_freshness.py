@@ -44,4 +44,10 @@ def test_fuente_parada_si_pasa_mas_del_doble_de_su_ciclo_sin_consultas():
 
 
 def test_una_fuente_que_nunca_se_ha_consultado_esta_parada():
-    assert is_source_stopped("wiki", last_attempt_at=None, now=NOW, live_active=False)
+    assert is_source_stopped("bp", last_attempt_at=None, now=NOW, live_active=False)
+
+
+def test_la_wiki_nunca_esta_parada_porque_no_tiene_ciclo():
+    # Spec 003, C-19: sus datos llegan por la importación manual de archivos (RF-4, RF-114).
+    assert not is_source_stopped("wiki", last_attempt_at=None, now=NOW, live_active=False)
+    assert not is_source_stopped("wiki", last_attempt_at=NOW - timedelta(days=400), now=NOW, live_active=False)

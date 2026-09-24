@@ -3,9 +3,10 @@
     "source": "bp",
     "url": "https://breakingpoint.gg/matches",
     "date": "2026-09-23",
-    "used_for": "Temporadas, eventos, franquicias con identidad y logo, y listas de partidos en vivo, próximos y terminados (JSON incrustado __NEXT_DATA__)"
+    "used_for": "Temporadas, eventos, franquicias con identidad y logo, y listas de partidos en vivo, próximos y terminados (pageProps del JSON incrustado)"
   },
   "notes": [
+    "Estructura original de pageProps, recortada.",
     "Fuera de temporada: las listas de en vivo y próximos están vacías.",
     "allEvents mezcla eventos de la CDL, Challengers (CDC) y externos (Esports World Cup)."
   ],
@@ -81,37 +82,85 @@
         "icon_light": "https://dfpiiufxcciujugzjvgx.supabase.co/storage/v1/object/public/events//EWC.webp"
       }
     ],
-    "cdlLists": {
-      "fetchLiveMatches": [],
-      "fetchUpcomingMatches": [],
-      "fetchCompletedMatches": [
-        {
-          "id": 356986,
-          "status": "complete",
-          "datetime": "2026-08-09T19:40:00+00:00",
-          "team_1_id": 715,
-          "team_2_id": 712,
-          "team_1_score": 3,
-          "team_2_score": 5,
-          "event_id": 211,
-          "round": {
-            "name": "Grand Finals"
+    "trpcState": {
+      "json": {
+        "queries": [
+          {
+            "queryKey": [
+              [
+                "cached",
+                "matches",
+                "fetchLiveMatches"
+              ],
+              {
+                "input": {
+                  "seeOnlyCDL": true,
+                  "slug": "cod"
+                },
+                "type": "query"
+              }
+            ],
+            "state": {
+              "data": []
+            }
+          },
+          {
+            "queryKey": [
+              [
+                "cached",
+                "matches",
+                "fetchUpcomingMatches"
+              ],
+              {
+                "input": {
+                  "seeOnlyCDL": true,
+                  "slug": "cod"
+                },
+                "type": "query"
+              }
+            ],
+            "state": {
+              "data": []
+            }
+          },
+          {
+            "queryKey": [
+              [
+                "cached",
+                "matches",
+                "fetchCompletedMatches"
+              ],
+              {
+                "input": {
+                  "seeOnlyCDL": true,
+                  "slug": "cod"
+                },
+                "type": "query"
+              }
+            ],
+            "state": {
+              "data": [
+                {
+                  "id": 356986,
+                  "status": "complete",
+                  "datetime": "2026-08-09T19:40:00+00:00",
+                  "event_id": 211,
+                  "team_1_id": 715,
+                  "team_2_id": 712
+                },
+                {
+                  "id": 356985,
+                  "status": "complete",
+                  "datetime": "2026-08-09T17:30:00+00:00",
+                  "event_id": 211,
+                  "team_1_id": 51,
+                  "team_2_id": 713
+                }
+              ]
+            }
           }
-        },
-        {
-          "id": 356985,
-          "status": "complete",
-          "datetime": "2026-08-09T17:30:00+00:00",
-          "team_1_id": 51,
-          "team_2_id": 713,
-          "team_1_score": 3,
-          "team_2_score": 4,
-          "event_id": 211,
-          "round": {
-            "name": "3rd Place Decider"
-          }
-        }
-      ]
+        ]
+      }
     }
   }
 }

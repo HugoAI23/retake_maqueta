@@ -61,7 +61,9 @@ def db_at_002(test_engine, test_database_url):
     with test_engine.begin() as connection:
         connection.execute(text("DROP SCHEMA public CASCADE"))
         connection.execute(text("CREATE SCHEMA public"))
+    test_engine.dispose()
     command.upgrade(_alembic(test_database_url), LAST_002_REVISION)
+    test_engine.dispose()
     return test_engine
 
 
@@ -107,6 +109,7 @@ def test_la_migracion_conserva_los_datos_de_prueba_de_la_002(db_at_002, test_dat
     before = _counts(db_at_002)
 
     command.upgrade(_alembic(test_database_url), "head")
+    db_at_002.dispose()
 
     assert _counts(db_at_002) == before
     with Session(db_at_002) as session:
@@ -124,10 +127,12 @@ def test_la_migracion_conserva_los_datos_de_prueba_de_la_002(db_at_002, test_dat
 def test_las_migraciones_de_la_003_se_aplican_y_se_deshacen(clean_db, test_database_url):
     config = _alembic(test_database_url)
     command.downgrade(config, LAST_002_REVISION)
+    clean_db.dispose()
     tables = set(inspect(clean_db).get_table_names())
     assert not tables & {"logo_image", "sync_run", "incident", "admin_user"}
     assert "last_seen_at" not in {c["name"] for c in inspect(clean_db).get_columns("external_ref")}
     command.upgrade(config, "head")
+    clean_db.dispose()
     assert {"logo_image", "sync_run", "incident", "admin_user"} <= set(inspect(clean_db).get_table_names())
 
 
@@ -146,7 +151,7 @@ def test_columnas_nuevas_de_referencias_observaciones_partidos_e_identidades(cle
     columns = lambda table: {c["name"] for c in inspect(clean_db).get_columns(table)}  # noqa: E731
     assert {"last_seen_at", "retained_since"} <= columns("external_ref")
     assert "invalid_reason" in columns("observation")
-    assert {"stats_complete_at", "disappeared_at"} <= columns("match")
+    assert {"stats_complete_at", "disappeared_at", "week"} <= columns("match")
     assert "logo_image_id" in columns("identity")
 
 

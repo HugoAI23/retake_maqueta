@@ -70,10 +70,10 @@ class SourceState(Base):
 
 
 class SyncJob(Base):
-    """Tarea con fecha: relecturas del historial tras el Champs, reintentos, carga inicial…
+    """Tarea con fecha: carga inicial y cambios de modo (RF-3, RF-12, RF-13).
 
-    `key` identifica la tarea (p. ej. `history:champs:2026:+24h`) para no programarla dos veces
-    (RF-30 a RF-33, RF-3 a RF-5, RF-12, RF-13).
+    `key` identifica la tarea para no programarla dos veces. Ya no hay relecturas del historial:
+    llega con la importación de los archivos de la Wiki (spec 003, C-17; plan I-26).
     """
 
     __tablename__ = "sync_job"
@@ -89,9 +89,10 @@ class SyncJob(Base):
 
 
 class SyncRequest(Base):
-    """Petición del administrador: actualizar una fuente o releer el historial (RF-100 a RF-111).
+    """Petición del administrador: actualizar una fuente (RF-100 a RF-111).
 
-    - `source` es nula en las relecturas del historial.
+    - Releer el historial ya no es una petición (spec 003, C-19); el tipo `history_reread` y
+      `source` nula quedan en el esquema sin uso (plan I-26).
     - Nunca hay dos peticiones activas (pendiente o en curso) del mismo tipo y fuente: lo
       garantiza un índice único parcial, además de la lógica del proceso (RF-107, RF-108).
     - `result` y `incident_count` se rellenan al terminar (RF-104 a RF-106), también si la

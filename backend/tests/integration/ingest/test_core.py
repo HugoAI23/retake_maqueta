@@ -1,5 +1,7 @@
 """T-030 y T-031 · Núcleo de la ingesta y valor resuelto (plan §3.3)."""
 
+from decimal import Decimal
+
 from sqlalchemy import func, select
 
 from app.db.models import ExternalRef, Observation, Player, PlayerMapStats
@@ -109,6 +111,17 @@ def test_un_dato_no_valido_y_luego_valido_en_un_partido_finalizado_es_una_correc
     stats = session.scalars(select(PlayerMapStats)).one()
     assert stats.kills == 20
     assert stats.corrected_fields == ["kills"]
+
+
+def test_corregir_kills_corrige_tambien_el_kd_calculado(session, ingest):
+    """T-091 (C-12): el K/D calculado sigue a kills y deaths, también en sus correcciones."""
+    ingest([*_finished_map(),
+            rec("player_map_stats", "st1", map_ref="bp:mp1", player_ref="bp:p1", franchise_ref="bp:t1", kills=20, deaths=10)])
+    ingest([rec("player_map_stats", "st1", hours=1, map_ref="bp:mp1", player_ref="bp:p1", franchise_ref="bp:t1",
+                kills=25, deaths=10)])
+    stats = session.scalars(select(PlayerMapStats)).one()
+    assert stats.kd == Decimal("2.5")
+    assert stats.corrected_fields == ["kills", "kd"]
 
 
 def test_un_registro_con_una_referencia_desconocida_se_rechaza_sin_afectar_a_los_demas(session, ingest):

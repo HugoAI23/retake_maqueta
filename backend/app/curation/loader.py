@@ -6,10 +6,10 @@ Si tiene un error de formato, no se aplica nada.
 
 from datetime import date
 from pathlib import Path
-from typing import Literal
+from typing import Annotated, Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, PositiveInt, StringConstraints, ValidationError
 
 from app.ingest.records import RefKey
 
@@ -19,6 +19,9 @@ CURATION_PATH = Path(__file__).resolve().parent.parent.parent / "curation" / "cu
 
 class CurationError(ValueError):
     """El archivo de curación no es válido o contradice los datos; no se aplica nada."""
+
+
+CountryName = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
 
 class _Entry(BaseModel):
@@ -54,6 +57,25 @@ class RemovalEntry(_Entry):
     requested_on: date
 
 
+class ObjectMergeEntry(_Entry):
+    """Referencias de partidos, eventos o franquicias que son lo mismo (spec 003: RF-54, RF-56).
+
+    Los jugadores siguen en `player_merges`.
+    """
+
+    kind: Literal["match", "event", "franchise"]
+    refs: list[RefKey] = Field(min_length=2)
+    reason: str = Field(min_length=1)
+
+
+class ConfirmedNewEntry(_Entry):
+    """Referencia retenida que es de verdad un objeto nuevo (spec 003, RF-56)."""
+
+    kind: Literal["match", "event", "franchise", "player"]
+    ref: RefKey
+    reason: str = Field(min_length=1)
+
+
 class Curation(_Entry):
     """Contenido completo del archivo de curación."""
 
@@ -61,6 +83,10 @@ class Curation(_Entry):
     player_merges: list[MergeEntry] = Field(default_factory=list)
     player_splits: list[SplitEntry] = Field(default_factory=list)
     personal_data_removals: list[RemovalEntry] = Field(default_factory=list)
+    merges: list[ObjectMergeEntry] = Field(default_factory=list)
+    confirmed_new: list[ConfirmedNewEntry] = Field(default_factory=list)
+    # Spec 003 (registro I-6): número de país de BreakingPoint → nombre.
+    countries: dict[PositiveInt, CountryName] = Field(default_factory=dict)
 
 
 def parse_curation(text: str) -> Curation:

@@ -28,7 +28,13 @@ from app.db.models import (
     Standing,
 )
 from app.db.models.matches import PLAYER_STAT_FIELDS
-from app.db.queries import championship_ids_for_player, current_season, is_current_season_player, is_free_agent
+from app.db.queries import (
+    championship_ids_for_player,
+    current_season,
+    is_current_season_player,
+    is_free_agent,
+    visible,
+)
 from app.domain.ages import player_age
 from app.domain.identities import identity_at
 from app.ingest.resolvers import franchise_identities
@@ -70,7 +76,7 @@ def season_view(season: Season) -> out.SeasonOut:
 
 def franchise_views(session: Session) -> list[out.FranchiseOut]:
     views = []
-    for franchise in session.scalars(select(Franchise)):
+    for franchise in session.scalars(select(Franchise).where(visible(Franchise, "franchise"))):
         identities = session.scalars(
             select(Identity).where(Identity.franchise_id == franchise.id).order_by(Identity.valid_from)
         ).all()
@@ -82,7 +88,7 @@ def event_views(session: Session) -> list[out.EventOut]:
     season = current_season(session)
     if season is None:
         return []
-    events = session.scalars(select(Event).where(Event.season_id == season.id).order_by(Event.name))
+    events = session.scalars(select(Event).where(Event.season_id == season.id, visible(Event, "event")).order_by(Event.name))
     return [out.EventOut(id=str(e.id), name=e.name, season_year=season.year) for e in events]
 
 
@@ -124,7 +130,7 @@ def player_view(session: Session, player: Player, now: datetime) -> out.PlayerOu
 
 
 def player_views(session: Session, now: datetime) -> list[out.PlayerOut]:
-    players = sorted(session.scalars(select(Player)), key=lambda p: p.current_gamertag.casefold())
+    players = sorted(session.scalars(select(Player).where(visible(Player, "player"))), key=lambda p: p.current_gamertag.casefold())
     return [player_view(session, p, now) for p in players]
 
 
@@ -193,7 +199,8 @@ def match_views(session: Session, now: datetime) -> list[out.MatchOut]:
     season = current_season(session)
     if season is None:
         return []
-    matches = session.scalars(select(Match).join(Event, Event.id == Match.event_id).where(Event.season_id == season.id))
+    matches = session.scalars(select(Match).join(Event, Event.id == Match.event_id)
+                              .where(Event.season_id == season.id, visible(Match, "match")))
     views = [match_view(session, m, now) for m in matches]
     far_future = datetime.max.replace(tzinfo=UTC)
     return sorted(views, key=lambda m: (m.scheduled_at or far_future, m.id))

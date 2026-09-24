@@ -15,9 +15,10 @@ from pathlib import Path
 
 from sqlalchemy.orm import Session
 
-from app.curation.loader import Curation, load_curation
+from app.curation.loader import ConfirmedNewEntry, Curation, load_curation
 from app.curation.overlay import apply_curation
 from app.ingest.pipeline import IngestReport, ingest_records
+from app.ingest.retention import RETAINABLE
 
 FIXTURES_DIR = Path(__file__).resolve().parent.parent.parent / "fixtures"
 
@@ -73,6 +74,22 @@ def read_fixture_files(directory: Path = FIXTURES_DIR) -> list[FixtureFile]:
     return files
 
 
+def confirm_real_sample(curation: Curation, files: list[FixtureFile]) -> Curation:
+    """Confirma como nueva la muestra real (spec 003, RF-56; registro I-20 del plan de la 003).
+
+    La muestra real de la 002 se transcribió de la Wiki y, en los datos de prueba, BreakingPoint
+    no publica esos mismos objetos. Sin esta confirmación quedaría retenida (RF-55) y la demo
+    se vería vacía. Solo vale para los datos de prueba: el archivo de curación no se toca.
+    """
+    extra = [
+        ConfirmedNewEntry(kind=record["kind"], ref=f"{record['source']}:{record['source_id']}",
+                          reason="Muestra real de los datos de prueba")
+        for fixture in files if not fixture.fictional
+        for record in fixture.records if record["kind"] in RETAINABLE
+    ]
+    return curation.model_copy(update={"confirmed_new": [*curation.confirmed_new, *extra]})
+
+
 def load_fixtures(
     session: Session, app_env: str, directory: Path = FIXTURES_DIR, curation: Curation | None = None
 ) -> FixtureLoadResult:
@@ -84,7 +101,7 @@ def load_fixtures(
     files = read_fixture_files(directory)
     if app_env == "production" and any(f.fictional for f in files):
         raise FixtureError("No se cargan datos ficticios en producción (APP_ENV=production).")
-    curation = curation if curation is not None else load_curation()
+    curation = confirm_real_sample(curation if curation is not None else load_curation(), files)
     report = ingest_records(session, [record for f in files for record in f.records], curation=curation)
     apply_curation(session, curation)
     return FixtureLoadResult(files=files, report=report)

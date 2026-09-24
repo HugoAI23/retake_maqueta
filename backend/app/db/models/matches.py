@@ -57,6 +57,8 @@ class Match(Base):
     - Spec 003: `stats_complete_at` (todas sus estadísticas registradas; abre la ventana
       de revisión de 7 días, RF-19 a RF-21) y `disappeared_at` (desaparecido de las
       fuentes, RF-50 a RF-52).
+    - Spec 003 (C-13): `week`, número de semana de un partido de fase `week`; el publicado
+      por una fuente o, si no hay, el calculado (RF-31 de la 002 revisado).
     """
 
     __tablename__ = "match"
@@ -67,6 +69,7 @@ class Match(Base):
             "maps_won_1 >= 0 AND maps_won_2 >= 0 AND live_score_1 >= 0 AND live_score_2 >= 0",
             name="scores_not_negative",
         ),
+        CheckConstraint("week > 0", name="week_positive"),
     )
 
     id: Mapped[uuid.UUID] = uuid_pk()
@@ -86,6 +89,7 @@ class Match(Base):
     corrected_fields: Mapped[list[str]] = corrected_fields_column()
     stats_complete_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     disappeared_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    week: Mapped[int | None] = mapped_column(SmallInteger)
     changed_at: Mapped[datetime | None] = changed_at_column()
 
 

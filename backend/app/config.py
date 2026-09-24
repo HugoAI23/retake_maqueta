@@ -4,8 +4,9 @@ Las credenciales nunca se escriben en el código (constitución §6.3): se leen 
 `DATABASE_URL` y `TEST_DATABASE_URL`. `backend/.env` queda fuera de git; solo se
 sube `backend/.env.example`, sin secretos.
 
-La spec 003 añade el modo de fuente (`SOURCE_MODE`) y el proxy de confianza
-(`TRUSTED_PROXY`), y deriva de `APP_ENV` si la cookie de sesión es segura.
+La spec 003 añade el modo de fuente (`SOURCE_MODE`), el proxy de confianza
+(`TRUSTED_PROXY`) y la carpeta de los archivos de la Wiki (`WIKI_CSV_DIR`), y deriva de
+`APP_ENV` si la cookie de sesión es segura.
 """
 
 from functools import lru_cache
@@ -16,7 +17,8 @@ from pydantic import ValidationError, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Ruta absoluta de backend/.env, para que funcione se ejecute desde donde se ejecute.
-ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
+BACKEND_DIR = Path(__file__).resolve().parent.parent
+ENV_FILE = BACKEND_DIR / ".env"
 
 
 class ConfigError(RuntimeError):
@@ -39,6 +41,9 @@ class Settings(BaseSettings):
         trusted_proxy: Dirección del proxy cuya cabecera `X-Forwarded-For` se
             acepta para saber el origen de un intento de acceso (plan D-10). Sin
             valor, el origen es siempre la dirección de la conexión.
+        wiki_csv_dir: Carpeta con los archivos CSV de la Wiki que prepara Hugo
+            (spec 003, C-15 a C-21; plan I-26). Está fuera de git porque llevan
+            nombres reales y fechas de nacimiento.
     """
 
     model_config = SettingsConfigDict(env_file=ENV_FILE, extra="ignore")
@@ -48,6 +53,7 @@ class Settings(BaseSettings):
     app_env: Literal["development", "test", "production"] = "development"
     source_mode: Literal["fixtures", "real", "simulated"] = "fixtures"
     trusted_proxy: str | None = None
+    wiki_csv_dir: Path = BACKEND_DIR / "data" / "wiki"
 
     @field_validator("trusted_proxy", mode="before")
     @classmethod

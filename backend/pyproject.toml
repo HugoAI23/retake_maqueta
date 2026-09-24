@@ -12,8 +12,6 @@ dependencies = [
     "pydantic-settings",
     "pyyaml",
     "httpx>=0.28.1",
-    "requests>=2.34.2",
-    "beautifulsoup4>=4.15.0",
     "argon2-cffi>=25.1.0",
     "pillow>=12.3.0",
 ]
@@ -24,7 +22,6 @@ retake = "app.cli:main"
 [dependency-groups]
 dev = [
     "pytest",
-    "responses>=0.26.3",
 ]
 
 [build-system]

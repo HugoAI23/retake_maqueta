@@ -67,14 +67,32 @@ class RefKey(_Strict):
         return f"{self.source}:{self.source_id}"
 
 
+# Campos comunes que nunca pueden marcarse como ilegibles.
+_COMMON_FIELDS = {"kind", "source", "source_id", "observed_at", "same_as", "fictional", "unreadable"}
+
+
 class _Record(_Strict):
-    """Campos comunes a todos los registros (plan §2.1)."""
+    """Campos comunes a todos los registros (plan §2.1).
+
+    `unreadable` (spec 003, plan §3.2) lista los campos que la fuente publica pero el
+    conector no ha podido entender: la ingesta los trata como no publicados por esa fuente
+    y cede el turno a las demás (RF-48, RF-49).
+    """
 
     source: Source
     source_id: str = Field(min_length=1)
     observed_at: AwareDatetime
     same_as: list[RefKey] = Field(default_factory=list)
     fictional: bool = False
+    unreadable: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _unreadable_are_own_fields(self):
+        own = set(type(self).model_fields) - _COMMON_FIELDS
+        unknown = [name for name in self.unreadable if name not in own]
+        if unknown:
+            raise ValueError(f"unreadable solo admite campos propios del registro; no: {unknown}")
+        return self
 
     @property
     def key(self) -> RefKey:
@@ -161,6 +179,7 @@ class MatchRecord(_Record):
     kind: Literal["match"]
     event_ref: RefKey
     phase: str | None = None
+    week: Loose = None  # spec 003 (C-13): número de semana, si la fuente lo publica
     best_of: Loose = None
     status: SourceStatus | None = None
     scheduled_at: AwareDatetime | None = None

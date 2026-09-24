@@ -3,12 +3,13 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import exists, or_, select
+from sqlalchemy import and_, exists, not_, or_, select
 from sqlalchemy.orm import Session
 
 from app.db.models import (
     Championship,
     Event,
+    ExternalRef,
     Match,
     MatchMap,
     Placement,
@@ -18,6 +19,17 @@ from app.db.models import (
     Season,
 )
 from app.domain.seasons import current_season_year
+
+
+def visible(model, kind: str):
+    """Condición: la fila no está oculta por la retención (spec 003: RF-55, nota C-14).
+
+    Oculta = todas sus referencias están retenidas. Solo se aplica a las listas de la temporada
+    actual; el historial usa también los registros retenidos.
+    """
+    refs = ExternalRef.kind == kind, ExternalRef.entity_id == model.id
+    return not_(and_(exists().where(*refs, ExternalRef.retained_since.is_not(None)),
+                     ~exists().where(*refs, ExternalRef.retained_since.is_(None))))
 
 
 def current_season(session: Session) -> Season | None:

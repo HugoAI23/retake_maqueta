@@ -17,8 +17,8 @@ def session(clean_db):
 def ingest(session):
     """Ingiere registros con una curación explícita (vacía por defecto) y confirma."""
 
-    def run(records, curation=None):
-        report = ingest_records(session, records, curation=curation or Curation())
+    def run(records, curation=None, now=None, logo_fetcher=None):
+        report = ingest_records(session, records, curation=curation or Curation(), now=now, logo_fetcher=logo_fetcher)
         session.commit()
         return report
 

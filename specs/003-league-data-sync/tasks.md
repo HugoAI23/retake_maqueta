@@ -3,7 +3,7 @@
 - **Spec**: [`spec.md`](spec.md) (`Aprobado`, 2026-09-23, con la revisión R-1)
 - **Plan**: [`plan.md`](plan.md) (`Aprobado`, 2026-09-23)
 - **Fecha**: `2026-09-23`
-- **Estado**: `Aprobado` (aprobado por Hugo el 2026-09-23). En implementación: **F0, F1 y F2 completadas** el 2026-09-23 (decisiones de F0 en `source-map.md` §5; ajustes en el registro del plan, I-1 a I-13).
+- **Estado**: `Aprobado` (aprobado por Hugo el 2026-09-23). En implementación: **F0, F1, F2 y F3 completadas** el 2026-09-23 (el acceso en vivo a la Wiki de I-17 se retiró con I-26). **F4 completada** el 2026-09-23 (T-037 a T-048 y T-091 a T-093). **F4b** (importación de la Wiki por CSV, cambios C-15 a C-21): T-095 a T-098 completadas; T-099 pendiente de que Hugo importe sus CSV reales. Ajustes en el registro del plan, I-1 a I-26.
 
 Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los requisitos que cubre (**RF**), de qué tareas depende (**Dep.**) y cuándo se considera terminada (**Hecho cuando**).
 
@@ -145,27 +145,27 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
 
 ## F3 — Conectores, logos y fuente simulada
 
-- [ ] **T-025** `sources/http`: cliente por fuente (httpx para BreakingPoint, requests para la Wiki, I-1) con identificación de Retake, pausa mínima por fuente (2 s; Wiki 10 s con espera creciente ante `ratelimited`, I-2), tiempo de espera de 15 s y lectura de las normas para robots si la fuente las publica. Una consulta prohibida devuelve `forbidden` sin hacerse.
+- [x] **T-025** `sources/http`: cliente por fuente (httpx para BreakingPoint, requests para la Wiki, I-1) con identificación de Retake, pausa mínima por fuente (2 s; Wiki 10 s con espera creciente ante `ratelimited`, I-2), tiempo de espera de 15 s y lectura de las normas para robots si la fuente las publica. Una consulta prohibida devuelve `forbidden` sin hacerse.
   - **RF:** RF-35, RF-37, RF-39, RF-40, RF-42
   - **Dep.:** T-024
   - **Hecho cuando:** pruebas con transporte simulado comprueban la cabecera, la pausa medida con el reloj simulado y la negativa ante una norma que prohíbe.
-- [ ] **T-026** Contrato del resultado de consulta (plan §3.1): `outcome`, `records`, `seen`, `rejected` y `message` en texto plano de 500 caracteres como máximo; marca de campo ilegible (plan §3.2).
+- [x] **T-026** Contrato del resultado de consulta (plan §3.1): `outcome`, `records`, `seen`, `rejected` y `message` en texto plano de 500 caracteres como máximo; marca de campo ilegible (plan §3.2).
   - **RF:** RF-47, RF-48, RF-119, RF-120
   - **Dep.:** T-025
   - **Hecho cuando:** `records.py` acepta la marca de ilegible y las pruebas de la 002 siguen en verde.
-- [ ] **T-027** Pruebas e implementación del conector de BreakingPoint, listado: `/matches` (temporadas, también la próxima; eventos, solo los de la CDL; franquicias e identidades con logo) y API interna `fetchMatchesPage` paginada (partidos con estado, horario, formato, marcador, ronda → fase y origen del bracket), con las referencias vistas. Una respuesta sin partidos donde antes había cuenta como fallo.
+- [x] **T-027** Pruebas e implementación del conector de BreakingPoint, listado: `/matches` (temporadas, también la próxima; eventos, solo los de la CDL; franquicias e identidades con logo) y API interna `fetchMatchesPage` paginada (partidos con estado, horario, formato, marcador, ronda → fase y origen del bracket), con las referencias vistas. Una respuesta sin partidos donde antes había cuenta como fallo.
   - **RF:** RF-1, RF-14, RF-16, RF-17, RF-46, RF-47
   - **Dep.:** T-026
   - **Hecho cuando:** traduce las muestras de T-005 y marca como ilegible lo que no entiende.
-- [ ] **T-028** Pruebas e implementación del conector de BreakingPoint, detalle de partido (`/match/{id}`): mapas jugados, mapas no jugados (a partir de `fetchGameBans`, I-7), modos, marcadores, marcador en vivo y estadísticas por jugador y modo.
+- [x] **T-028** Pruebas e implementación del conector de BreakingPoint, detalle de partido (`/match/{id}`): mapas jugados, mapas no jugados (a partir de `fetchGameBans`, I-7), modos, marcadores, marcador en vivo y estadísticas por jugador y modo.
   - **RF:** RF-1, RF-16, RF-19
   - **Dep.:** T-027
   - **Hecho cuando:** traduce las muestras y distingue una estadística ausente de un 0.
-- [ ] **T-029** Pruebas e implementación de BreakingPoint, equipos y jugadores: `/teams/{id}` (tabla: puesto y puntos) y `/players/{id}` (datos personales, `country_id`, retirada e historial de equipos → rosters).
+- [x] **T-029** Pruebas e implementación de BreakingPoint, equipos y jugadores: `/teams/{id}` (tabla: puesto y puntos) y `/players/{id}` (datos personales, `country_id`, retirada e historial de equipos → rosters).
   - **RF:** RF-1, RF-18
   - **Dep.:** T-027
   - **Hecho cuando:** traduce las muestras; los jugadores retirados no entran en el roster.
-- [ ] **T-030** Pruebas e implementación del conector de la Wiki, jugadores (I-3): `Players` y `PlayerRedirects` (datos personales y gamertags anteriores) con requests, solo por la API, de una en una, con el parámetro de cortesía y la pausa de I-2.
+- [x] **T-030** Pruebas e implementación del conector de la Wiki, jugadores (I-3): `Players` y `PlayerRedirects` (datos personales y gamertags anteriores) con requests, solo por la API, de una en una, con el parámetro de cortesía y la pausa de I-2.
   - **RF:** RF-1, RF-18, RF-38
   - **Dep.:** T-026
   - **Hecho cuando:** traduce las muestras, nunca pide una página web de la Wiki y respeta la espera creciente ante `ratelimited`.
@@ -173,7 +173,7 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** RF-1, RF-18
   - **Dep.:** T-030
   - **Hecho cuando:** traduce las muestras.
-- [ ] **T-032** Pruebas e implementación del conector de la Wiki, historial, con `action=parse` y BeautifulSoup (I-1): campeonatos, clasificaciones, premios, porcentaje de la bolsa, rosters con el gamertag de la final y datos personales de los jugadores que solo están en el historial. Reutiliza la lógica de `get_tables_champs_all_years.py` de `CDL-data-analysis` (columnas dinámicas, filas de mostrar/ocultar).
+- [x] **T-032** Pruebas e implementación del conector de la Wiki, historial, con `action=parse` y BeautifulSoup (I-1): campeonatos, clasificaciones, premios, porcentaje de la bolsa, rosters con el gamertag de la final y datos personales de los jugadores que solo están en el historial. Reutiliza la lógica de `get_tables_champs_all_years.py` de `CDL-data-analysis` (columnas dinámicas, filas de mostrar/ocultar).
   - **RF:** RF-4, RF-34
   - **Dep.:** T-030
   - **Hecho cuando:** traduce las muestras, incluidos un lugar compartido y un `DQ`.
@@ -181,15 +181,15 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** RF-1, RF-18
   - **Dep.:** T-026
   - **Hecho cuando:** traduce las muestras, incluidas las posiciones compartidas.
-- [ ] **T-034** Pruebas e implementación de `logos/`: descarga con el cliente educado; Pillow verifica que es PNG, JPEG o WebP; 1 MB como máximo; huella SHA-256 para no duplicar; un logo no válido se rechaza con su motivo.
+- [x] **T-034** Pruebas e implementación de `logos/`: descarga con el cliente educado; Pillow verifica que es PNG, JPEG o WebP; 1 MB como máximo; huella SHA-256 para no duplicar; un logo no válido se rechaza con su motivo.
   - **RF:** RF-65 a RF-70
   - **Dep.:** T-025
   - **Hecho cuando:** rechaza un SVG, un GIF, un archivo de más de 1 MB y un falso PNG, y guarda una sola vez dos descargas idénticas.
-- [ ] **T-035** `sources/simulated`: formato de escenario (respuestas de las tres fuentes que cambian con el reloj) y escenarios del plan §6.4. El proceso de obtención se niega a arrancar con ella en producción.
+- [x] **T-035** `sources/simulated`: formato de escenario (respuestas de las tres fuentes que cambian con el reloj) y escenarios del plan §6.4. El proceso de obtención se niega a arrancar con ella en producción.
   - **RF:** RF-9 a RF-11
   - **Dep.:** T-027 a T-033
   - **Hecho cuando:** cada escenario se reproduce igual dos veces seguidas con el reloj simulado.
-- [ ] **T-036 · Cierre F3**
+- [x] **T-036 · Cierre F3**
   - **Dep.:** T-025 a T-035
   - **Hecho cuando:** las pruebas están en verde, la guía incluye una consulta real de cada fuente con `sync-once` (sin guardar) y se ha sugerido el commit.
 
@@ -197,65 +197,96 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
 
 ## F4 — Ingesta ampliada y curación
 
-- [ ] **T-037** Pruebas e implementación de "ilegible" frente a "imposible": un ilegible cede el turno a la siguiente fuente; si ninguna lo publica de forma legible, se conserva el valor registrado; un imposible sigue pasando a ausente.
+- [x] **T-037** Pruebas e implementación de "ilegible" frente a "imposible": un ilegible cede el turno a la siguiente fuente; si ninguna lo publica de forma legible, se conserva el valor registrado; un imposible sigue pasando a ausente.
   - **RF:** RF-48, RF-49
   - **Dep.:** T-036
   - **Hecho cuando:** cubre las tres situaciones y las pruebas de la 002 siguen en verde.
-- [ ] **T-038** `changed_at` en cada fila cuyo valor resuelto cambia, y registro de los conjuntos de datos cambiados en `dataset_change` y en el informe de la ingesta.
+- [x] **T-038** `changed_at` en cada fila cuyo valor resuelto cambia, y registro de los conjuntos de datos cambiados en `dataset_change` y en el informe de la ingesta.
   - **RF:** RF-157 a RF-159
   - **Dep.:** T-036
   - **Hecho cuando:** reingerir los mismos datos no mueve `changed_at`, y el primer registro de un dato sí lo fija.
-- [ ] **T-039** `last_seen_at` de las referencias vistas en cada consulta con éxito; partido desaparecido a las 24 h y reaparecido cuando vuelve.
+- [x] **T-039** `last_seen_at` de las referencias vistas en cada consulta con éxito; partido desaparecido a las 24 h y reaparecido cuando vuelve.
   - **RF:** RF-50 a RF-52
   - **Dep.:** T-038
   - **Hecho cuando:** un partido desaparecido se conserva tal cual, también en vivo, y vuelve a actualizarse al reaparecer.
-- [ ] **T-040** Marcador en vivo con `live_score` en el cálculo del partido; al finalizar, el marcador final vuelve a la prioridad de fuentes.
+- [x] **T-040** Marcador en vivo con `live_score` en el cálculo del partido; al finalizar, el marcador final vuelve a la prioridad de fuentes.
   - **RF:** RF-57 a RF-59
   - **Dep.:** T-036
   - **Hecho cuando:** el marcador en vivo nunca retrocede aunque la fuente principal vaya por detrás.
-- [ ] **T-041** Cancelación con `cancellation`; si no se aplica, se informa la discrepancia.
+- [x] **T-041** Cancelación con `cancellation`; si no se aplica, se informa la discrepancia.
   - **RF:** RF-53
   - **Dep.:** T-036
   - **Hecho cuando:** una cancelación de una fuente secundaria no borra el partido.
-- [ ] **T-042** Identidades combinadas con `identity_merge` (sustituye el ajuste I-15 de la 002). El logo de la identidad es la copia propia; sin logo tras combinar, rigen las reglas de logo ausente de la 002; un logo que la fuente deja de publicar se conserva.
+- [x] **T-042** Identidades combinadas con `identity_merge` (sustituye el ajuste I-15 de la 002). El logo de la identidad es la copia propia; sin logo tras combinar, rigen las reglas de logo ausente de la 002; un logo que la fuente deja de publicar se conserva.
   - **RF:** RF-61 a RF-65, RF-71
   - **Dep.:** T-036
   - **Hecho cuando:** dos fuentes con identidades distintas dan una sola identidad vigente, y las pruebas de I-15 se actualizan con el motivo anotado en el registro del plan.
-- [ ] **T-043** Registros retenidos: una referencia sin enlazar, cuando una fuente de mayor prioridad publica ese tipo, queda retenida y no forma parte de ninguna entidad visible; se informa.
+- [x] **T-043** Registros retenidos: una referencia sin enlazar, cuando una fuente de mayor prioridad publica ese tipo, queda retenida y no forma parte de ninguna entidad visible; se informa.
   - **RF:** RF-54, RF-55
   - **Dep.:** T-036
   - **Hecho cuando:** un partido de la Wiki sin enlace no duplica el de BreakingPoint y aparece como retenido.
-- [ ] **T-044** Curación: secciones `merges` (partidos, eventos y franquicias) y `confirmed_new`, con validación; al unir o confirmar, el registro deja de estar retenido.
+- [x] **T-044** Curación: secciones `merges` (partidos, eventos y franquicias) y `confirmed_new`, con validación; al unir o confirmar, el registro deja de estar retenido.
   - **RF:** RF-54, RF-56
   - **Dep.:** T-043
   - **Hecho cuando:** unir o confirmar libera el registro, y un error de formato no aplica nada (como en la 002).
-- [ ] **T-045** Retirada permanente: el cálculo de un jugador con los datos retirados ignora los datos personales que publiquen las fuentes.
+- [x] **T-045** Retirada permanente: el cálculo de un jugador con los datos retirados ignora los datos personales que publiquen las fuentes.
   - **RF:** RF-60
   - **Dep.:** T-036
   - **Hecho cuando:** reingerir un jugador retirado no devuelve ningún dato personal, ni un instante.
-- [ ] **T-046** `stats_complete_at`: se fija cuando un partido finalizado tiene todas sus estadísticas registradas.
+- [x] **T-046** `stats_complete_at`: se fija cuando un partido finalizado tiene todas sus estadísticas registradas.
   - **RF:** RF-19, RF-20
   - **Dep.:** T-038
   - **Hecho cuando:** un forfeit sin mapas lo tiene desde que finaliza.
-- [ ] **T-047** Orden `retake list-retained`: lista los retenidos y sugiere candidatos parecidos, sin unir nada.
+- [x] **T-047** Orden `retake list-retained`: lista los retenidos y sugiere candidatos parecidos, sin unir nada.
   - **RF:** RF-54, RF-56
   - **Dep.:** T-044
   - **Hecho cuando:** una prueba comprueba que la orden no cambia ningún dato.
-- [ ] **T-091** Pruebas e implementación del K/D calculado (C-12): si ninguna fuente lo publica, kills ÷ deaths con 2 decimales; con 0 deaths, K/D = kills; si falta alguno, ausente.
+- [x] **T-091** Pruebas e implementación del K/D calculado (C-12): si ninguna fuente lo publica, kills ÷ deaths con 2 decimales; con 0 deaths, K/D = kills; si falta alguno, ausente.
   - **RF:** RF-2 (RF-79 de la 002 revisado)
   - **Dep.:** T-036 (C-12 aplicado a la 002 el 2026-09-23)
   - **Hecho cuando:** cubre 0 deaths, kills ausente y un K/D publicado, que manda sobre el calculado.
-- [ ] **T-092** Pruebas e implementación de la semana calculada (C-13): orden de la semana (lunes a domingo, hora de Ciudad de México) entre las semanas con partidos del evento, solo si la fuente no publica la semana.
+- [x] **T-092** Pruebas e implementación de la semana calculada (C-13): orden de la semana (lunes a domingo, hora de Ciudad de México) entre las semanas con partidos del evento, solo si la fuente no publica la semana.
   - **RF:** RF-2 (RF-31 de la 002 revisado)
   - **Dep.:** T-036 (C-13 aplicado a la 002 el 2026-09-23)
   - **Hecho cuando:** con los partidos de la muestra del clasificatorio del Major 1, da "semana 1" y "semana 4" donde la Wiki dice "Week 1" y "Week 4", incluido el parón navideño.
-- [ ] **T-093** Tabla de países en la curación (I-6): sección `countries` (número de BreakingPoint → nombre) con validación; un número sin traducir es `No disponible` y se anota como incidencia.
+- [x] **T-093** Tabla de países en la curación (I-6): sección `countries` (número de BreakingPoint → nombre) con validación; un número sin traducir es `No disponible` y se anota como incidencia.
   - **RF:** RF-2, RF-142
   - **Dep.:** T-044
   - **Hecho cuando:** un jugador con un número sin traducir aparece sin país y con su incidencia.
-- [ ] **T-048 · Cierre F4**
+- [x] **T-048 · Cierre F4**
   - **Dep.:** T-037 a T-047, T-091 a T-093
   - **Hecho cuando:** las pruebas de la 002 y de la 003 están en verde, se ha entregado la guía y se ha sugerido el commit.
+
+---
+
+## F4b — Importación de la Wiki por CSV (cambios C-15 a C-21, I-26)
+
+> Tareas nuevas del 2026-09-23, **aprobadas por Hugo el mismo día**. Sustituyen el acceso en vivo a la Wiki.
+
+- [x] **T-095** Configuración: `WIKI_CSV_DIR` (por defecto `backend/data/wiki/`), carpeta ignorada por git y documentada en `.env.example`.
+  - **RF:** RF-4, RF-4a
+  - **Dep.:** T-048
+  - **Hecho cuando:** la ruta se lee de la configuración y `git status` no muestra los CSV copiados en la carpeta.
+- [x] **T-096** Pruebas e implementación de `sources/wiki_csv` (lectura y conversión), con CSV de prueba ficticios:
+  - una clasificación por año y equipo con su roster, y el premio del equipo, nunca por jugador;
+  - campeonato con identificador de página, competición y juego por año, fecha de la final y completado si hay 1.er puesto;
+  - lugares con rango (`9-12`) y `DQ` tal cual; premio y porcentaje vacíos, ausentes; ilegibles, marcados como ilegibles;
+  - datos personales solo de los jugadores del historial o de un roster (RF-4a); `Stream`, `Twitter` y `Age` nunca se leen;
+  - archivo que falta o columna que falta → error que nombra el archivo, sin registros.
+  - **RF:** RF-4 a RF-4c, RF-7 de la 002
+  - **Dep.:** T-095
+  - **Hecho cuando:** los registros pasan la validación del contrato de la 002 y cada caso tiene su prueba.
+- [x] **T-097** Orden `retake import-wiki-csv [--dir RUTA]`: registros → `ingest_records` con la curación vigente, en una sola transacción (sin `apply_curation`, I-26); muestra el resultado (éxito, parcial o fallo) y sus incidencias, y lo anota en `sync_run` (`wiki`, `history`).
+  - **RF:** RF-4b, RF-4c, RF-32
+  - **Dep.:** T-096
+  - **Hecho cuando:** una prueba de integración importa los CSV ficticios dos veces sin duplicar nada, y un archivo roto no deja ningún cambio en la base de datos.
+- [x] **T-098** Retirar el acceso en vivo a la Wiki (C-18): `sources/wiki.py` (la tabla `GAMES` y los nombres de los campeonatos pasan a `wiki_csv`), el adaptador TLS y el cliente real de la Wiki en `sources/http.py`, `sync-once --source wiki`, sus pruebas y muestras, y la dependencia `requests` (y `responses` si ya no la usa ninguna prueba).
+  - **RF:** RF-38
+  - **Dep.:** T-097
+  - **Hecho cuando:** `grep` no encuentra en `app/` ninguna dirección de la Wiki ni `requests`, y todas las pruebas siguen en verde.
+- [ ] **T-099 · Cierre F4b**: guía de verificación (copiar los CSV, importar, comprobar el historial en la API y `list-retained`), sugerencia de commit y registro del plan al día.
+  - **Dep.:** T-095 a T-098
+  - **Hecho cuando:** Hugo ha importado sus CSV reales en su base de desarrollo y lo ha comprobado.
 
 ---
 
@@ -264,10 +295,10 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
 - [ ] **T-049** Pruebas e implementación de `sync/planner` (función pura), con cada consulta del plan §5:
   - carga inicial en orden (temporada antes que historial; entre temporadas, la última con partidos oficiales);
   - en vivo, antes del partido, resto cada hora, partidos terminados y próxima temporada;
-  - relecturas del Champs a 1 h y de 24 h a 168 h, y reintentos cada hora;
+  - ~~relecturas del Champs a 1 h y de 24 h a 168 h, y reintentos cada hora~~ (eliminadas por C-17, I-26: el historial llega con `retake import-wiki-csv`);
   - resumen diario y limpieza;
   - recuperación tras una parada.
-  - **RF:** RF-3 a RF-6, RF-14, RF-16 a RF-21, RF-23 a RF-34, RF-150
+  - **RF:** RF-3, RF-6, RF-14, RF-16 a RF-21, RF-23 a RF-29, RF-150
   - **Dep.:** T-048
   - **Hecho cuando:** cada fila del §5 del plan tiene su prueba con el reloj simulado.
 - [ ] **T-050** `sync/registry`:
@@ -288,10 +319,10 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **Hecho cuando:** una prueba de integración recibe el aviso en otra conexión.
 - [ ] **T-053** `sync/worker` y orden `retake sync`:
   - bucle de 5 s con una cola por fuente;
-  - recoge las peticiones del administrador (`sync_request`), con una sola en curso por fuente y por historial;
+  - recoge las peticiones del administrador (`sync_request`), con una sola en curso por fuente (sin relectura del historial: C-19, I-26);
   - termina lo empezado aunque caduque la sesión que lo pidió;
   - se niega a arrancar en producción con la fuente simulada o con datos ficticios.
-  - **RF:** RF-9, RF-44, RF-100, RF-102, RF-107, RF-108, RF-136
+  - **RF:** RF-9, RF-44, RF-100, RF-107, RF-136
   - **Dep.:** T-051, T-052
   - **Hecho cuando:** las pruebas cubren las colas, las peticiones y la negativa en producción.
 - [ ] **T-054** Resumen diario a las 00:00 de `America/Mexico_City`: totales y lista de incidencias distintas por fuente; sin resumen si no hubo incidencias; borrado a los 7 días.
@@ -310,8 +341,8 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - desaparición y reaparición;
   - parada y recuperación;
   - cambio de temporada automático, con la próxima temporada oculta hasta entonces;
-  - final del Champs con clasificación tardía y sus relecturas.
-  - **RF:** RF-3 a RF-34, RF-43 a RF-53, RF-72, RF-73
+  - ~~final del Champs con clasificación tardía y sus relecturas~~ (eliminado por C-17; la importación se prueba en T-097).
+  - **RF:** RF-3, RF-6 a RF-29, RF-43 a RF-53, RF-72, RF-73
   - **Dep.:** T-053 a T-055
   - **Hecho cuando:** todos los escenarios pasan.
 - [ ] **T-057 · Cierre F5**
@@ -432,7 +463,7 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **Hecho cuando:** pruebas de componentes y de rutas.
 - [ ] **T-078** Paneles de administración como bloques de la 001:
   - estado de las fuentes (última consulta, última con éxito, parada);
-  - acciones (actualizar fuente y releer historial), desactivadas sin conexión;
+  - acciones (actualizar fuente; sin releer historial por C-19), desactivadas sin conexión; la Wiki muestra su última importación y nunca aparece como parada;
   - resultado de cada petición (en curso, éxito, parcial o fallo, con el número de incidencias).
   - **RF:** RF-100 a RF-116
   - **Dep.:** T-077
@@ -484,7 +515,7 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** —
   - **Dep.:** T-084
   - **Hecho cuando:** todo está en verde.
-- [ ] **T-086** Recorrido manual en modo real: `retake sync` durante al menos un ciclo de cada tipo que la temporada permita (resto, historial y próxima temporada), revisando el registro y la página de administración.
+- [ ] **T-086** Recorrido manual en modo real: `retake sync` durante al menos un ciclo de cada tipo que la temporada permita (resto y próxima temporada; el historial, con `retake import-wiki-csv`, I-26), revisando el registro y la página de administración.
   - **RF:** RF-1 a RF-42, RF-112 a RF-114
   - **Dep.:** T-085
   - **Hecho cuando:** Hugo lo ha comprobado en la página de administración.
