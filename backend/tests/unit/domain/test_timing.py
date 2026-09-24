@@ -18,7 +18,9 @@ def test_ciclos_de_la_pagina_y_umbrales_de_desactualizacion():
 
 
 def test_plazos_de_revision_desaparicion_y_conservacion():
-    assert v.REVIEW_WINDOW == timedelta(days=7)  # RF-20
+    # RF-19 y RF-20 (cambio C-25): tres revisiones, una al día, salvo partidos de hace más de 3 días.
+    assert (v.FINISHED_REVIEWS, v.FINISHED_REVIEW_INTERVAL, v.FINISHED_REVIEW_AGE_LIMIT) == (
+        3, timedelta(hours=24), timedelta(days=3))
     assert v.DISAPPEARED_AFTER == timedelta(hours=24)  # RF-50
     assert v.LIVE_MISSING_AFTER == timedelta(seconds=60)  # RF-90
     assert v.RETENTION == timedelta(days=7)  # RF-149, RF-154

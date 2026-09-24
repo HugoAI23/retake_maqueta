@@ -285,15 +285,30 @@ def test_cada_consulta_del_plan_usa_su_consulta_del_conector(monkeypatch):
 
     calls = []
     ok = lambda job: ConsultaResult(source="bp", job=job, outcome="success")  # noqa: E731
-    monkeypatch.setattr(bp, "consult_regular", lambda client, now, job: calls.append(("regular", job)) or ok(job))
-    monkeypatch.setattr(bp, "consult_upcoming", lambda client, now, job: calls.append(("upcoming", job)) or ok(job))
+    guests = {"744"}
+    # Los invitados conocidos llegan a los dos listados, que no vuelven a pedir su ficha (RF-18b, plan I-38).
+    monkeypatch.setattr(bp, "consult_regular", lambda client, now, job, known_guests: calls.append(("regular", job, known_guests is guests)) or ok(job))
+    monkeypatch.setattr(bp, "consult_upcoming", lambda client, now, job, known_guests: calls.append(("upcoming", job, known_guests is guests)) or ok(job))
     monkeypatch.setattr(bp, "consult_match", lambda client, mid, now, job: calls.append(("match", job, mid)) or ok(job))
-    monkeypatch.setattr(bp, "consult_teams", lambda client, ids, season, now, job: calls.append(("teams", job, tuple(ids), season)) or ok(job))
+    monkeypatch.setattr(bp, "consult_teams", lambda client, ids, season, now, job, guests: calls.append(("teams", job, tuple(ids), season, set(guests))) or ok(job))
     season = (2026, "2025-10-28", "2026-10-29")
     for query in (PlannedQuery("initial_load", "bp"), PlannedQuery("regular", "bp"), PlannedQuery("pre_match", "bp"),
                   PlannedQuery("live", "bp"), PlannedQuery("live", "bp", match_id="900"),
                   PlannedQuery("finished_matches", "bp", match_id="901"),
-                  PlannedQuery("regular", "bp", team_id="4", season=season)):
-        consult(query, client=None, now=T0)
-    assert calls == [("regular", "initial_load"), ("regular", "regular"), ("upcoming", "pre_match"), ("upcoming", "live"),
-                     ("match", "live", "900"), ("match", "finished_matches", "901"), ("teams", "regular", ("4",), season)]
+                  PlannedQuery("regular", "bp", team_id="4", season=season),
+                  PlannedQuery("regular", "bp", team_id="744", season=season, guest=True)):
+        consult(query, client=None, now=T0, known_guests=guests)
+    assert calls == [("regular", "initial_load", True), ("regular", "regular", True), ("upcoming", "pre_match", True),
+                     ("upcoming", "live", True),
+                     ("match", "live", "900"), ("match", "finished_matches", "901"), ("teams", "regular", ("4",), season, set()),
+                     ("teams", "regular", ("744",), season, {"744"})]
+
+
+def test_un_roster_de_un_equipo_ajeno_a_la_cdl_no_deja_la_consulta_parcial(session):
+    """RF-18c (C-26): se descarta sin anotarlo; la consulta sale bien y el registro queda limpio."""
+    records = [*_sample_records("m100"), rec("player", "p1", gamertag="[FICTICIO] Uno"),
+               rec("roster", "2026/858/p1", season_year=2026, franchise_ref="bp:858", player_ref="bp:p1")]
+    result = ConsultaResult(source="bp", job="regular", outcome="success", records=records, item_count=1)
+    execute_consultation(session, result=result, curation=Curation(), now=T0)
+    assert session.scalar(select(SyncRun)).outcome == "success"
+    assert session.scalar(select(Incident)) is None

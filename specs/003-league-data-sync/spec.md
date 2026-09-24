@@ -2,7 +2,7 @@
 
 - **ID**: `003-league-data-sync`
 - **Fecha**: `2026-09-23` (borrador, segunda ronda de pendientes y resolución de la revisión QA, el mismo día)
-- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-23; revisión R-1 del mismo día, durante el plan; cambios C-15 a C-21 del mismo día: la Wiki entra por archivos CSV)
+- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-23; revisión R-1 del mismo día, durante el plan; cambios C-15 a C-21 del mismo día: la Wiki entra por archivos CSV; cambios C-22 a C-26 del 2026-09-24: franquicias que la fuente ya no lista, equipos invitados, revisión de partidos finalizados y rosters de equipos ajenos a la CDL)
 
 > **Numeración:** tras la revisión QA, la spec se renumeró de principio a fin, porque aún no estaba aprobada y ninguna otra spec cita sus números. Las tablas del §5 usan ya los números nuevos.
 
@@ -82,9 +82,16 @@ Además, cierra tres deudas de specs anteriores:
 * **RF-16 (Estado)**: MIENTRAS un partido esté `en vivo`, EL SISTEMA consultará sus datos en vivo al menos cada 60 segundos.
 * **RF-17 (Estado)**: MIENTRAS un partido `programado` esté a 1 hora o menos de su hora de inicio programada, o la haya pasado sin pasar a `en vivo`, EL SISTEMA consultará su estado al menos cada 60 segundos.
 * **RF-18 (Ubicuo)**: EL SISTEMA consultará el resto de datos al menos cada hora, salvo los partidos finalizados, que siguen RF-19 a RF-21, y los datos de la Wiki (RF-32).
+* **RF-18a (No deseado)**: SI una fuente publica un partido, una posición en la tabla o un roster de la temporada actual con un equipo que no figura en su lista de equipos de esa temporada, ENTONCES EL SISTEMA consultará los datos de ese equipo y, si la fuente lo incluye en la tabla de posiciones de esa temporada, lo registrará como franquicia y lo consultará en adelante como a las demás (RF-18).
+  * *Nota (cambio C-22):* le pasa a Boston Breach en 2026, que BreakingPoint ya lista como M80 Boston y con otro número. Que dos registros sean la misma franquicia lo decide la curación (RF-54 de esta spec; RF-114 de la 002). Un equipo que la fuente no incluye en la tabla se registra como equipo invitado (RF-117a de la 002; cambio C-24).
+* **RF-18b (Ubicuo)**: EL SISTEMA consultará los datos de cada equipo invitado y de sus jugadores la primera vez que aparezca en un partido y, después, al menos una vez al mes.
+  * *Nota (cambio C-24):* sus partidos siguen los ciclos de los demás (en vivo cada 60 s, el resto cada hora); lo mensual son su identidad, su roster y los datos de sus jugadores.
+* **RF-18c (No deseado)**: SI el historial de un jugador incluye un roster de la temporada con un equipo que no es franquicia de la CDL ni equipo invitado, ENTONCES EL SISTEMA lo descartará sin registrarlo ni anotarlo en el registro.
+  * *Nota (cambio C-26):* son etapas del jugador en equipos que no juegan ningún evento de la CDL (por ejemplo, en Challengers). Si ese equipo llega a jugar un evento de la CDL, pasa a ser invitado y sus rosters se registran desde entonces (RF-18b).
   * *Nota (2026-09-23, cambio C-17):* se añade la excepción de los datos de la Wiki.
-* **RF-19 (Estado)**: MIENTRAS un partido `finalizado` tenga el aviso "Estadísticas pendientes" (RF-47 de la 002), EL SISTEMA lo consultará al menos cada hora.
-* **RF-20 (Dirigido por evento)**: CUANDO un partido `finalizado` tenga registradas todas sus estadísticas, EL SISTEMA lo seguirá consultando al menos cada hora durante 7 días.
+* **RF-19 (Dirigido por evento)**: CUANDO un partido pase a `finalizado`, o se registre ya `finalizado`, EL SISTEMA consultará su página una vez para obtener sus estadísticas.
+* **RF-20 (Dirigido por evento)**: CUANDO pasen 24, 48 y 72 horas desde la consulta de RF-19, EL SISTEMA volverá a consultar el partido, salvo si ya habían pasado más de 3 días desde su inicio cuando se registró como `finalizado`.
+  * *Nota (cambio C-25):* estas tres consultas diarias valen tanto para completar estadísticas pendientes (RF-47 de la 002) como para recoger correcciones. Un partido cargado mucho después de jugarse (por ejemplo, en la primera carga de una temporada) solo se consulta una vez. El administrador puede pedir una actualización cuando quiera (RF-100).
 * **RF-21 (Ubicuo)**: EL SISTEMA no consultará un partido `finalizado` fuera de los plazos de RF-19 y RF-20, salvo cuando el administrador lo pida (RF-100).
 * **RF-22 (Dirigido por evento)**: CUANDO una consulta devuelva un dato nuevo o cambiado, EL SISTEMA lo registrará al terminar esa consulta.
   * *Nota:* se registra lo que devuelve cada consulta. Los valores intermedios que una fuente publique y retire entre dos consultas no se registran.
@@ -295,6 +302,7 @@ Estas reglas rigen el desarrollo, no el comportamiento de la web, así que no ll
 2. **Entradas no válidas**:
    - Respuesta entendida a medias → se registra lo que se entiende; lo ilegible cuenta como no publicado por esa fuente y se anota (RF-47, RF-48, RF-142).
    - Respuesta vacía donde antes había datos → consulta fallida, no desaparición en bloque (RF-46).
+   - Equipo de un partido que la fuente no incluye en su lista → se consultan sus datos: si está en la tabla de la temporada, franquicia (RF-18a; la curación lo une a su nombre siguiente, RF-54); si no, equipo invitado (RF-18b; cambios C-22 y C-24).
    - Registro de una fuente secundaria que no se puede enlazar → retenido sin mostrar hasta que Retake lo una o lo confirme como nuevo, para que el usuario nunca vea duplicados (RF-54 a RF-56).
    - Identidades distintas entre fuentes → una sola, campo a campo; solo nace una identidad nueva si cambia el resultado combinado (RF-61 a RF-64).
    - Cancelación publicada solo por una fuente secundaria → no se cancela y se anota (RF-53, RF-146).
@@ -446,7 +454,7 @@ Estas reglas rigen el desarrollo, no el comportamiento de la web, así que no ll
 | Q-40 | [1.1, 1.2, 1.3] Plazos no medibles y "ciclo" sin definir | Los plazos pasan a ciclos máximos de consulta; se registra lo que devuelve cada consulta | RF-16, RF-18, RF-22, glosario |
 | Q-41 | [1.1] Detectar el inicio de un partido | Consulta cada 60 s desde 1 h antes de su hora hasta que empieza | RF-17 |
 | Q-42 | [1.4] Mapa terminado en un partido en vivo | Marcador, ganador y estadísticas del mapa, todo a 60 s | Glosario, RF-16 |
-| Q-43 | [1.5] Revisión de partidos finalizados | Cada hora mientras tengan estadísticas pendientes y 7 días más | RF-19 a RF-21 |
+| Q-43 | [1.5] Revisión de partidos finalizados | Cada hora mientras tengan estadísticas pendientes y 7 días más. *Sustituida por C-25: una consulta al finalizar y una al día durante 3 días* | RF-19 a RF-21 |
 | Q-44 | [1.6] Cuándo desaparece un partido | Tras 24 horas sin aparecer | RF-50 |
 | Q-45 | [1.7] Fecha de vigencia distinta entre fuentes | Es un campo más: manda la fuente con más prioridad | RF-62 |
 | Q-46 | [1.8] Cuándo hay un logo nuevo | Se compara la imagen, no la dirección | RF-66, RF-67 |
@@ -517,12 +525,17 @@ Por la decisión Q-17, cada cambio se presentó a Hugo y se aprobó por separado
 | C-19 | 003, RF-100, RF-102, RF-108, RF-109, RF-113, RF-114 | Sin releer el historial desde la página de administración; la Wiki muestra su última importación y nunca aparece como parada | Ídem | Aprobado · aplicado (2026-09-23) |
 | C-20 | 003, RF-89 | Los bloques con solo datos de la Wiki no muestran el aviso de datos sin actualizar | Ídem | Aprobado · aplicado (2026-09-23) |
 | C-21 | 003, §3 y §6 | Casos límite y criterios de finalización pasan de las relecturas a la importación | Ídem | Aprobado · aplicado (2026-09-23) |
+| C-22 | 003, RF-18a y §3 | Un equipo que la fuente ya no lista, pero que está en la tabla de la temporada, se registra como franquicia | Primera carga real, T-086: Boston Breach | Aprobado · aplicado (2026-09-24) |
+| C-23 | 002, glosario, RF-117a a RF-117d y §3.11 | Equipos invitados: equipos de fuera de la CDL que juegan un evento de la CDL, con roster y jugadores (mismos datos que los de la CDL), visibles solo en sus partidos; sus estadísticas no cuentan para la temporada | Primera carga real, T-086: Minors | Aprobado · aplicado (2026-09-24) |
+| C-24 | 003, nota de RF-18a, RF-18b y §3 | Los equipos que no están en la tabla se registran como invitados; sus datos y los de sus jugadores se consultan al aparecer y después una vez al mes | Ídem | Aprobado · aplicado (2026-09-24) |
+| C-25 | 003, RF-19 y RF-20; 002, plazos de corrección | Revisión de partidos finalizados: una consulta al finalizar y una al día durante 3 días; ninguna más si ya eran antiguos al registrarse | Primera carga real, T-086: 281 partidos de julio en revisión horaria de 7 días | Aprobado · aplicado (2026-09-24) |
+| C-26 | 003, RF-18c | Los rosters de equipos que no son de la CDL ni invitados se descartan sin anotarlos | Primera carga real, T-086: 33 rosters de 23 equipos de Challengers | Aprobado · aplicado (2026-09-24) |
 
 Además, **el ajuste I-15 del plan de la 002** queda resuelto por RF-61 a RF-64. Es un plan, no una spec, así que basta con anotarlo.
 
 ### 5.4 Pendientes
 
-No queda ningún `[NECESITA ACLARACIÓN]` abierto. Los cambios C-1 a C-21 están aprobados y aplicados. Limitación conocida: RF-75 de la 002 incumplido mientras la web de la CDL esté en reserva (F0-3).
+No queda ningún `[NECESITA ACLARACIÓN]` abierto. Los cambios C-1 a C-26 están aprobados y aplicados. Limitación conocida: RF-75 de la 002 incumplido mientras la web de la CDL esté en reserva (F0-3).
 
 ---
 

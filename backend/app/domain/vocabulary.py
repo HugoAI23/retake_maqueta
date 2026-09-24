@@ -77,7 +77,11 @@ STALE_AFTER_LIVE = timedelta(seconds=60)
 STALE_AFTER_REST = timedelta(hours=1)
 
 # Plazos.
-REVIEW_WINDOW = timedelta(days=7)             # revisión tras completar las estadísticas (RF-20)
+# Revisión de partidos finalizados (RF-19, RF-20; cambio C-25): tras la consulta al finalizar,
+# una al día durante 3 días; ninguna si el partido ya llevaba más de 3 días jugado al registrarse.
+FINISHED_REVIEWS = 3
+FINISHED_REVIEW_INTERVAL = timedelta(hours=24)
+FINISHED_REVIEW_AGE_LIMIT = timedelta(days=3)
 DISAPPEARED_AFTER = timedelta(hours=24)       # partido desaparecido (RF-50)
 LIVE_MISSING_AFTER = timedelta(seconds=60)    # partido en vivo que falta en las fuentes (RF-90)
 RETENTION = timedelta(days=7)                 # registro y resúmenes (RF-149, RF-154)
@@ -85,6 +89,9 @@ RETENTION = timedelta(days=7)                 # registro y resúmenes (RF-149, R
 # Pausa mínima entre dos consultas a la misma fuente (RF-39; plan §1.2 e I-2).
 # La Wiki no se consulta (spec 003, C-18): sus datos llegan por archivos (plan I-26).
 MIN_PAUSE = {"bp": timedelta(seconds=2), "cdl": timedelta(seconds=2)}
+
+# Ciclo de las fichas de los equipos invitados y de sus jugadores (RF-18b; cambio C-24).
+GUEST_CYCLE = timedelta(days=30)
 
 # Acceso del administrador (RF-127, RF-134) y zona horaria del resumen diario (RF-150).
 SESSION_DURATION = timedelta(hours=8)

@@ -10,7 +10,7 @@ from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from app.domain.live_priority import LiveMatch, live_cycles
-from app.domain.review_windows import needs_review
+from app.domain.review_windows import review_due
 from app.domain.vocabulary import (
     LIVE_CYCLE,
     MIN_PAUSE,
@@ -31,10 +31,11 @@ class ScheduledMatch:
 
 @dataclass(frozen=True)
 class FinishedMatch:
-    """Partido finalizado con la fecha en que se completaron sus estadísticas (o None)."""
+    """Partido finalizado con su consulta al finalizar y sus revisiones diarias hechas (RF-19, RF-20)."""
 
     id: object
-    stats_complete_at: datetime | None
+    first_checked_at: datetime | None
+    reviews_done: int = 0
 
 
 @dataclass(frozen=True)
@@ -42,7 +43,8 @@ class PlannedQuery:
     """Consulta o tarea interna planificada por el planificador.
 
     `team_id` y `season` identifican una ficha de equipo del "Resto", que el trabajador encola
-    tras cada listado con éxito (plan §5, RF-18).
+    tras cada listado con éxito (plan §5, RF-18); `guest`, si es la de un equipo invitado, que va
+    una vez al mes y trae su identidad (RF-18b; C-24).
     """
 
     job: str
@@ -51,6 +53,7 @@ class PlannedQuery:
     day: date | None = None
     team_id: str | None = None
     season: tuple[int, str, str] | None = None
+    guest: bool = False
 
     def __post_init__(self) -> None:
         if self.job not in SYNC_JOBS:
@@ -123,10 +126,11 @@ def plan_queries(state: PlannerState, now: datetime) -> list[PlannedQuery]:
     if state.last_regular_at is None or (now - state.last_regular_at) >= REST_CYCLE:
         planned.append(PlannedQuery(job="regular", source="bp", match_id=None))
 
-    # 5. Partidos terminados (RF-19 a RF-21; plan §5 fila 5):
-    # Cada hora cada partido finalizado con estadísticas pendientes o completado hace menos de 7 días.
+    # 5. Partidos terminados (RF-19 a RF-21; plan §5 fila 5; cambio C-25):
+    # Una consulta al finalizar y otra a las 24, 48 y 72 horas. Si una falla, se repite a la hora
+    # (RF-45), no en cada vuelta de 5 s.
     for m in state.finished_matches:
-        if needs_review(status="finished", stats_complete_at=m.stats_complete_at, now=now):
+        if review_due(m.first_checked_at, m.reviews_done, now):
             last_at = state.last_finished_match_at.get(m.id)
             if last_at is None or (now - last_at) >= REST_CYCLE:
                 planned.append(PlannedQuery(job="finished_matches", source="bp", match_id=m.id))

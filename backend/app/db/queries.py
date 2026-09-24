@@ -10,6 +10,7 @@ from app.db.models import (
     Championship,
     Event,
     ExternalRef,
+    Franchise,
     Match,
     MatchMap,
     Placement,
@@ -19,6 +20,23 @@ from app.db.models import (
     Season,
 )
 from app.domain.seasons import current_season_year
+
+
+def guest_only_player_ids(session: Session) -> set[uuid.UUID]:
+    """Jugadores que solo aparecen con equipos invitados (RF-117c de la 002; cambio C-23 de la 003).
+
+    Se ven solo en sus partidos, no en las listas. Un jugador con algún roster o partido con una
+    franquicia de la liga, o con historial de campeonatos, sigue en las listas.
+    """
+    def linked(guest: bool) -> set[uuid.UUID]:
+        rosters = select(RosterMembership.player_id).join(Franchise, Franchise.id == RosterMembership.franchise_id) \
+            .where(Franchise.is_guest.is_(guest))
+        stats = select(PlayerMapStats.player_id).join(Franchise, Franchise.id == PlayerMapStats.franchise_id) \
+            .where(Franchise.is_guest.is_(guest))
+        return set(session.scalars(rosters.union(stats)))
+
+    league = linked(False) | set(session.scalars(select(PlacementRoster.player_id)))
+    return linked(True) - league
 
 
 def visible(model, kind: str):

@@ -22,7 +22,7 @@ TODAY = datetime(2026, 9, 22, 12, 0, tzinfo=UTC)
 
 @pytest.fixture(scope="module")
 def api():
-    url = load_settings(app_env="test").test_database_url
+    url = load_settings(app_env="test", source_mode="fixtures").test_database_url
     engine = make_engine(url)
     with engine.begin() as connection:
         connection.execute(text("DROP SCHEMA public CASCADE"))

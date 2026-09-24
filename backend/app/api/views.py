@@ -32,6 +32,7 @@ from app.db.models.matches import PLAYER_STAT_FIELDS
 from app.db.queries import (
     championship_ids_for_player,
     current_season,
+    guest_only_player_ids,
     is_current_season_player,
     is_free_agent,
     visible,
@@ -81,7 +82,8 @@ def season_view(season: Season) -> out.SeasonOut:
 
 def franchise_views(session: Session) -> list[out.FranchiseOut]:
     views = []
-    for franchise in session.scalars(select(Franchise).where(visible(Franchise, "franchise"))):
+    # Los equipos invitados se ven solo en sus partidos (RF-117c de la 002; C-23).
+    for franchise in session.scalars(select(Franchise).where(visible(Franchise, "franchise"), Franchise.is_guest.is_(False))):
         identities = session.scalars(
             select(Identity).where(Identity.franchise_id == franchise.id).order_by(Identity.valid_from)
         ).all()
@@ -129,6 +131,7 @@ def player_view(session: Session, player: Player, now: datetime) -> out.PlayerOu
         age=out.AgeOut(min=age.min, max=age.max) if age else None,
         role=player.role,
         team_franchise_id=str(team) if team else None,
+        team_is_guest=bool(team) and session.get(Franchise, team).is_guest,
         is_current_season=is_current_season_player(session, player.id),
         is_free_agent=is_free_agent(session, player.id, now),
         championship_ids=[str(cid) for cid in championship_ids_for_player(session, player.id)],
@@ -137,7 +140,10 @@ def player_view(session: Session, player: Player, now: datetime) -> out.PlayerOu
 
 
 def player_views(session: Session, now: datetime) -> list[out.PlayerOut]:
-    players = sorted(session.scalars(select(Player).where(visible(Player, "player"))), key=lambda p: p.current_gamertag.casefold())
+    # Los jugadores que solo jugaron con invitados se ven solo en sus partidos (RF-117c de la 002; C-23).
+    guests_only = guest_only_player_ids(session)
+    players = sorted((p for p in session.scalars(select(Player).where(visible(Player, "player"))) if p.id not in guests_only),
+                     key=lambda p: p.current_gamertag.casefold())
     return [player_view(session, p, now) for p in players]
 
 
@@ -187,6 +193,7 @@ def match_view(session: Session, match: Match, now: datetime, live_success: dict
             franchise_id=str(franchise_id) if franchise_id else None,
             identity=identity_of_franchise_at(session, franchise_id, scheduled_at or now) if franchise_id else None,
             origin=origin,
+            is_guest=bool(franchise_id) and session.get(Franchise, franchise_id).is_guest,
         ))
     maps_query = select(MatchMap).where(MatchMap.match_id == match.id).order_by(MatchMap.position)
     if match.status != "finished":
@@ -230,7 +237,9 @@ def standing_views(session: Session, now: datetime) -> list[out.StandingOut]:
             identity=identity_of_franchise_at(session, row.franchise_id, now),
             position=row.position, points=row.points, changed_at=utc(row.changed_at),
         )
-        for row in session.scalars(select(Standing).where(Standing.season_id == season.id))
+        # Un invitado nunca está en la tabla (RF-117c de la 002; C-23).
+        for row in session.scalars(select(Standing).join(Franchise, Franchise.id == Standing.franchise_id)
+                                   .where(Standing.season_id == season.id, Franchise.is_guest.is_(False)))
     ]
     return sorted(views, key=lambda v: (v.position is None, v.position or 0,
                                         v.identity.short_name.casefold() if v.identity else ""))

@@ -317,9 +317,48 @@ def cambio_de_temporada() -> Scenario:
     ))
 
 
+# Equipos que no están en la lista de la temporada (RF-18a, C-22): una franquicia que la fuente ya
+# lista con otro número (está en la tabla) y un equipo de fuera de la CDL (no lo está).
+UNLISTED_FRANCHISE = {"id": 6, "name": "[FICTICIO] Boston Breach", "name_short": "BOS", "color_hex": "#02FF5B",
+                      "start_date": "2021-12-15"}
+OUTSIDER_TEAM = {"id": 744, "name": "[FICTICIO] Huntsmen", "name_short": "HUNT", "color_hex": "#235330",
+                 "start_date": "2025-11-01"}
+GUEST_PLAYER = 9010
+
+
+def _unlisted_team_page(team: dict, standing: dict | None = None, players: tuple[int, ...] = ()) -> Stub:
+    members = [{"id": pid, "retired": False, "current_team_id": team["id"]} for pid in players]
+    return Stub(f"{bp.BASE_URL}/teams/{team['id']}", _page({"team": {**team, "players": members}, "standings": standing}))
+
+
+def _guest_player_page() -> Stub:
+    """Jugador de un equipo invitado, con los mismos datos que uno de la CDL (RF-117b de la 002)."""
+    return Stub(f"{bp.BASE_URL}/players/{GUEST_PLAYER}", _page({
+        "player": {"id": GUEST_PLAYER, "tag": "[FICTICIO] Invitado", "first_name": "[FICTICIO]", "last_name": "Invitado",
+                   "date_of_birth": "2004-05-06", "retired": False},
+        "teamHistory": [{"team_id": OUTSIDER_TEAM["id"], "role_name": "Player", "start_date": "2025-11-01", "end_date": None}],
+    }))
+
+
+def franquicia_sin_listar() -> Scenario:
+    """Partidos con equipos que no están en la lista de la temporada (RF-18a, RF-18b; C-22, C-24): una
+    franquicia renombrada con otro número, que está en la tabla; un equipo invitado, que no lo está; y
+    un equipo cuya ficha no responde."""
+    renamed = _match(911, "complete", T, (3, 1), 4, teams=(4, 6))
+    outsider = _match(912, "complete", T, (3, 0), 743, teams=(743, 744))
+    missing = _match(914, "complete", T, (3, 2), 26, teams=(26, 745))
+    upcoming = _match(913, "upcoming", "2026-12-06T20:00:00+00:00", (None, None), teams=(6, 26))
+    return Scenario("franquicia_sin_listar", franquicia_sin_listar.__doc__, _robots() + (
+        _listing(), _api_page([renamed, outsider, missing], "completed"), _api_page([upcoming], "upcoming_live"),
+        _unlisted_team_page(UNLISTED_FRANCHISE, {"season_id": 2026, "rank": 5, "points": 50}),
+        _unlisted_team_page(OUTSIDER_TEAM, players=(GUEST_PLAYER,)), _guest_player_page(),
+        _series(renamed), _series(outsider), _series(missing),
+    ))
+
+
 SCENARIOS: dict[str, Callable[[], Scenario]] = {
     fn.__name__: fn for fn in (partido_en_vivo, marcador_que_retrocede, fuente_caida, respuesta_vacia, dato_ilegible,
-                               partido_desaparece, varios_en_vivo, cambio_de_temporada)
+                               partido_desaparece, varios_en_vivo, cambio_de_temporada, franquicia_sin_listar)
 }
 
 

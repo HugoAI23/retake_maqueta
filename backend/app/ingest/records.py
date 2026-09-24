@@ -114,6 +114,7 @@ class EventRecord(_Record):
 class FranchiseRecord(_Record):
     kind: Literal["franchise"]
     predecessor: RefKey | None = None
+    guest: bool | None = None  # equipo invitado (RF-117a; C-23 de la 003); sin valor, la fuente no lo dice
 
 
 class IdentityRecord(_Record):

@@ -54,9 +54,12 @@ class Match(Base):
     - `phase` nula = fase desconocida (RF-134).
     - `status` solo avanza: scheduled → live → finished (RF-62, plan §3.4).
     - `maps_won_*`, `live_*` y `winner_side` se rellenan según el estado (RF-36 a RF-39).
-    - Spec 003: `stats_complete_at` (todas sus estadísticas registradas; abre la ventana
-      de revisión de 7 días, RF-19 a RF-21) y `disappeared_at` (desaparecido de las
+    - Spec 003: `stats_complete_at` (todas sus estadísticas registradas; aviso de
+      "Estadísticas pendientes", RF-47 de la 002) y `disappeared_at` (desaparecido de las
       fuentes, RF-50 a RF-52).
+    - Spec 003 (C-25): `finished_checked_at` (consulta al finalizar, RF-19) y
+      `finished_reviews` (revisiones diarias ya hechas, RF-20). Se guardan en la base para que
+      un reinicio del proceso no vuelva a consultar todos los partidos.
     - Spec 003 (C-13): `week`, número de semana de un partido de fase `week`; el publicado
       por una fuente o, si no hay, el calculado (RF-31 de la 002 revisado).
     """
@@ -90,6 +93,8 @@ class Match(Base):
     stats_complete_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     disappeared_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     week: Mapped[int | None] = mapped_column(SmallInteger)
+    finished_checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    finished_reviews: Mapped[int] = mapped_column(SmallInteger, default=0, server_default="0")
     changed_at: Mapped[datetime | None] = changed_at_column()
 
 

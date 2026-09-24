@@ -125,8 +125,10 @@ def test_corregir_kills_corrige_tambien_el_kd_calculado(session, ingest):
 
 
 def test_un_registro_con_una_referencia_desconocida_se_rechaza_sin_afectar_a_los_demas(session, ingest):
+    # Spec 003, C-26: un roster con un equipo desconocido ya no se rechaza (se descarta, RF-18c);
+    # el ejemplo es una identidad de una franquicia que no existe.
     report = ingest([
-        rec("roster", "r1", season_year=2026, franchise_ref="bp:nope", player_ref="bp:nope"),
+        rec("identity", "i1", franchise_ref="bp:nope", short_name="[FICTICIO] Nadie"),
         rec("player", "p1", gamertag="[FICTICIO] Uno"),
     ])
     assert report.accepted == 1

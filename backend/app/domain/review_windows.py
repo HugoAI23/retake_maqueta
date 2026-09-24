@@ -1,29 +1,36 @@
-"""Revisión de los partidos finalizados (spec 003: RF-19 a RF-21).
+"""Revisión de los partidos finalizados (spec 003: RF-19 a RF-21; cambio C-25).
 
-Un partido finalizado se consulta cada hora mientras tenga "Estadísticas pendientes" y
-durante 7 días desde que las tiene todas; después solo si el administrador lo pide.
+Un partido se consulta una vez al finalizar (o al registrarse ya finalizado) y después a las 24,
+48 y 72 horas; si ya llevaba más de 3 días jugado cuando se registró como finalizado, solo esa
+primera vez. Fuera de esos plazos, solo si el administrador lo pide.
 """
 
 from datetime import datetime
 
-from app.domain.vocabulary import REVIEW_WINDOW
+from app.domain.vocabulary import FINISHED_REVIEW_AGE_LIMIT, FINISHED_REVIEW_INTERVAL, FINISHED_REVIEWS
 
 
-def needs_review(status: str, stats_complete_at: datetime | None, now: datetime) -> bool:
-    """Indica si un partido entra en la revisión horaria de partidos finalizados.
+def review_due(first_checked_at: datetime | None, reviews_done: int, now: datetime) -> bool:
+    """Indica si toca consultar un partido finalizado.
 
     Args:
-        status: Estado del partido en Retake.
-        stats_complete_at: Cuándo tuvo todas sus estadísticas registradas, o `None` si aún
-            le faltan. Un partido sin mapas (forfeit) lo tiene desde que finaliza (T-046).
+        first_checked_at: Cuándo se hizo la consulta al finalizar (RF-19), o `None` si aún no.
+        reviews_done: Revisiones diarias ya hechas (RF-20).
         now: Hora actual (reloj inyectado).
-
-    Returns:
-        `True` durante la ventana `[stats_complete_at, stats_complete_at + 7 días)` o mientras
-        falten estadísticas. Los partidos no finalizados tienen sus propios ciclos: `False`.
     """
-    if status != "finished":
-        return False
-    if stats_complete_at is None:
+    if first_checked_at is None:
         return True
-    return now < stats_complete_at + REVIEW_WINDOW
+    if reviews_done >= FINISHED_REVIEWS:
+        return False
+    return now >= first_checked_at + (reviews_done + 1) * FINISHED_REVIEW_INTERVAL
+
+
+def reviews_after_first_check(started_at: datetime | None, checked_at: datetime) -> int:
+    """Revisiones que se dan por hechas tras la consulta al finalizar (RF-20).
+
+    Todas, si el partido ya llevaba más de 3 días jugado: su plazo de correcciones ya pasó (por
+    ejemplo, en la primera carga de una temporada). Ninguna, si es reciente o no se sabe su inicio.
+    """
+    if started_at is not None and checked_at - started_at > FINISHED_REVIEW_AGE_LIMIT:
+        return FINISHED_REVIEWS
+    return 0

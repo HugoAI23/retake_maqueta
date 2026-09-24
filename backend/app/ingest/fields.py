@@ -47,7 +47,7 @@ def event_fields(record: r.EventRecord, session: Session) -> list[Field]:
 
 
 def franchise_fields(record: r.FranchiseRecord, session: Session) -> list[Field]:
-    return []  # la predecesora es un enlace, no un campo
+    return _plain(record, "guest")  # la predecesora es un enlace, no un campo
 
 
 def identity_fields(record: r.IdentityRecord, session: Session) -> list[Field]:

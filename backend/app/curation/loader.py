@@ -14,7 +14,11 @@ from pydantic import BaseModel, ConfigDict, Field, PositiveInt, StringConstraint
 from app.ingest.records import RefKey
 
 # Archivo de curación del proyecto, versionado en git.
-CURATION_PATH = Path(__file__).resolve().parent.parent.parent / "curation" / "curation.yaml"
+CURATION_DIR = Path(__file__).resolve().parent.parent.parent / "curation"
+# Plan I-35: la curación de los datos reales y la de los datos de prueba van en archivos distintos,
+# porque cada una se valida en modo estricto contra su base (una referencia ajena la haría fallar).
+CURATION_PATH = CURATION_DIR / "curation.yaml"
+FIXTURES_CURATION_PATH = CURATION_DIR / "fixtures.yaml"
 
 
 class CurationError(ValueError):
@@ -106,6 +110,11 @@ def parse_curation(text: str) -> Curation:
             f"{'.'.join(str(part) for part in issue['loc'])}: {issue['msg']}" for issue in error.errors()
         )
         raise CurationError(f"El archivo de curación no es válido: {problems}") from None
+
+
+def curation_path(source_mode: str) -> Path:
+    """Archivo de curación de cada modo de fuente: el de prueba en `fixtures`; el real en `real` y `simulated`."""
+    return FIXTURES_CURATION_PATH if source_mode == "fixtures" else CURATION_PATH
 
 
 def load_curation(path: Path = CURATION_PATH) -> Curation:

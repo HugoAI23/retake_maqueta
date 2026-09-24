@@ -21,15 +21,18 @@ def migrate() -> None:
 
 
 def apply_curation_command() -> None:
-    """Aplica `curation/curation.yaml` a la base de datos de `DATABASE_URL`, entero o nada."""
+    """Aplica la curación del modo de fuente a la base de datos de `DATABASE_URL`, entero o nada (plan I-35)."""
     from sqlalchemy.orm import Session
 
-    from app.curation.loader import CURATION_PATH, CurationError, load_curation
+    from app.config import get_settings
+    from app.curation import loader
+    from app.curation.loader import CurationError
     from app.curation.overlay import apply_curation
     from app.db.engine import get_engine
 
+    path = loader.curation_path(get_settings().source_mode)
     try:
-        curation = load_curation()
+        curation = loader.load_curation(path)
         with Session(get_engine()) as session:
             apply_curation(session, curation)
             session.commit()
@@ -37,7 +40,7 @@ def apply_curation_command() -> None:
         print(f"No se ha aplicado la curación: {error}", file=sys.stderr)
         raise SystemExit(1) from None
     print(
-        f"Curación aplicada desde {CURATION_PATH}: {len(curation.roles)} roles, "
+        f"Curación aplicada desde {path}: {len(curation.roles)} roles, "
         f"{len(curation.player_merges)} uniones, {len(curation.player_splits)} separaciones, "
         f"{len(curation.personal_data_removals)} retiradas, {len(curation.merges)} uniones de partidos, eventos "
         f"o franquicias, {len(curation.confirmed_new)} confirmados como nuevos, {len(curation.countries)} países."
@@ -73,12 +76,15 @@ def import_wiki_csv_command(directory: str | None = None) -> None:
     from sqlalchemy.orm import Session
 
     from app.config import get_settings
+    from app.curation.loader import curation_path, load_curation
     from app.db import engine
     from app.ingest.wiki_import import import_wiki_csv
 
-    folder = Path(directory) if directory else get_settings().wiki_csv_dir
+    settings = get_settings()
+    folder = Path(directory) if directory else settings.wiki_csv_dir
     with Session(engine.get_engine()) as session:
-        result = import_wiki_csv(session, folder)
+        # La curación del modo de fuente (I-35): la Wiki también se importa sobre los datos de prueba.
+        result = import_wiki_csv(session, folder, curation=load_curation(curation_path(settings.source_mode)))
     if result.outcome == "failure":
         print(result.message, file=sys.stderr)
         raise SystemExit(1)

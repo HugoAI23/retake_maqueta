@@ -51,6 +51,7 @@ class UnknownReferenceError(LookupError):
 
     def __init__(self, kind: str, key: RefKey):
         super().__init__(f"Referencia desconocida: {kind} {key}")
+        self.kind, self.key = kind, key
 
 
 def as_key(value: RefKey | str | dict) -> RefKey:

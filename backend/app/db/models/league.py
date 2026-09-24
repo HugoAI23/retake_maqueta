@@ -3,7 +3,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, UniqueConstraint, false
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -42,11 +42,18 @@ class Franchise(Base):
     """Franquicia: sigue siendo la misma aunque cambie de nombre, dueño o ciudad (RF-10, RF-114).
 
     Sus datos visibles viven en sus identidades.
+
+    - `is_guest`: equipo invitado, que no es de la CDL y juega un evento de la CDL (RF-117a; cambio
+      C-23 de la spec 003). Se ve solo en sus partidos (RF-117c).
+    - `guest_checked_at`: última consulta de la ficha del invitado y de sus jugadores, que van una
+      vez al mes (RF-18b de la 003).
     """
 
     __tablename__ = "franchise"
 
     id: Mapped[uuid.UUID] = uuid_pk()
+    is_guest: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false())
+    guest_checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class Identity(Base):

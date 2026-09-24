@@ -138,7 +138,7 @@ def test_peticion_wiki_se_rechaza_inmediatamente_como_prohibida(session, clock):
 def listing_done(session, now):
     """Estado de una fuente que ya hizo su carga inicial y su "Resto" a la hora `now`."""
     for job in ("initial_load", "regular"):
-        session.add(SourceState(source="bp", job=job, last_attempt_at=now, last_success_at=now, last_item_count=2))
+        session.merge(SourceState(source="bp", job=job, last_attempt_at=now, last_success_at=now, last_item_count=2))
     session.commit()
 
 
@@ -176,18 +176,46 @@ def test_en_produccion_no_arranca_con_referencias_ficticias(session):
         verify_production_safety(session, app_env="production", source_mode="real")
 
 
-def test_un_partido_terminado_se_revisa_una_vez_por_hora_y_no_en_cada_ciclo(session, clock):
-    # RF-19: cada hora mientras tenga estadísticas pendientes (plan §5).
-    ingest_finished(session)
+def finished_jobs(recorder):
+    return [(q.job, q.match_id) for q in recorder.queries if q.job == "finished_matches"]
+
+
+def test_un_partido_terminado_se_consulta_al_finalizar_y_despues_una_vez_al_dia_tres_dias(session, clock):
+    # RF-19 y RF-20 (cambio C-25): una consulta al finalizar y otra a las 24, 48 y 72 horas.
+    ingest_finished(session, scheduled_at=T0.isoformat())
     listing_done(session, T0)
     recorder = Recorder()
     worker = make_worker(session, clock, recorder)
     for seconds in (0, 5, 10, 60):
         worker.tick(session=session, now=T0 + timedelta(seconds=seconds))
-    assert [(q.job, q.match_id) for q in recorder.queries] == [("finished_matches", "m1")]  # su id en BreakingPoint
-    for seconds in (1, 6):  # a la hora también toca el "Resto", que va antes en la cola
-        worker.tick(session=session, now=T0 + timedelta(hours=1, seconds=seconds))
-    assert [q.job for q in recorder.queries] == ["finished_matches", "regular", "finished_matches"]
+    assert finished_jobs(recorder) == [("finished_matches", "m1")]  # su id en BreakingPoint
+    for hours in (23, 24, 25, 48, 72, 96, 200):
+        listing_done(session, T0 + timedelta(hours=hours))  # el "Resto" ya hecho: solo cuenta la revisión
+        worker.tick(session=session, now=T0 + timedelta(hours=hours, seconds=1))
+    assert len(finished_jobs(recorder)) == 4
+
+
+def test_lo_consultado_se_recuerda_aunque_se_reinicie_el_proceso(session, clock):
+    # Antes lo recordaba el proceso en memoria: al reiniciar, repasaba todos los partidos (I-39).
+    ingest_finished(session, scheduled_at=T0.isoformat())
+    listing_done(session, T0)
+    make_worker(session, clock, Recorder()).tick(session=session, now=T0)
+    recorder = Recorder()
+    make_worker(session, clock, recorder).tick(session=session, now=T0 + timedelta(minutes=5))
+    assert finished_jobs(recorder) == []
+
+
+def test_un_partido_que_ya_era_antiguo_al_registrarse_solo_se_consulta_una_vez(session, clock):
+    # RF-20 (C-25): como los de la primera carga de una temporada ya jugada.
+    ingest_finished(session, scheduled_at=(T0 - timedelta(days=60)).isoformat())
+    listing_done(session, T0)
+    recorder = Recorder()
+    worker = make_worker(session, clock, recorder)
+    worker.tick(session=session, now=T0)
+    for hours in (24, 48, 72):
+        listing_done(session, T0 + timedelta(hours=hours))
+        worker.tick(session=session, now=T0 + timedelta(hours=hours, seconds=1))
+    assert finished_jobs(recorder) == [("finished_matches", "m1")]
 
 
 def test_lo_en_vivo_se_consulta_antes_que_la_cola_de_partidos_terminados(session, clock):
@@ -256,11 +284,11 @@ def test_la_hora_de_un_partido_programado_es_la_ultima_publicada(session, clock)
     assert [m.scheduled_at for m in state.scheduled_matches] == [datetime(2026, 12, 5, 20, 30, tzinfo=UTC)]
 
 
-def ingest_finished(session):
+def ingest_finished(session, **fields):
     from app.ingest.pipeline import ingest_records
 
     ingest_records(session, [*season_and_event(), rec("match", "m1", event_ref="bp:ev1", best_of=5, status="finished",
-                                                      maps_won=[3, 1])], curation=Curation(), now=T0)
+                                                      maps_won=[3, 1], **fields)], curation=Curation(), now=T0)
     session.commit()
 
 

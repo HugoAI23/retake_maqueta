@@ -1,27 +1,116 @@
-# Curación manual de Retake (spec 002, plan §2.2 y P-4).
+# Curación manual de los datos reales de Retake (spec 002, plan §2.2 y P-4; spec 003, plan I-35).
 # Solo referencias externas y motivos: nunca datos personales.
-# Se aplica con `uv run retake apply-curation` y con `uv run retake load-fixtures`.
+# La aplican la obtención (`retake sync`) e `import-wiki-csv`, y `apply-curation` en los modos
+# `real` y `simulated`. Los datos de prueba tienen la suya en `fixtures.yaml`.
 #
 # Roles de los jugadores reales: pendientes de confirmación de Hugo (tasks.md, dependencia de T-046).
 # Mientras tanto, esos jugadores quedan como "Sin rol" (RF-27).
 
-roles:
-  - {player: "bp:fx-A1", role: SMG, reason: "[FICTICIO] Datos de prueba: rol asignado"}
-  - {player: "bp:fx-A2", role: AR, reason: "[FICTICIO] Datos de prueba: rol asignado"}
+roles: []
 
 player_merges:
-  - {players: ["bp:fx-MergeA", "wiki:Merge_B"], reason: "[FICTICIO] Datos de prueba: misma persona sin enlace en las fuentes"}
+  # Jugadores reales: el mismo en BreakingPoint y en la Wiki (RF-54). Los dudosos no se unen:
+  # wiki:LuCkY y wiki:Super, jugadores antiguos con un gamertag parecido al de uno actual.
+  - {players: ["bp:2", "wiki:aBeZy"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:4", "wiki:Afro"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:8", "wiki:Cellium"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:9", "wiki:CleanX"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:11", "wiki:Dashy"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:12", "wiki:Drazah"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:13", "wiki:Envoy"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:15", "wiki:HyDra"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:17", "wiki:Insight"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:18", "wiki:Kenny"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:19", "wiki:KiSMET"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:20", "wiki:Mack"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:22", "wiki:Nastie"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:23", "wiki:Nero"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:26", "wiki:Pred"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:27", "wiki:Shotzzy"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:28", "wiki:Sib"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:29", "wiki:Simp"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:30", "wiki:TJHaLy"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:31", "wiki:Vivid"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:35", "wiki:SlasheR"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:36", "wiki:Capsidal"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:39", "wiki:Huke"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:40", "wiki:Ghosty"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:41", "wiki:Skyz"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:42", "wiki:Beans"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:43", "wiki:Kremp"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:48", "wiki:Standy"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:54", "wiki:Exceed"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:55", "wiki:JoeDeceives"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:58", "wiki:Scrap"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:81", "wiki:Neptune"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:93", "wiki:Lucky"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:94", "wiki:MettalZ"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:97", "wiki:Abuzah"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:101", "wiki:Gwinn"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:104", "wiki:ReeaL"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:107", "wiki:Estreal"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:114", "wiki:04"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:134", "wiki:RenKoR"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:135", "wiki:SupeR"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:138", "wiki:Exnid"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:163", "wiki:Lunarz"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:167", "wiki:Craze"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:172", "wiki:Mercules"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:178", "wiki:Abe"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:189", "wiki:Mamba"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:190", "wiki:Lurqxx"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:192", "wiki:Nium"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:194", "wiki:Encourage"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:231", "wiki:Traixx"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:235", "wiki:Kips"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:252", "wiki:Atura"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:393", "wiki:Lqgend"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:395", "wiki:Hide"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:399", "wiki:Alluka"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:407", "wiki:KnoX"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:412", "wiki:Okis"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:414", "wiki:Nejra"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:762", "wiki:Wevy"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
 
-player_splits:
-  - {players: ["bp:fx-SplitA", "wiki:Split_B"], reason: "[FICTICIO] Datos de prueba: la fuente los enlaza por error"}
+player_splits: []
 
-personal_data_removals:
-  - {player: "bp:fx-Removed", requested_on: 2026-09-22}
+personal_data_removals: []
 
 # Spec 003 (RF-54 a RF-56): uniones de partidos, eventos y franquicias sin enlace en las fuentes,
 # y registros retenidos que son de verdad objetos nuevos. `retake list-retained` sugiere candidatos.
-merges: []
+merges:
+  # Franquicias actuales de la CDL: BreakingPoint las nombra entero y la Wiki en forma corta.
+  - {kind: franchise, refs: ["bp:1", "wiki:FaZe_VGS"], reason: "Mismo nombre actual; la Wiki usa la forma corta"}
+  - {kind: franchise, refs: ["bp:2", "wiki:LA_Thieves"], reason: "Mismo nombre actual; la Wiki usa la forma corta"}
+  - {kind: franchise, refs: ["bp:3", "wiki:VAN_Surge"], reason: "Mismo nombre actual; la Wiki usa la forma corta"}
+  - {kind: franchise, refs: ["bp:4", "wiki:OpTic_TEX"], reason: "Mismo nombre actual; la Wiki usa la forma corta"}
+  - {kind: franchise, refs: ["bp:11", "wiki:G2_MIN"], reason: "Mismo nombre actual; la Wiki usa la forma corta"}
+  - {kind: franchise, refs: ["bp:12", "wiki:TOR_KOI"], reason: "Mismo nombre actual; la Wiki usa la forma corta"}
+  - {kind: franchise, refs: ["bp:26", "wiki:CAR_Royal_Ravens"], reason: "Mismo nombre actual; la Wiki usa la forma corta"}
+  - {kind: franchise, refs: ["bp:27", "wiki:MIA_Heretics"], reason: "Mismo nombre actual; la Wiki usa la forma corta"}
+  - {kind: franchise, refs: ["bp:62", "wiki:RYD_Falcons"], reason: "Mismo nombre actual; la Wiki usa la forma corta"}
+  - {kind: franchise, refs: ["bp:743", "wiki:PAR_Gentle_Mates"], reason: "Mismo nombre actual; la Wiki usa la forma corta"}
+  # Boston Breach: BreakingPoint la lista como M80 Boston (bp:1176), pero la temporada 2026 sigue con
+  # su número antiguo (bp:6), que entra por su ficha al estar en la tabla (C-22, plan I-36).
+  - {kind: franchise, refs: ["bp:1176", "bp:6", "wiki:BOS_Breach"], reason: "M80 Boston es Boston Breach con otro nombre y otro número en BreakingPoint (confirmado por Hugo, 2026-09-24)"}
 
-confirmed_new:
-  - {kind: player, ref: "wiki:Twin_2", reason: "[FICTICIO] Datos de prueba: mismo gamertag, pero es otra persona"}
-  - {kind: player, ref: "wiki:Split_B", reason: "[FICTICIO] Datos de prueba: separado de bp:fx-SplitA; es otra persona"}
+confirmed_new: []
+
+# Spec 003 (plan I-22, T-093): BreakingPoint publica el país solo como número (hueco H-6).
+# Nombres en inglés, como los de la Wiki. Deducidos cruzando por gamertag con los CSV de la Wiki
+# en la primera carga real (2026-09-24). El 74 queda sin traducir a propósito: su único jugador
+# tiene en la Wiki un país que BreakingPoint numera con otro valor; sin traducir, manda la Wiki.
+countries:
+  23: Australia
+  31: Belgium
+  48: Canada
+  68: Denmark
+  83: France
+  90: Germany
+  148: Mexico
+  183: Puerto Rico
+  197: Saudi Arabia
+  208: Spain
+  233: United Kingdom
+  234: United States
+  250: Scotland  # aparte del Reino Unido (233) en BreakingPoint; cruzado con la Wiki el 2026-09-24

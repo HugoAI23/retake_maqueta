@@ -43,7 +43,7 @@ def loaded(tmp_path_factory):
     from app.db.session import make_engine
     from tests.conftest import BACKEND_DIR
 
-    url = load_settings(app_env="test").test_database_url
+    url = load_settings(app_env="test", source_mode="fixtures").test_database_url
     engine = make_engine(url)
     with engine.begin() as connection:
         connection.execute(text("DROP SCHEMA public CASCADE"))
@@ -52,11 +52,15 @@ def loaded(tmp_path_factory):
     config.attributes.update(database_url=url, configure_logger=False)
     command.upgrade(config, "head")
     session = Session(engine)
-    result = load_fixtures(session, app_env="test")
-    session.commit()
-    yield session, result
-    session.close()
-    engine.dispose()
+    try:
+        result = load_fixtures(session, app_env="test")
+        session.commit()
+        yield session, result
+    finally:
+        # Si la carga falla, cerrar igualmente: una transacción abierta bloquearía la limpieza de
+        # las pruebas siguientes y la batería se quedaría colgada en vez de fallar.
+        session.close()
+        engine.dispose()
 
 
 @pytest.fixture

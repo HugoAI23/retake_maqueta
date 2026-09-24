@@ -32,6 +32,7 @@ from app.ingest.resolvers import (
     IngestContext,
     PERSONAL_FIELDS,
     IngestError,
+    collapse_repeated_identities,
     delete_orphan_rows,
     removal_requested,
     reresolve_all_refs,
@@ -64,11 +65,13 @@ class IngestReport:
     """Resultado de una ingesta.
 
     `changed_datasets` son los conjuntos de datos que cambiaron (spec 003, RF-158): el proceso
-    de obtención avisa con ellos a la API.
+    de obtención avisa con ellos a la API. `discarded` cuenta los rosters de equipos que no son de
+    la CDL ni invitados, que se descartan sin anotarlos (RF-18c de la 003; cambio C-26).
     """
 
     accepted: int = 0
     rejected: list[Rejection] = field(default_factory=list)
+    discarded: int = 0
     changed_datasets: set[str] = field(default_factory=set)
     discrepancies: list = field(default_factory=list)
     retained: list[str] = field(default_factory=list)
@@ -107,6 +110,10 @@ def apply_regroup(ctx: IngestContext, kind: str, skip: set | None = None) -> Non
         # Spec 003: al unir, lo que colgaba de cada parte se recalcula junto (p. ej. la identidad combinada).
         for dependent in MERGE_DEPENDENTS[kind]:
             reresolve_all_refs(ctx, dependent)
+    if kind == "franchise":
+        # Plan I-37: cada parte traía su identidad; tras recalcularlas no deben quedar dos iguales seguidas.
+        for keep, _ in result.merged:
+            collapse_repeated_identities(ctx, keep)
 
 
 def confirmed_keys(curation: Curation) -> set[tuple[str, str, str]]:
@@ -208,7 +215,16 @@ def _ingest_all(ctx: IngestContext, raw_records: Iterable[object], report: Inges
             ingest_one(ctx, record)
             savepoint.commit()
             report.accepted += 1
-        except (UnknownReferenceError, IngestError, CurationConflictError) as error:
+        except UnknownReferenceError as error:
+            savepoint.rollback()
+            ctx.pending_rollover = None
+            if record.kind == "roster" and error.kind == "franchise":
+                # Etapa del jugador en un equipo que no es de la CDL ni invitado (RF-18c; C-26).
+                report.discarded += 1
+            else:
+                report.rejected.append(Rejection(index, str(error)))
+            continue
+        except (IngestError, CurationConflictError) as error:
             savepoint.rollback()
             ctx.pending_rollover = None
             report.rejected.append(Rejection(index, str(error)))

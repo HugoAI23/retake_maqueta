@@ -5,7 +5,7 @@ conector → ingesta → curación → avistamientos → registro → estado de 
 """
 
 import uuid
-from collections.abc import Callable
+from collections.abc import Callable, Collection
 from dataclasses import replace
 from datetime import UTC, datetime
 
@@ -29,21 +29,26 @@ from app.sync.registry import record_incident, record_run
 LISTING_JOBS = ("initial_load", "regular")
 
 
-def consult(query: PlannedQuery, client: PoliteClient, now: datetime) -> ConsultaResult:
+def consult(query: PlannedQuery, client: PoliteClient, now: datetime,
+            known_guests: Collection[str] = ()) -> ConsultaResult:
     """Consulta del conector que corresponde a cada tipo de consulta del plan (§5).
 
     - Carga inicial y "Resto": listado completo; después, las fichas de cada equipo (`team_id`).
     - "Antes del partido" y la lista de "En vivo": solo la lista de próximos y en vivo.
     - Partido en vivo y revisión de un partido terminado: su página.
+
+    `known_guests` son los equipos invitados que ya están en la base: el listado no vuelve a pedir su
+    ficha, que va una vez al mes (RF-18b, plan I-38).
     """
     if query.team_id is not None:
-        return bp.consult_teams(client, [query.team_id], query.season, now, job=query.job)
+        return bp.consult_teams(client, [query.team_id], query.season, now, job=query.job,
+                                guests={query.team_id} if query.guest else ())
     if query.match_id is not None and query.job in ("live", "finished_matches"):
         return bp.consult_match(client, query.match_id, now, job=query.job)
     if query.job in ("pre_match", "live"):
-        return bp.consult_upcoming(client, now, job=query.job)
+        return bp.consult_upcoming(client, now, job=query.job, known_guests=known_guests)
     if query.job in LISTING_JOBS:
-        return bp.consult_regular(client, now, job=query.job)
+        return bp.consult_regular(client, now, job=query.job, known_guests=known_guests)
     raise ValueError(f"Consulta de conector no soportada: {query.job!r}")
 
 

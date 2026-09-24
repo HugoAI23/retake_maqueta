@@ -46,3 +46,28 @@ def test_un_archivo_vacio_o_inexistente_es_una_curacion_vacia(tmp_path):
 def test_un_archivo_mal_formado_da_un_error_claro(content):
     with pytest.raises(CurationError):
         parse_curation(content)
+
+
+def test_cada_modo_usa_su_archivo_de_curacion():
+    # Plan I-35: los datos de prueba tienen su propia curación; la real no las mezcla.
+    from app.curation.loader import CURATION_PATH, FIXTURES_CURATION_PATH, curation_path
+
+    assert curation_path("fixtures") == FIXTURES_CURATION_PATH
+    assert curation_path("real") == CURATION_PATH
+    assert curation_path("simulated") == CURATION_PATH
+    assert FIXTURES_CURATION_PATH != CURATION_PATH
+
+
+def _entries(curation):
+    return [*curation.roles, *curation.player_merges, *curation.player_splits, *curation.merges, *curation.confirmed_new]
+
+
+def test_la_curacion_real_no_lleva_entradas_de_prueba_ni_la_de_prueba_reales():
+    # Cada archivo se valida en modo estricto contra su base: una entrada del otro la haría fallar (I-35).
+    from app.curation.loader import CURATION_PATH, FIXTURES_CURATION_PATH
+
+    real, fixtures = load_curation(CURATION_PATH), load_curation(FIXTURES_CURATION_PATH)
+    assert not any("[FICTICIO]" in entry.reason for entry in _entries(real))
+    assert not any("fx-" in str(entry.player) for entry in real.personal_data_removals)
+    assert _entries(fixtures) and all(entry.reason.startswith("[FICTICIO]") for entry in _entries(fixtures))
+    assert fixtures.countries == {}

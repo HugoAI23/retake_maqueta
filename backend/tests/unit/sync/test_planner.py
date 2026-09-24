@@ -175,61 +175,46 @@ def test_resto_se_consulta_cada_hora():
     assert not any(p.job == "regular" for p in planned_soon)
 
 
-def test_partidos_terminados_con_estadisticas_pendientes_se_consultan_cada_hora():
-    """RF-19: Un partido finalizado con estadísticas pendientes se consulta cada hora."""
-    finished = FinishedMatch("fin_incompleto", stats_complete_at=None)
-    state = PlannerState(
+def finished_state(finished, attempts=None):
+    return PlannerState(
         initial_load_needed=False,
         finished_matches=[finished],
-        last_finished_match_at={"fin_incompleto": T0 - timedelta(hours=1)},
+        last_finished_match_at=attempts or {},
         last_regular_at=T0,
         last_cleanup_at=T0,
         last_summary_date=(T0.astimezone(CDMX) - timedelta(days=1)).date(),
     )
-    clock = FixedClock(T0)
-    planned = plan_queries(state, clock.now())
-
-    fin_queries = [p for p in planned if p.job == "finished_matches"]
-    assert len(fin_queries) == 1
-    assert fin_queries[0] == PlannedQuery(job="finished_matches", source="bp", match_id="fin_incompleto")
 
 
-def test_partidos_terminados_con_estadisticas_completas_se_consultan_durante_7_dias():
-    """RF-20: Un partido finalizado con estadísticas completas se sigue consultando cada hora durante 7 días."""
-    completed_at = T0 - timedelta(days=3)
-    finished = FinishedMatch("fin_completo", stats_complete_at=completed_at)
-    state = PlannerState(
-        initial_load_needed=False,
-        finished_matches=[finished],
-        last_finished_match_at={"fin_completo": T0 - timedelta(hours=1)},
-        last_regular_at=T0,
-        last_cleanup_at=T0,
-        last_summary_date=(T0.astimezone(CDMX) - timedelta(days=1)).date(),
-    )
-    clock = FixedClock(T0)
-    planned = plan_queries(state, clock.now())
-
-    fin_queries = [p for p in planned if p.job == "finished_matches"]
-    assert len(fin_queries) == 1
-    assert fin_queries[0] == PlannedQuery(job="finished_matches", source="bp", match_id="fin_completo")
+def finished_queries(state):
+    return [p for p in plan_queries(state, FixedClock(T0).now()) if p.job == "finished_matches"]
 
 
-def test_partidos_terminados_fuera_de_plazo_de_7_dias_no_se_consultan():
-    """RF-21: Pasados 7 días desde completar estadísticas, no se vuelve a consultar."""
-    completed_at = T0 - timedelta(days=8)
-    finished = FinishedMatch("fin_antiguo", stats_complete_at=completed_at)
-    state = PlannerState(
-        initial_load_needed=False,
-        finished_matches=[finished],
-        last_finished_match_at={"fin_antiguo": T0 - timedelta(hours=2)},
-        last_regular_at=T0,
-        last_cleanup_at=T0,
-        last_summary_date=(T0.astimezone(CDMX) - timedelta(days=1)).date(),
-    )
-    clock = FixedClock(T0)
-    planned = plan_queries(state, clock.now())
+def test_un_partido_recien_finalizado_se_consulta_una_vez():
+    """RF-19 (C-25): al finalizar, o al registrarse ya finalizado, se consulta su página."""
+    assert finished_queries(finished_state(FinishedMatch("nuevo", first_checked_at=None, reviews_done=0))) == [
+        PlannedQuery(job="finished_matches", source="bp", match_id="nuevo")]
 
-    assert not any(p.job == "finished_matches" for p in planned)
+
+def test_despues_se_revisa_una_vez_al_dia_durante_tres_dias():
+    """RF-20 (C-25): a las 24, 48 y 72 horas de la primera consulta."""
+    due = FinishedMatch("m", first_checked_at=T0 - timedelta(hours=48), reviews_done=1)
+    not_yet = FinishedMatch("m", first_checked_at=T0 - timedelta(hours=30), reviews_done=1)
+    assert len(finished_queries(finished_state(due))) == 1
+    assert finished_queries(finished_state(not_yet)) == []
+
+
+def test_tras_las_tres_revisiones_no_se_consulta_mas():
+    """RF-21: fuera de los plazos de RF-19 y RF-20, solo a petición del administrador."""
+    done = FinishedMatch("m", first_checked_at=T0 - timedelta(days=10), reviews_done=3)
+    assert finished_queries(finished_state(done)) == []
+
+
+def test_una_consulta_de_partido_finalizado_que_fallo_se_repite_a_la_hora():
+    """RF-45: una consulta fallida se repite en el siguiente ciclo, no en cada vuelta de 5 s."""
+    pending = FinishedMatch("m", first_checked_at=None, reviews_done=0)
+    assert finished_queries(finished_state(pending, {"m": T0 - timedelta(minutes=30)})) == []
+    assert len(finished_queries(finished_state(pending, {"m": T0 - timedelta(hours=1)}))) == 1
 
 
 def test_resumen_diario_se_planifica_a_las_00_00_de_ciudad_de_mexico():
@@ -289,7 +274,7 @@ def test_recuperacion_tras_parada_ejecuta_consultas_vencidas_en_el_primer_ciclo(
     stoppage_time = T0 - timedelta(hours=4)
     live = LiveMatch("m_live", T0)
     scheduled = ScheduledMatch("m_sched", T0 + timedelta(minutes=15))
-    finished = FinishedMatch("m_fin", stats_complete_at=None)
+    finished = FinishedMatch("m_fin", first_checked_at=None, reviews_done=0)
 
     state = PlannerState(
         initial_load_needed=False,

@@ -18,6 +18,7 @@ import itertools
 import time
 import uuid
 from collections.abc import Callable
+from functools import partial
 from datetime import date, datetime
 from typing import Any
 
@@ -32,18 +33,22 @@ from app.db.models import (
     DailySummary,
     Event,
     ExternalRef,
+    Franchise,
     Identity,
     Incident,
     Match,
     MatchSchedule,
+    MatchSlot,
     Player,
+    Season,
     SourceState,
     SyncJob,
     SyncRequest,
     SyncRun,
 )
 from app.domain.live_priority import LiveMatch
-from app.domain.vocabulary import SOURCES
+from app.domain.review_windows import reviews_after_first_check
+from app.domain.vocabulary import FINISHED_REVIEWS, GUEST_CYCLE, SOURCES
 from app.sources.contract import ConsultaResult
 from app.sources.http import real_client
 from app.sync.lock import acquire_sync_lock, release_sync_lock
@@ -133,7 +138,9 @@ class SyncWorker:
             clock = ScenarioClock(SCENARIO_START)  # los escenarios viven en su propia fecha (I-32)
         self.clock = clock or SystemClock()
         self.loop_interval = loop_interval
-        self.consult_fn = consult_fn or consult
+        # Invitados que ya están en la base: el listado no vuelve a pedir su ficha (RF-18b, plan I-38).
+        self.known_guests: set[str] = set()
+        self.consult_fn = consult_fn or partial(consult, known_guests=self.known_guests)
         self.logo_fetcher = logo_fetcher
 
         if client_factory is not None:
@@ -194,6 +201,50 @@ class SyncWorker:
         queue.remove(item)
         return item[2], item[3]
 
+    # --- Partidos finalizados (RF-19 a RF-21; cambio C-25) ---------------------------------------
+
+    def _record_finished_check(self, session: Session, bp_match_id, now: datetime) -> None:
+        match_id = session.scalar(select(ExternalRef.entity_id).where(
+            ExternalRef.kind == "match", ExternalRef.source == "bp", ExternalRef.source_id == str(bp_match_id)))
+        match = session.get(Match, match_id) if match_id else None
+        if match is None:
+            return
+        if match.finished_checked_at is None:
+            match.finished_checked_at = now
+            match.finished_reviews = reviews_after_first_check(self._latest_schedule(session, match.id), now)
+        else:
+            match.finished_reviews += 1
+
+    # --- Equipos invitados (RF-18b; cambio C-24) -------------------------------------------------
+
+    @staticmethod
+    def _bp_franchise(session: Session, team_id: str):
+        return session.scalar(select(ExternalRef.entity_id).where(
+            ExternalRef.kind == "franchise", ExternalRef.source == "bp", ExternalRef.source_id == str(team_id)))
+
+    def refresh_known_guests(self, session: Session) -> None:
+        """Invitados que ya están en la base, que el listado no vuelve a pedir (RF-18b)."""
+        self.known_guests.clear()
+        self.known_guests.update(session.scalars(
+            select(ExternalRef.source_id).join(Franchise, Franchise.id == ExternalRef.entity_id)
+            .where(ExternalRef.kind == "franchise", ExternalRef.source == "bp", Franchise.is_guest.is_(True))))
+
+    @staticmethod
+    def _due_guests(session: Session, season_year: int, now: datetime) -> list[str]:
+        """Invitados de la temporada cuya ficha nunca se consultó o lleva un mes sin consultarse."""
+        rows = session.scalars(
+            select(ExternalRef.source_id).distinct()
+            .join(Franchise, Franchise.id == ExternalRef.entity_id)
+            .join(MatchSlot, MatchSlot.franchise_id == Franchise.id)
+            .join(Match, Match.id == MatchSlot.match_id)
+            .join(Event, Event.id == Match.event_id)
+            .join(Season, Season.id == Event.season_id)
+            .where(ExternalRef.kind == "franchise", ExternalRef.source == "bp", Franchise.is_guest.is_(True),
+                   Season.year == season_year,
+                   (Franchise.guest_checked_at.is_(None)) | (Franchise.guest_checked_at <= now - GUEST_CYCLE))
+            .order_by(ExternalRef.source_id))
+        return list(rows)
+
     # --- Estado para el planificador ------------------------------------------------------------
 
     @staticmethod
@@ -227,14 +278,17 @@ class SyncWorker:
         # Solo los partidos que publica BreakingPoint: se consultan por su página (plan §5).
         live_rows = session.scalars(select(Match).where(Match.status == "live")).all()
         sched_rows = session.scalars(select(Match).where(Match.status == "scheduled")).all()
-        fin_rows = session.scalars(select(Match).where(Match.status == "finished")).all()
+        # Solo los que aún tienen consultas por hacer (RF-19, RF-20; C-25): el resto no se vuelve a pedir.
+        fin_rows = session.scalars(select(Match).where(Match.status == "finished",
+                                                      Match.finished_reviews < FINISHED_REVIEWS)).all()
         bp_ids = self._bp_ids(session, [m.id for m in (*live_rows, *fin_rows)])
 
         live_matches = [LiveMatch(bp_ids[m.id], self._latest_schedule(session, m.id) or m.went_live_at or now)
                         for m in live_rows if m.id in bp_ids]
         scheduled = [(m, self._latest_schedule(session, m.id)) for m in sched_rows]
         scheduled_matches = [ScheduledMatch(str(m.id), at) for m, at in scheduled if at is not None]
-        finished_matches = [FinishedMatch(bp_ids[m.id], m.stats_complete_at) for m in fin_rows if m.id in bp_ids]
+        finished_matches = [FinishedMatch(bp_ids[m.id], m.finished_checked_at, m.finished_reviews)
+                            for m in fin_rows if m.id in bp_ids]
 
         last_db_summary = session.scalar(select(func.max(DailySummary.day)))
         summary_dates = [d for d in (self.last_evaluated_summary_date, last_db_summary) if d is not None]
@@ -323,11 +377,25 @@ class SyncWorker:
         print(f"[retake sync] {source} {query.job}"
               f"{' ' + str(query.match_id or query.team_id) if (query.match_id or query.team_id) else ''}: {outcome}")
 
-        # Tras un listado con éxito, las fichas de cada equipo del "Resto" (RF-18).
+        # Tras un listado con éxito, las fichas de cada equipo del "Resto" (RF-18) y, detrás, las de los
+        # invitados que aparecen por primera vez o llevan un mes sin consultarse (RF-18b).
         if (result is not None and not follow_up and query.job in LISTING_JOBS
-                and outcome in ("success", "partial") and result.teams and result.season):
+                and outcome in ("success", "partial") and result.season):
             for team_id in result.teams:
                 self.enqueue(PlannedQuery(job=query.job, source=source, team_id=team_id, season=result.season))
+            for team_id in self._due_guests(s, result.season[0], now):
+                self.enqueue(PlannedQuery(job=query.job, source=source, team_id=team_id, season=result.season, guest=True))
+
+        # La consulta de un partido finalizado se anota en la base si salió bien (RF-19, RF-20; C-25):
+        # así un reinicio del proceso no vuelve a pedirlos todos. Si falla, se repite a la hora.
+        if query.job == "finished_matches" and query.match_id is not None and outcome in ("success", "partial"):
+            self._record_finished_check(s, query.match_id, now)
+
+        # La ficha de un invitado se da por consultada si salió bien: si falla, va con el siguiente listado.
+        if follow_up and query.guest and outcome in ("success", "partial"):
+            franchise = s.get(Franchise, self._bp_franchise(s, query.team_id))
+            if franchise is not None:
+                franchise.guest_checked_at = now
 
         # Si venía de una petición administrativa, finalizarla (RF-104 a RF-106, RF-136)
         if req_id is not None:
@@ -346,6 +414,7 @@ class SyncWorker:
 
         def _do_tick(s: Session):
             verify_production_safety(s, self.app_env, self.source_mode)
+            self.refresh_known_guests(s)
 
             # 1. Planificar consultas periódicas y tareas internas
             state = self.build_planner_state(s, instant)

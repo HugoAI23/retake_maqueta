@@ -30,7 +30,8 @@ def clock() -> FixedClock:
 
 @pytest.fixture(scope="session")
 def test_database_url() -> str:
-    settings = load_settings(app_env="test")
+    # Las pruebas fijan su modo de fuente: el de `.env` es el del desarrollo y puede ser `real` (RF-10).
+    settings = load_settings(app_env="test", source_mode="fixtures")
     if not settings.test_database_url:
         pytest.fail("Falta TEST_DATABASE_URL en backend/.env: las pruebas de integración la necesitan.")
     test_db = make_url(settings.test_database_url).database

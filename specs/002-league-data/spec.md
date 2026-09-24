@@ -2,7 +2,7 @@
 
 - **ID**: `002-league-data`
 - **Fecha**: `2026-09-22` (creada el 2026-09-21; revisada tras la revisión QA, revisión QA cerrada)
-- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-22; revisiones R-1 y R-2 del 2026-09-22 durante el plan y aclaraciones R-3 a R-5 durante la implementación; cambios C-4 a C-10, C-12 y C-13 de la spec 003 aplicados el 2026-09-23; ver §5.1)
+- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-22; revisiones R-1 y R-2 del 2026-09-22 durante el plan y aclaraciones R-3 a R-5 durante la implementación; cambios C-4 a C-10, C-12 y C-13 de la spec 003 aplicados el 2026-09-23, y C-23 y C-25 el 2026-09-24; ver §5.1)
 
 ---
 
@@ -28,6 +28,7 @@ Alcance temporal: detalle completo de la **temporada actual** y, de temporadas a
 | **Suplente** | Jugador que disputa un partido con un equipo a cuyo roster no pertenece. |
 | **Agente libre** | Jugador de la temporada actual que no pertenece a ningún equipo. |
 | **Franquicia** | Equipo de la liga, que sigue siendo el mismo aunque cambie de nombre. |
+| **Equipo invitado** | Equipo que no es franquicia de la CDL y juega un partido de un evento de la CDL de la temporada actual (por ejemplo, en un Minor). *(Cambio C-23 de la spec 003.)* |
 | **Identidad** | Conjunto de nombre corto, abreviatura, logo, color primario y color secundario que una franquicia usa desde una fecha. |
 | **Campeonato mundial** | El campeonato que cierra cada año competitivo (ver RF-54). |
 | **Fuente** | Cualquiera de las fuentes de datos de RF-66, con la prioridad de RF-67 (o de RF-75 en la tabla de posiciones). |
@@ -86,6 +87,11 @@ Alcance temporal: detalle completo de la **temporada actual** y, de temporadas a
 * **RF-115 (No deseado)**: SI la fuente publica como franquicia nueva a la que ocupa una plaza ya existente, ENTONCES EL SISTEMA la tratará como franquicia nueva.
 * **RF-116 (No deseado)**: SI una franquicia deja la liga y no figura en el historial de campeonatos, ENTONCES EL SISTEMA dejará de mantenerla.
 * **RF-117 (Ubicuo)**: EL SISTEMA tratará a los equipos del historial que nunca fueron franquicia de la CDL como franquicias con sus propias identidades.
+* **RF-117a (Ubicuo)**: EL SISTEMA tratará a cada equipo invitado como una franquicia con sus propias identidades y su roster de la temporada, marcada como invitada y sin plaza en la liga (RF-114 y RF-115 no le aplican).
+* **RF-117b (Ubicuo)**: EL SISTEMA mantendrá de los jugadores de los equipos invitados los mismos datos y con las mismas reglas que de los de la CDL, incluidas la edad aproximada y la retirada de datos personales.
+* **RF-117c (Ubicuo)**: EL SISTEMA mostrará los equipos invitados, sus rosters, sus jugadores y sus estadísticas solo en los partidos y eventos en que jugaron, marcados como invitados; nunca en la tabla de posiciones, en las listas de franquicias o de jugadores de la temporada, ni en resúmenes, rankings o medias de la temporada.
+* **RF-117d (No deseado)**: SI un equipo invitado pasa a ser franquicia de la CDL, ENTONCES EL SISTEMA dejará de marcarlo como invitado y conservará sus identidades.
+  * *Nota (2026-09-24, cambio C-23 de la spec 003):* RF-117a a RF-117d. Un jugador que pasa de un equipo invitado a una franquicia es el mismo jugador (RF-131); solo cuentan para la temporada sus estadísticas con la franquicia.
 * **RF-14** y **RF-15**: trasladados a §2.9 (reglas comunes de presentación).
 
 ### 2.4 Jugadores
@@ -187,7 +193,7 @@ Alcance temporal: detalle completo de la **temporada actual** y, de temporadas a
 
 * **RF-96 (Dirigido por evento)**: CUANDO la fuente cambie un dato ya registrado de un partido `finalizado` o del historial de campeonatos, EL SISTEMA registrará el valor nuevo.
   * *Nota (2026-09-23, cambio C-8 de la spec 003):* las correcciones solo llegan dentro de los plazos de revisión de la 003:
-    - partidos `finalizado`: hasta 7 días después de tener todas sus estadísticas (RF-19 a RF-21 de la 003);
+    - partidos `finalizado`: hasta 3 días después de finalizar (RF-19 a RF-21 de la 003; cambio C-25);
     - historial: con las relecturas de cada Champs (RF-30 a RF-33 de la 003);
     - en ambos casos, también cuando lo pida el administrador (RF-100 y RF-102 de la 003).
 
@@ -302,6 +308,7 @@ Estas reglas obligan a todas las specs visuales (004 en adelante). Cada spec vis
    - Venta o mudanza → misma franquicia si ocupa la misma plaza, salvo que la fuente la publique como nueva (RF-114, RF-115).
    - Salida de la liga → solo se conserva si figura en el historial (RF-80, RF-116).
    - Equipos anteriores a 2020 que nunca fueron franquicia → se tratan como franquicias con identidades propias (RF-117).
+   - Equipo de fuera de la CDL en un evento de la CDL → equipo invitado: se ve solo en sus partidos, marcado como tal, con su roster y sus estadísticas del partido, que no cuentan para la temporada (RF-117a a RF-117d; cambio C-23 de la 003).
    - Cambio de identidad el mismo día de un partido → manda la hora exacta de inicio (RF-12, RF-74).
 12. **Historial y tabla**:
    - Campeonato incompleto → se registra con lo que haya; lo que falte es `No disponible`; sin fecha de final, la identidad cuyo nombre coincide con el publicado en ese campeonato y, si ninguno coincide, la vigente al terminar ese año (RF-119 a RF-121, RF-124).
@@ -466,6 +473,7 @@ Cambios derivados de la spec 003, aprobados por Hugo uno a uno antes de aprobar 
 | C-10 | Unos datos personales retirados no vuelven a registrarse desde las fuentes | RF-78 |
 | C-12 | Si ninguna fuente publica el K/D, se calcula como kills ÷ deaths (surgió en la fase F0 de la 003; aprobado y aplicado el 2026-09-23) | RF-45, RF-79 |
 | C-13 | Si la fuente no publica la semana de un clasificatorio, se calcula por el orden de la semana con partidos (surgió en la fase F0 de la 003; aprobado y aplicado el 2026-09-23) | RF-31, RF-45 |
+| C-23 | Equipos invitados: equipos de fuera de la CDL que juegan un evento de la CDL, con su roster y sus jugadores, visibles solo en sus partidos (surgió en la primera carga real de la 003; aprobado y aplicado el 2026-09-24) | RF-117a a RF-117d |
 
 Los cambios C-1 a C-3 y C-11 afectan a la spec 001 (su §5.4).
 

@@ -230,9 +230,17 @@ def resolve_event(ctx: IngestContext, ref: ExternalRef) -> None:
 
 
 def resolve_franchise(ctx: IngestContext, ref: ExternalRef) -> None:
-    """Franquicia (RF-10, RF-114, RF-117): su agrupación ya la decidieron los enlaces."""
-    if ctx.session.get(Franchise, ref.entity_id) is None:
-        _new_row(ctx, Franchise, id=ref.entity_id)
+    """Franquicia (RF-10, RF-114, RF-117): su agrupación ya la decidieron los enlaces.
+
+    Equipo invitado (RF-117a, RF-117d; cambio C-23 de la 003): lo es si alguna de sus referencias
+    lo publica como invitado y ninguna como franquicia de la liga. Así, en cuanto la fuente lo
+    lista entre los equipos de la liga, deja de serlo; la Wiki no lo publica y no cuenta.
+    """
+    franchise = ctx.session.get(Franchise, ref.entity_id)
+    if franchise is None:
+        franchise = _new_row(ctx, Franchise, id=ref.entity_id)
+    published = {_own_index(ctx, peer).value("guest") for peer in refs_of_entity(ctx.session, "franchise", franchise.id)}
+    franchise.is_guest = True in published and False not in published
 
 
 def _identity_data(identity: Identity) -> IdentityData:
@@ -847,6 +855,40 @@ def _reresolve_rows(ctx: IngestContext, kind: str, model, condition) -> None:
 
 def reresolve_placements(ctx: IngestContext, condition) -> None:
     _reresolve_rows(ctx, "placement", Placement, condition)
+
+
+def _same_identity(first: Identity, second: Identity) -> bool:
+    """Mismos datos y, si las dos tienen copia del logo, la misma imagen (RF-67)."""
+    logos = {first.logo_image_id, second.logo_image_id} - {None}
+    return len(logos) <= 1 and not identity_changed(_identity_data(first), _identity_data(second))
+
+
+def collapse_repeated_identities(ctx: IngestContext, franchise_id: uuid.UUID) -> None:
+    """Junta las identidades seguidas que tienen los mismos datos (RF-73 de la 002; plan I-37).
+
+    Al unir dos franquicias ya cargadas, cada una traía su identidad: tras recalcularlas quedaban
+    dos seguidas iguales, una sin referencias y con las clasificaciones antiguas. Sobrevive la más
+    antigua, con las referencias y las clasificaciones de la otra. Un cambio de verdad (otros datos
+    u otra imagen de logo, RF-67) sigue siendo historial.
+    """
+    session = ctx.session
+    rows = sorted(session.scalars(select(Identity).where(Identity.franchise_id == franchise_id)),
+                  key=lambda row: row.valid_from)
+    kept, removed = None, False
+    for row in rows:
+        if kept is None or not _same_identity(kept, row):
+            kept = row
+            continue
+        session.execute(update(ExternalRef).where(ExternalRef.kind == "identity", ExternalRef.entity_id == row.id)
+                        .values(entity_id=kept.id))
+        session.execute(update(Placement).where(Placement.identity_id == row.id).values(identity_id=kept.id))
+        kept.logo_image_id = kept.logo_image_id or row.logo_image_id
+        session.delete(row)
+        touch(session, kept)
+        removed = True
+    if removed:
+        session.flush()
+        reresolve_placements(ctx, Placement.franchise_id == franchise_id)
 
 
 def reresolve_stats(ctx: IngestContext, condition) -> None:

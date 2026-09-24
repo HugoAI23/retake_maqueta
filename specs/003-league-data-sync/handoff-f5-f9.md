@@ -129,7 +129,7 @@ Módulos nuevos en `backend/app/sync/`: `planner.py` (función pura), `runner.py
 - Recorrido en modo real con `retake sync`.
 - `verification-guide.md` con una fila por RF.
 - Sincronizar spec, plan y código.
-- **Pendiente de añadir al checklist:** `backend/curation/curation.yaml` mezcla entradas de los datos de prueba (`bp:fx-…`, `wiki:Twin_2`, `wiki:Split_B`) con las reales. En una base de producción, `retake apply-curation` fallaría por referencias desconocidas. Hay que proponer a Hugo cómo separarlas.
+- **Pendiente de añadir al checklist:** `backend/curation/curation.yaml` mezcla entradas de los datos de prueba (`bp:fx-…`, `wiki:Twin_2`, `wiki:Split_B`) con las reales. En una base de producción, `retake apply-curation` fallaría por referencias desconocidas. Hay que proponer a Hugo cómo separarlas. **Resuelto con I-35** (2026-09-24): dos archivos, `curation.yaml` (real) y `fixtures.yaml` (prueba).
 
 ### Dependen del calendario (no se pueden cerrar antes)
 - **T-094:** repetir la exploración del en vivo y de la próxima temporada cuando BreakingPoint publique el calendario de 2027.

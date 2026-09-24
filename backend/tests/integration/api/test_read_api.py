@@ -109,7 +109,8 @@ def test_partidos_con_casos_limite(api, ids):
     assert (origin["slots"][0]["franchiseId"], origin["slots"][0]["identity"]) == (None, None)
 
     none = match("bp:fx-tbd-none")
-    assert all(s == {"franchiseId": None, "identity": None, "origin": None} for s in none["slots"])
+    # Spec 003, C-23: cada lado dice además si es un equipo invitado.
+    assert all(s == {"franchiseId": None, "identity": None, "origin": None, "isGuest": False} for s in none["slots"])
 
     live = match("bp:fx-live")
     assert (live["status"], live["mapsWon"], live["liveMap"]) == ("live", [0, 0], {"mode": None, "score": None})

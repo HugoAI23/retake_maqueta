@@ -90,3 +90,23 @@ def test_source_mode_recuerda_volver_a_importar_la_wiki(monkeypatch, capsys):
     monkeypatch.setattr(cli, "set_source_mode", lambda session, mode, app_env: None)
     cli.main(["source-mode", "real"])
     assert "import-wiki-csv" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("mode", ["fixtures", "real"])
+def test_apply_curation_usa_el_archivo_de_su_modo(monkeypatch, capsys, mode):
+    # Plan I-35: en modo fixtures, la curación de los datos de prueba; si no, la real.
+    from types import SimpleNamespace
+
+    from app.curation import loader
+
+    paths = []
+
+    def fake_load(path=loader.CURATION_PATH):
+        paths.append(path)
+        raise loader.CurationError("parar aquí")
+
+    monkeypatch.setattr(loader, "load_curation", fake_load)
+    monkeypatch.setattr("app.config.get_settings", lambda: SimpleNamespace(source_mode=mode))
+    with pytest.raises(SystemExit):
+        cli.main(["apply-curation"])
+    assert paths == [loader.curation_path(mode)]

@@ -57,6 +57,7 @@ class PlayerOut(ApiModel):
     age: AgeOut | None
     role: Literal["SMG", "AR"] | None
     team_franchise_id: str | None
+    team_is_guest: bool = False  # su equipo actual es un invitado (RF-117a de la 002; C-23)
     is_current_season: bool
     is_free_agent: bool
     championship_ids: list[str]
@@ -79,6 +80,7 @@ class SlotOut(ApiModel):
     franchise_id: str | None
     identity: IdentityOut | None
     origin: OriginOut | None
+    is_guest: bool = False  # equipo invitado (RF-117a y RF-117c de la 002; C-23)
 
 
 class LiveMapOut(ApiModel):

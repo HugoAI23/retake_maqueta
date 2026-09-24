@@ -14,7 +14,7 @@ Lo que no entienden no lo inventan: lo marcan como ilegible (plan D-8).
 
 import json
 import re
-from collections.abc import Iterable, Sequence
+from collections.abc import Collection, Iterable, Sequence
 from datetime import date, datetime
 
 from app.sources.contract import ConsultaResult, Rejection, UnreadableResponse
@@ -156,8 +156,20 @@ def parse_listing(page_props: dict, observed_at: datetime, include_previous: boo
             records.append(_record("event", event["id"], observed_at,
                                    season_year=event["season_id"], name=str(event["name"]).strip()))
     for team in page_props.get("allTeams") or []:
-        records.append(_record("franchise", team["id"], observed_at))
-        records.append(_record(
+        records.extend(_franchise_records(team, observed_at))
+    return records
+
+
+def _franchise_records(team: dict, observed_at: datetime, valid_from: str | None = None,
+                       guest: bool = False) -> list[dict]:
+    """Franquicia y su identidad tal como las publica BreakingPoint.
+
+    `guest` dice si es un equipo invitado (RF-117a de la 002; C-23): los de la lista de la
+    temporada no lo son, y así un invitado que entra en la liga deja de serlo (RF-117d).
+    """
+    return [
+        _record("franchise", team["id"], observed_at, guest=guest),
+        _record(
             "identity", f"{team['id']}#identity", observed_at,
             franchise_ref=_ref(team["id"]),
             short_name=team.get("name"),
@@ -165,8 +177,44 @@ def parse_listing(page_props: dict, observed_at: datetime, include_previous: boo
             # La web de Retake es solo de tema oscuro (RF-5 de la 001): el logo para fondo oscuro.
             logo_url=team.get("logo_darkmode") or team.get("logo_main"),
             primary_color=team.get("color_hex"),
-        ))
-    return records
+            valid_from=valid_from,
+        ),
+    ]
+
+
+# --- C-22 y C-24 · equipos que no están en la lista de la temporada (RF-18a, RF-18b) ------------
+
+
+def unlisted_team_ids(listing_records: Sequence[dict], match_records: Sequence[dict]) -> list[str]:
+    """Equipos de los partidos que no están en la lista de la temporada, en orden de aparición."""
+    listed = {r["source_id"] for r in listing_records if r["kind"] == "franchise"}
+    found: list[str] = []
+    for record in match_records:
+        for slot in record.get("slots") or []:
+            ref = slot.get("franchise_ref")
+            team_id = ref.split(":", 1)[1] if ref else None
+            if team_id is not None and team_id not in listed and team_id not in found:
+                found.append(team_id)
+    return found
+
+
+def parse_unlisted_team(page_props: dict, years: Iterable[int], observed_at: datetime) -> list[dict]:
+    """Ficha de un equipo que no está en `allTeams`.
+
+    - Si está en la tabla de una de esas temporadas, es una franquicia: franquicia, identidad y
+      posición (RF-18a; C-22).
+    - Si no, es un equipo invitado: franquicia marcada como invitada e identidad, sin posición
+      (RF-18b de la 003, RF-117a de la 002; C-24).
+
+    Su identidad empieza en la fecha de alta que publica la ficha: así queda anterior a la de su
+    nombre siguiente cuando la curación las une (Boston Breach y M80 Boston; plan I-36).
+    """
+    team, standing = page_props.get("team") or {}, page_props.get("standings") or {}
+    if not team.get("id"):
+        return []
+    in_table = standing.get("season_id") in set(years)
+    records = _franchise_records(team, observed_at, valid_from=_day_start(team.get("start_date")), guest=not in_table)
+    return records + parse_team_page(page_props, observed_at) if in_table else records
 
 
 # --- T-027 · partidos de la API interna -------------------------------------------------------
@@ -475,23 +523,54 @@ def _listing_and_matches(client: PoliteClient, observed_at: datetime, statuses: 
     return props, records, raw, current_year
 
 
-def consult_regular(client: PoliteClient, observed_at: datetime, job: str = "regular") -> ConsultaResult:
+def _unlisted_teams(client: PoliteClient, records: list[dict], match_records: list[dict], observed_at: datetime,
+                    known_guests: Collection[str]) -> tuple[list[dict], list[Rejection]]:
+    """Registros de los equipos de los partidos que no están en la lista: franquicias o invitados.
+
+    Van antes que los partidos, para que la ingesta ya los conozca. Los invitados ya conocidos no se
+    vuelven a pedir: su ficha va una vez al mes, aparte (RF-18b). Una ficha que no responde se anota
+    y la consulta sigue: sus partidos se rechazarán como antes (RF-142).
+
+    Raises:
+        Forbidden: si las normas de la fuente prohíben la ficha (la consulta entera se detiene).
+    """
+    years = {r["year"] for r in records if r["kind"] == "season"}
+    extra: list[dict] = []
+    rejected: list[Rejection] = []
+    for team_id in unlisted_team_ids(records, match_records):
+        if team_id in known_guests:
+            continue
+        try:
+            extra.extend(parse_unlisted_team(fetch_page_props(client, f"/teams/{team_id}"), years, observed_at))
+        except (SourceUnavailable, UnreadableResponse) as error:
+            rejected.append(Rejection(ref=_ref(team_id), field="team", reason=str(error)))
+    return extra, rejected
+
+
+def consult_regular(client: PoliteClient, observed_at: datetime, job: str = "regular",
+                    known_guests: Collection[str] = ()) -> ConsultaResult:
     """Listado de temporadas, eventos y equipos, y todos los partidos de los eventos de la CDL.
 
     Devuelve también los equipos y las fechas de la temporada actual, para que el "Resto" siga
-    con sus fichas de equipo y de jugador (plan §5, RF-18).
+    con sus fichas de equipo y de jugador (plan §5, RF-18). Entre los equipos van también las
+    franquicias que la fuente ya no lista pero siguen en la tabla (RF-18a); los invitados no, porque
+    sus fichas van una vez al mes (RF-18b).
     """
     try:
         props, records, raw, current_year = _listing_and_matches(client, observed_at, ("completed", "upcoming_live"))
         match_records, seen = parse_matches(raw, observed_at)
+        extra, rejected = _unlisted_teams(client, records, match_records, observed_at, known_guests)
     except (Forbidden, SourceUnavailable, UnreadableResponse) as error:
         return _failure(job, error)
-    teams = tuple(r["source_id"] for r in records if r["kind"] == "franchise")
+    records += extra
+    teams = tuple(r["source_id"] for r in records if r["kind"] == "franchise" and not r["guest"])
     return ConsultaResult(source=SOURCE, job=job, outcome="success", records=records + match_records, seen=seen,
-                          item_count=len(raw), teams=teams, season=_current_season(props, current_year))
+                          rejected=rejected, item_count=len(raw), teams=teams,
+                          season=_current_season(props, current_year)).with_rejections_outcome()
 
 
-def consult_upcoming(client: PoliteClient, observed_at: datetime, job: str) -> ConsultaResult:
+def consult_upcoming(client: PoliteClient, observed_at: datetime, job: str,
+                     known_guests: Collection[str] = ()) -> ConsultaResult:
     """Solo la lista de partidos próximos y en vivo (plan §5: "Antes del partido" y "En vivo").
 
     Es más ligera que el listado completo: no pide los partidos terminados. Su número de elementos
@@ -500,10 +579,11 @@ def consult_upcoming(client: PoliteClient, observed_at: datetime, job: str) -> C
     try:
         _, records, raw, _ = _listing_and_matches(client, observed_at, ("upcoming_live",))
         match_records, seen = parse_matches(raw, observed_at)
+        extra, rejected = _unlisted_teams(client, records, match_records, observed_at, known_guests)
     except (Forbidden, SourceUnavailable, UnreadableResponse) as error:
         return _failure(job, error)
-    return ConsultaResult(source=SOURCE, job=job, outcome="success", records=records + match_records, seen=seen,
-                          item_count=len(raw))
+    return ConsultaResult(source=SOURCE, job=job, outcome="success", records=records + extra + match_records,
+                          seen=seen, rejected=rejected, item_count=len(raw)).with_rejections_outcome()
 
 
 def consult_match(client: PoliteClient, match_id: object, observed_at: datetime, job: str) -> ConsultaResult:
@@ -516,13 +596,20 @@ def consult_match(client: PoliteClient, match_id: object, observed_at: datetime,
 
 
 def consult_teams(client: PoliteClient, team_ids: Sequence[object], season: tuple[int, str, str],
-                  observed_at: datetime, job: str = "regular") -> ConsultaResult:
-    """Fichas de equipo (tabla) y de sus jugadores en activo (datos personales y rosters)."""
+                  observed_at: datetime, job: str = "regular", guests: Collection[str] = ()) -> ConsultaResult:
+    """Fichas de equipo (tabla) y de sus jugadores en activo (datos personales y rosters).
+
+    La ficha de un equipo invitado trae también su identidad, que no sale del listado (RF-18b; C-24).
+    """
     records: list[dict] = []
     rejected: list[Rejection] = []
     try:
         for team_id in team_ids:
             team_props = fetch_page_props(client, f"/teams/{team_id}")
+            if str(team_id) in guests and (team_props.get("team") or {}).get("id"):
+                team = team_props["team"]
+                records.extend(_franchise_records(team, observed_at, valid_from=_day_start(team.get("start_date")),
+                                                  guest=True))
             records.extend(parse_team_page(team_props, observed_at))
             for player_id in team_player_ids(team_props):
                 try:

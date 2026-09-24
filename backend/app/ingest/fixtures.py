@@ -15,7 +15,7 @@ from pathlib import Path
 
 from sqlalchemy.orm import Session
 
-from app.curation.loader import ConfirmedNewEntry, Curation, load_curation
+from app.curation.loader import FIXTURES_CURATION_PATH, ConfirmedNewEntry, Curation, load_curation
 from app.curation.overlay import apply_curation
 from app.ingest.pipeline import IngestReport, ingest_records
 from app.ingest.retention import RETAINABLE
@@ -101,7 +101,7 @@ def load_fixtures(
     files = read_fixture_files(directory)
     if app_env == "production" and any(f.fictional for f in files):
         raise FixtureError("No se cargan datos ficticios en producción (APP_ENV=production).")
-    curation = confirm_real_sample(curation if curation is not None else load_curation(), files)
+    curation = confirm_real_sample(curation if curation is not None else load_curation(FIXTURES_CURATION_PATH), files)
     report = ingest_records(session, [record for f in files for record in f.records], curation=curation)
     apply_curation(session, curation)
     return FixtureLoadResult(files=files, report=report)

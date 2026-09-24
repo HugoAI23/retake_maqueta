@@ -291,7 +291,7 @@ Abreviaturas de las órdenes, desde la raíz del repositorio:
 | Datos personales | `tests/integration/ingest/test_003_personal_removal.py`, `registry.py` | La retirada es permanente; el registro guarda solo la huella de un valor rechazado. La IP de un origen bloqueado se guarda 7 días en su incidencia. |
 | Credenciales | `git check-ignore -v backend/.env backend/data/wiki/players_birthday.csv` | Ambos ignorados; `.env.example` sin valores. |
 | Datos de prueba en producción | `tests/integration/sync/test_worker.py -k produccion` | El proceso se niega a arrancar. |
-| **Pendiente** | `backend/curation/curation.yaml` | Mezcla entradas de los datos de prueba (`bp:fx-…`, `wiki:Twin_2`, `wiki:Split_B`) con las reales: en una base de producción, `retake apply-curation` fallaría por referencias desconocidas. Hay que separarlas antes de desplegar (decisión de Hugo). |
+| **Resuelto (I-35)** | `backend/curation/curation.yaml` y `fixtures.yaml` | La curación real y la de los datos de prueba van en archivos distintos; cada modo de fuente usa la suya y las dos se validan en modo estricto. |
 
 ## Pendiente que depende del calendario o de Hugo
 

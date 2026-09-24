@@ -6,14 +6,20 @@ deshace la transacción. Aplicarla dos veces da el mismo resultado.
 
 from datetime import UTC, datetime
 
-from sqlalchemy import delete, update
+from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 
 from app.curation.loader import Curation, CurationError
-from app.db.models import Observation, Player
+from app.db.models import Franchise, Observation, Player
 from app.domain.entity_links import CurationConflictError
 from app.ingest.pipeline import apply_regroup, confirmed_keys
-from app.ingest.resolvers import PERSONAL_FIELDS, IngestContext, delete_orphan_rows, reresolve_entity
+from app.ingest.resolvers import (
+    PERSONAL_FIELDS,
+    IngestContext,
+    collapse_repeated_identities,
+    delete_orphan_rows,
+    reresolve_entity,
+)
 from app.ingest.retention import update_retention
 from app.ingest.store import find_ref, refs_of_entity
 
@@ -68,6 +74,10 @@ def apply_curation(session: Session, curation: Curation, now: datetime | None = 
             Observation.ref_id.in_(ref_ids), Observation.field.in_(PERSONAL_FIELDS)))
         session.flush()
         reresolve_entity(ctx, "player", player.id)
+
+    # Plan I-37: identidades repetidas que dejaron uniones anteriores (también en bases ya cargadas).
+    for franchise_id in session.scalars(select(Franchise.id)).all():
+        collapse_repeated_identities(ctx, franchise_id)
 
     delete_orphan_rows(session)
     # Spec 003 (RF-56): unir o confirmar como nuevo libera los registros retenidos.
