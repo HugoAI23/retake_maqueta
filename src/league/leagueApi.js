@@ -122,7 +122,8 @@ export class LeagueApiError extends Error {
 async function request(path, { allowNotFound = false } = {}) {
   let response
   try {
-    response = await fetch(`${BASE_URL}${path}`, { headers: { Accept: 'application/json' } })
+    // Sin caché del navegador: Safari devolvía datos viejos al actualizar un bloque en vivo (plan I-44).
+    response = await fetch(`${BASE_URL}${path}`, { headers: { Accept: 'application/json' }, cache: 'no-store' })
   } catch (error) {
     throw new LeagueApiError(`No se pudo contactar con la API (${path}): ${error.message}`, 0)
   }

@@ -196,3 +196,14 @@ def test_ninguna_ruta_devuelve_la_proxima_temporada(api, clean_db):
         "/api/championships", "/api/freshness"))
     assert "2027" not in everything
     assert api.get("/api/season/current").json()["year"] == 2026
+
+
+# --- Plan I-44: los datos nunca salen de la caché del navegador ----------------------------------
+
+
+def test_las_respuestas_de_la_api_no_se_guardan_en_la_cache(api, clean_db):
+    # Safari devolvía una copia guardada de /api/matches y el bloque en vivo no cambiaba (RF-79, RF-82).
+    ingest(clean_db, world(maps_won=[3, 0], winner_side=1))
+    for path in ("/api/matches", "/api/freshness", "/api/season/current", "/api/players", "/api/admin/me", "/api/health"):
+        assert api.get(path).headers["cache-control"] == "no-store", path
+

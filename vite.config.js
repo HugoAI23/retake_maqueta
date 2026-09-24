@@ -8,7 +8,9 @@ import { defineConfig } from 'vite'
 // Proxy de /api al backend. `changeOrigin: false` conserva el `Host` del navegador: la página de
 // administración solo acepta peticiones del mismo origen (spec 003, plan D-11), y con la forma
 // abreviada ('/api': 'http://…') Vite reescribe el `Host` y el backend las rechaza con 403.
-const apiProxy = { '/api': { target: 'http://localhost:8000', changeOrigin: false } }
+// `RETAKE_API_TARGET` permite apuntar a otro backend (por ejemplo, uno simulado en otra base de datos
+// para la guía de verificación de la 003); sin ella, el de siempre.
+const apiProxy = { '/api': { target: process.env.RETAKE_API_TARGET ?? 'http://localhost:8000', changeOrigin: false } }
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],

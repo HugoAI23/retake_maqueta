@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { BlockError } from '../blocks/BlockError.jsx'
 import { usePageTitle } from '../shared/usePageTitle.js'
 import { AdminAuthError, logout, me } from './adminApi.js'
 import { LogPanel } from './LogPanel.jsx'
@@ -12,7 +13,9 @@ import { SummariesPanel } from './SummariesPanel.jsx'
  *
  * Dentro del marco común, sin entrada en el menú. Sin sesión, pide usuario y contraseña; si la
  * sesión caduca mientras se usa, vuelve a pedirlos (RF-137). Cada panel es un bloque de la 001
- * con sus reglas de carga, error y conexión (RF-115).
+ * con sus reglas de carga, error y conexión (RF-115). Si no se puede comprobar la sesión (servidor
+ * caído), la página muestra el error de bloque con "Reintentar", no la pantalla de acceso: pedir
+ * la contraseña haría creer que está mal.
  */
 export function AdminPage() {
   const { t } = useTranslation()
@@ -20,14 +23,21 @@ export function AdminPage() {
   const [auth, setAuth] = useState({ status: 'checking', username: null })
   const [logSource, setLogSource] = useState('')
 
+  const [attempt, setAttempt] = useState(0)
+
   useEffect(() => {
     let active = true
     me().then((user) => active && setAuth({ status: 'ready', username: user?.username }))
-      .catch(() => active && setAuth({ status: 'login', username: null }))
+      .catch((error) => active && setAuth({ status: error instanceof AdminAuthError ? 'login' : 'error', username: null }))
     return () => {
       active = false
     }
-  }, [])
+  }, [attempt])
+
+  const recheck = () => {
+    setAuth({ status: 'checking', username: null })
+    setAttempt((value) => value + 1)
+  }
 
   const onAuthLost = useCallback((error) => {
     if (error instanceof AdminAuthError || error?.status === 401) setAuth({ status: 'login', username: null })
@@ -53,6 +63,7 @@ export function AdminPage() {
   }
 
   if (auth.status === 'checking') return null
+  if (auth.status === 'error') return <BlockError blockName={t('admin.title')} onRetry={recheck} />
   if (auth.status === 'login') return <LoginForm onSignedIn={(username) => setAuth({ status: 'ready', username })} />
 
   return (

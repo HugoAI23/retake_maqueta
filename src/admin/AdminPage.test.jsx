@@ -69,6 +69,27 @@ describe('página de administración (T-077 a T-079)', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('15 minutos')
   })
 
+  it('si no se puede comprobar la sesión, error de bloque con "Reintentar" y no la pantalla de acceso (RF-115)', async () => {
+    // Con el servidor caído no se sabe si hay sesión: pedir la contraseña haría creer que está mal.
+    api.me.mockRejectedValueOnce(new api.AdminApiError('No se pudo contactar con la API (/me)', 0))
+    signedIn()
+    renderApp('/admin')
+    const retry = await screen.findByRole('button', { name: /Reintentar/ })
+    expect(screen.queryByRole('heading', { name: 'Acceso de administración' })).toBeNull()
+    await userEvent.click(retry)
+    expect(await screen.findByRole('heading', { name: 'Estado de las fuentes' })).toBeInTheDocument()
+  })
+
+  it('un fallo del servidor al entrar no se confunde con una contraseña incorrecta', async () => {
+    api.me.mockRejectedValue(new api.AdminAuthError('x', 401))
+    api.login.mockRejectedValue(new api.AdminApiError('La API respondió 502 en /login', 502))
+    renderApp('/admin')
+    await userEvent.type(await screen.findByLabelText('Usuario'), 'hugo')
+    await userEvent.type(screen.getByLabelText('Contraseña'), 'x')
+    await userEvent.click(screen.getByRole('button', { name: 'Entrar' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('No se ha podido conectar con el servidor')
+  })
+
   it('tras entrar muestra los paneles y "Cerrar sesión" vuelve al acceso', async () => {
     api.me.mockRejectedValueOnce(new api.AdminAuthError('x', 401))
     api.login.mockResolvedValue({ username: 'hugo' })

@@ -76,6 +76,7 @@ export default {
       wrong: 'Incorrect username or password.',
       blocked: 'Too many failed attempts from this device or network. Try again in 15 minutes.',
       error: 'Could not sign in. Please try again.',
+      unreachable: 'Could not reach the server. Please try again in a moment.',
     },
     sources: {
       heading: 'Source status',

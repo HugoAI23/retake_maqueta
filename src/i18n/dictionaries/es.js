@@ -77,6 +77,7 @@ export default {
       wrong: 'Usuario o contraseña incorrectos.',
       blocked: 'Demasiados intentos fallidos desde este dispositivo o red. Vuelve a intentarlo dentro de 15 minutos.',
       error: 'No se ha podido entrar. Inténtalo de nuevo.',
+      unreachable: 'No se ha podido conectar con el servidor. Inténtalo de nuevo en un momento.',
     },
     sources: {
       heading: 'Estado de las fuentes',

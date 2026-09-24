@@ -290,7 +290,7 @@ Abreviaturas de las órdenes, desde la raíz del repositorio:
 
 ## Checklist de seguridad (constitución §6, plan §9, T-084)
 
-| Vector | Comprobación | Resultado (2026-09-23) |
+| Vector | Comprobación | Resultado (2026-09-23; revisado con Hugo el 2026-09-24, T-087) |
 |---|---|---|
 | Inyección SQL | `grep -rnE "text\(|exec_driver_sql" backend/app` | Solo consultas fijas; `pg_notify` con parámetros y nombres de una lista cerrada; `LISTEN` con un nombre fijo. |
 | XSS | `grep -rnE "dangerouslySetInnerHTML|innerHTML" src` | Ninguno. Los mensajes de las fuentes se ven literales (RF-119). |
@@ -304,16 +304,22 @@ Abreviaturas de las órdenes, desde la raíz del repositorio:
 | Datos personales | `tests/integration/ingest/test_003_personal_removal.py`, `registry.py` | La retirada es permanente; el registro guarda solo la huella de un valor rechazado. La IP de un origen bloqueado se guarda 7 días en su incidencia. |
 | Credenciales | `git check-ignore -v backend/.env backend/data/wiki/players_birthday.csv` | Ambos ignorados; `.env.example` sin valores. |
 | Datos de prueba en producción | `tests/integration/sync/test_worker.py -k produccion` | El proceso se niega a arrancar. |
+| Peticiones falsificadas en desarrollo (I-41) | `curl` a `/api/admin/login` por el proxy de Vite con y sin `X-Retake-Admin`, y con otro `Origin` | El proxy conserva el `Host`: la propia web pasa y las demás siguen rechazadas con 403. |
+| Caché del navegador (I-44) | pt `tests/integration/api/test_003_api.py -k cache` | Toda respuesta de `/api/` lleva `Cache-Control: no-store`, salvo los logos (inmutables) y el canal (`no-cache`). |
+| Base de datos real (T-087) | Consulta de `admin_user` y `admin_session` | Contraseña Argon2id (`m=65536,t=3,p=4`); sesiones solo como huella de 64 caracteres. |
+| Datos personales de invitados (C-23) | pt `tests/unit/sources/test_bp_unlisted.py -k ficha_mensual` | Sus jugadores tienen los mismos datos y reglas que los de la CDL (decisión de Hugo); pueden incluir menores de edad; la retirada de datos personales (RF-78 de la 002) les aplica igual. |
+| **Abierto** · conexiones con la base | Contar las conexiones del backend con PostgreSQL | Tras las pruebas del navegador, el backend de desarrollo llegó a 95 conexiones y agotó `max_connections`. No se ha podido reproducir (`curl`, proxy y navegador liberan las conexiones del canal al cerrarse). Vigilar; si se repite, limitar el número de canales o compartir una sola escucha `LISTEN` por proceso. |
 | **Resuelto (I-35)** | `backend/curation/curation.yaml` y `fixtures.yaml` | La curación real y la de los datos de prueba van en archivos distintos; cada modo de fuente usa la suya y las dos se validan en modo estricto. |
 
 ## Pendiente que depende del calendario o de Hugo
 
 | Tarea | Qué falta |
 |---|---|
-| T-086 | Recorrido en modo `real` con `retake sync` durante al menos un ciclo de cada tipo que la temporada permita (resto y próxima temporada), revisando el registro y `/admin`. |
-| T-087 | Que Hugo confirme cada fila de esta guía. |
+| T-086 | **Hecha el 2026-09-24** (primera carga real y cambios C-22 a C-27). |
+| T-087 | **Hecha el 2026-09-24.** Hugo recorrió la guía: pruebas automáticas (737 + 422 + 138), filas manuales en `/admin` y la terminal, bloqueo por intentos, demostración en vivo con la fuente simulada y checklist de seguridad. Quedan abiertas y anotadas: RF-79 en Safari (con T-089) y la vigilancia de las conexiones con la base. |
 | T-089 | Medir con un partido real en vivo el ciclo de 60 s, la ventana previa de 1 h y el margen de 30 s en pantalla (criterio 3 de la spec). |
 | T-094 | Repetir la exploración del en vivo y de la próxima temporada cuando BreakingPoint publique el calendario de 2027. |
 | T-090 | Cierre de la spec, cuando todo lo anterior esté hecho. |
 | Curación | Unir jugadores Wiki ↔ BreakingPoint y rellenar `countries` tras una carga real (`retake list-retained`). |
-| RF-75 de la 002 | Incumplido mientras la web de la CDL esté en reserva (F0-3): decidir si se acepta así. |
+| RF-75 de la 002 | **Aceptado por Hugo el 2026-09-24** como limitación conocida: mientras la web de la CDL esté en reserva y sin conector (F0-3), la tabla sale de BreakingPoint, la fuente que RF-75 prevé "en su defecto". |
+| RF-79 en Safari | Verificado el 2026-09-24 con la fuente simulada: en Chromium el bloque en vivo se actualiza solo (RF-79, RF-83, RF-84); en Safari, en desarrollo, no cambia sin recargar, ni siquiera tras quitar la caché del navegador (I-44). Sospechas: Safari pausa las ventanas tapadas y el servidor de desarrollo usa HTTP/1.1 (6 conexiones por servidor, una fija por pestaña para el canal). Volver a comprobarlo en Safari con el primer partido real (T-089) o en un despliegue con HTTP/2. |

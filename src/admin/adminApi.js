@@ -29,7 +29,8 @@ async function request(path, { method = 'GET', body } = {}) {
   let response
   try {
     response = await fetch(`${BASE_URL}${path}`, {
-      method, headers, credentials: 'same-origin', body: body === undefined ? undefined : JSON.stringify(body),
+      method, headers, credentials: 'same-origin', cache: 'no-store', // sin caché del navegador (plan I-44)
+      body: body === undefined ? undefined : JSON.stringify(body),
     })
   } catch (error) {
     throw new AdminApiError(`No se pudo contactar con la API (${path}): ${error.message}`, 0)

@@ -2,6 +2,15 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AdminAuthError, AdminBlockedError, login } from './adminApi.js'
 
+/** Motivo del aviso: credenciales, bloqueo, servidor que no responde u otro fallo. */
+function failureKind(failure) {
+  if (failure instanceof AdminBlockedError) return 'blocked'
+  if (failure instanceof AdminAuthError) return 'wrong'
+  // Sin respuesta (0) o error del servidor o del proxy (5xx): no es un problema de la contraseña.
+  if (failure?.status === 0 || failure?.status >= 500) return 'unreachable'
+  return 'error'
+}
+
 const field = 'min-h-11 rounded-md border border-border bg-bg px-3 text-text focus-visible:border-accent'
 
 /**
@@ -26,7 +35,7 @@ export function LoginForm({ onSignedIn }) {
       setPassword('')
       onSignedIn(result?.username ?? username)
     } catch (failure) {
-      setError(failure instanceof AdminBlockedError ? 'blocked' : failure instanceof AdminAuthError ? 'wrong' : 'error')
+      setError(failureKind(failure))
     } finally {
       setSending(false)
     }

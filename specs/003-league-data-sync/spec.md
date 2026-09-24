@@ -537,7 +537,7 @@ Además, **el ajuste I-15 del plan de la 002** queda resuelto por RF-61 a RF-64.
 
 ### 5.4 Pendientes
 
-No queda ningún `[NECESITA ACLARACIÓN]` abierto. Los cambios C-1 a C-27 están aprobados y aplicados. Limitación conocida: RF-75 de la 002 incumplido mientras la web de la CDL esté en reserva (F0-3).
+No queda ningún `[NECESITA ACLARACIÓN]` abierto. Los cambios C-1 a C-27 están aprobados y aplicados. Limitación conocida, aceptada por Hugo el 2026-09-24: RF-75 de la 002 incumplido mientras la web de la CDL esté en reserva (F0-3); la tabla sale de BreakingPoint.
 
 ---
 

@@ -15,6 +15,13 @@ describe('leagueApi (T-061)', () => {
     expect(fetchMock).toHaveBeenCalledWith('/api/championships', expect.objectContaining({ headers: { Accept: 'application/json' } }))
   })
 
+  it('nunca usa la caché del navegador: los datos en vivo deben ser los de ahora (plan I-44)', async () => {
+    const fetchMock = respond(200, [])
+    vi.stubGlobal('fetch', fetchMock)
+    await getChampionships()
+    expect(fetchMock).toHaveBeenCalledWith('/api/championships', expect.objectContaining({ cache: 'no-store' }))
+  })
+
   it('falla con un error si el servidor responde con error', async () => {
     vi.stubGlobal('fetch', respond(500, { detail: 'x' }))
     const error = await getPlayers().catch((e) => e)
