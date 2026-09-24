@@ -25,6 +25,13 @@ export default defineConfig({
     },
   ],
   webServer: [
+    // Spec 003: la API, para el canal de eventos a través del proxy de Vite (T-061, T-082). Las
+    // demás pruebas simulan sus respuestas en el navegador y no dependen de ninguna base de datos.
+    {
+      command: 'uv run --directory backend uvicorn app.main:app --port 8000',
+      url: 'http://localhost:8000/api/health',
+      reuseExistingServer: true,
+    },
     {
       command: 'npm run dev -- --port 5173 --strictPort',
       url: 'http://localhost:5173',

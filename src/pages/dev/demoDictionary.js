@@ -23,6 +23,13 @@ export const demoDictionary = {
     sampleHeading: 'Partido de ejemplo',
     sampleMode: 'Modo',
     sampleMap: 'Mapa',
+    live: {
+      heading: 'Bloque en vivo (spec 003)',
+      intro:
+        'Partidos en vivo de la API, actualizados solos. Con `uv run retake source-mode simulated` y `uv run retake sync` se ven cambiar (RF-79 a RF-96, RF-155 a RF-159).',
+      blockName: 'Partidos en vivo',
+      empty: 'No hay ningún partido en vivo.',
+    },
   },
   en: {
     title: 'Block demo',
@@ -40,5 +47,12 @@ export const demoDictionary = {
     sampleHeading: 'Sample match',
     sampleMode: 'Mode',
     sampleMap: 'Map',
+    live: {
+      heading: 'Live block (spec 003)',
+      intro:
+        'Live matches from the API, updating on their own. Run `uv run retake source-mode simulated` and `uv run retake sync` to see them change (RF-79 to RF-96, RF-155 to RF-159).',
+      blockName: 'Live matches',
+      empty: 'There are no live matches.',
+    },
   },
 }

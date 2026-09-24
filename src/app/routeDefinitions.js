@@ -3,7 +3,7 @@ import { sectionsRegistry } from '../config/sectionsRegistry.js'
 /**
  * @typedef {object} RouteDefinition
  * @property {string} path
- * @property {'home' | 'content' | 'comingSoon' | 'demo' | 'notFound'} kind Qué página se pinta.
+ * @property {'home' | 'content' | 'comingSoon' | 'admin' | 'demo' | 'notFound'} kind Qué página se pinta.
  * @property {string} [sectionId] Sección del menú a la que pertenece (para la entrada activa).
  */
 
@@ -22,7 +22,8 @@ export function buildRouteDefinitions({ devRoutes = [] } = {}) {
     kind: section.id === 'home' ? 'home' : section.hasContent ? 'content' : 'comingSoon',
   }))
 
-  return [...sectionRoutes, ...devRoutes, { path: '*', kind: 'notFound' }]
+  // `/admin` (spec 003, RF-97 a RF-99): dentro del marco, sin sección ni entrada en el menú.
+  return [...sectionRoutes, { path: '/admin', kind: 'admin' }, ...devRoutes, { path: '*', kind: 'notFound' }]
 }
 
 /**

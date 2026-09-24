@@ -110,3 +110,89 @@ def test_ningun_escenario_simula_la_wiki():
     from app.sources.simulated import hosts
 
     assert not any("fandom" in host for host in hosts())
+
+
+# --- Revisión de F5: consultas que el proceso de obtención necesita del conector (plan §5) -------
+
+
+class Recording:
+    """Envuelve el transporte simulado y anota cada petición."""
+
+    def __init__(self, transport):
+        self.transport, self.calls = transport, []
+
+    def __call__(self, url, params=None, headers=None, timeout=None):
+        self.calls.append((url, SimulatedParams.of(params)))
+        return self.transport(url, params=params, headers=headers, timeout=timeout)
+
+
+class SimulatedParams:
+    @staticmethod
+    def of(params):
+        import json
+
+        params = dict(params or {})
+        if "input" in params:
+            params.update(json.loads(params["input"]).get("json") or {})
+        return params
+
+
+def recording_client(name):
+    clock = SteppingClock(START)
+    transport = Recording(simulated_transport(name, clock, app_env="development"))
+    return PoliteClient("bp", transport, clock=clock, sleep=clock.sleep, base_url=bp.BASE_URL), transport, clock
+
+
+def test_el_listado_indica_los_equipos_y_las_fechas_de_la_temporada_actual():
+    # RF-18: el "Resto" sigue con las fichas de equipo y de jugador, que necesitan ambos datos.
+    from app.sources.simulated import SEASON_2026, TEAMS
+
+    client, _, clock = recording_client("partido_en_vivo")
+    result = bp.consult_regular(client, clock.now())
+    assert result.teams == tuple(str(t["id"]) for t in TEAMS)
+    assert result.season == (2026, SEASON_2026["start_date"], SEASON_2026["end_date"])
+
+
+def test_la_lista_de_proximos_y_en_vivo_no_pide_los_partidos_terminados():
+    # Plan §5: "Antes del partido" y la lista de "En vivo" consultan solo la lista.
+    client, transport, clock = recording_client("partido_en_vivo")
+    result = bp.consult_upcoming(client, clock.now(), job="pre_match")
+    statuses = {params.get("status") for url, params in transport.calls if "fetchMatchesPage" in url}
+    assert statuses == {"upcoming_live"}
+    assert result.outcome == "success"
+    assert [r["source_id"] for r in result.records if r["kind"] == "match"] == ["900"]
+    assert result.item_count == 1
+
+
+def test_cada_escenario_responde_las_fichas_de_equipo_y_de_jugador():
+    # Sin ellas, el "Resto" fallaría siempre en modo simulado (RF-18).
+    from app.sources.simulated import SEASON_2026
+
+    for name in SCENARIOS:
+        client, _, clock = recording_client(name)
+        result = bp.consult_teams(client, ["4", "743"], (2026, SEASON_2026["start_date"], SEASON_2026["end_date"]),
+                                  clock.now())
+        kinds = [r["kind"] for r in result.records]
+        assert result.outcome == "success", name
+        assert kinds.count("standing") == 2 and "player" in kinds and "roster" in kinds, name
+
+
+@pytest.mark.parametrize("name", sorted(SCENARIOS))
+def test_cada_partido_en_vivo_o_terminado_tiene_su_pagina(name):
+    # El trabajador consulta la página de cada partido en vivo o terminado (RF-16, RF-19): sin
+    # ella, el recorrido manual en modo simulado registraría siempre un 404 (T-057).
+    import json
+
+    clock = SteppingClock(START)
+    transport = simulated_transport(name, clock, app_env="development")
+    missing = []
+    for stub in transport.scenario.stubs:
+        if "fetchMatchesPage" not in stub.url or stub.status != 200:
+            continue
+        clock.advance(START.timestamp() + stub.start - clock.instant.timestamp())
+        for match in json.loads(stub.body)["result"]["data"]["json"]["data"]:
+            if match["status"] in ("live", "complete"):
+                response = transport(f"{bp.BASE_URL}/match/{match['id']}")
+                if response.status_code != 200 or '"status": "' + match["status"] + '"' not in response.text:
+                    missing.append((match["id"], match["status"], stub.start))
+    assert missing == []

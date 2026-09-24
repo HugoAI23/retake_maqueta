@@ -33,7 +33,9 @@ def test_franquicias_con_identidades_ordenadas(api, ids):
     assert [i["shortName"] for i in faze["identities"]] == ["ATL FaZe", "FaZe VGS"]
     assert faze["identities"][1]["validFrom"] == "2025-09-19T00:00:00Z"
     assert faze["identities"][1]["logoUrl"] is None
-    assert set(faze["identities"][0]) == {"id", "shortName", "abbreviation", "logoUrl", "primaryColor", "secondaryColor", "validFrom"}
+    # Spec 003 (T-058, I-28): cada fila añade `changedAt` (RF-157).
+    assert set(faze["identities"][0]) == {"id", "shortName", "abbreviation", "logoUrl", "primaryColor", "secondaryColor",
+                                          "validFrom", "changedAt"}
 
 
 # --- T-052 · Jugadores -----------------------------------------------------------------------

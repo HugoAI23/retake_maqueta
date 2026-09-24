@@ -8,6 +8,7 @@ from fastapi import Depends, FastAPI
 from fastapi.responses import JSONResponse
 from sqlalchemy import Engine, text
 
+from app.api.admin import router as admin_router
 from app.api.deps import engine_or_none
 from app.api.routes import router
 from app.config import get_settings
@@ -42,6 +43,7 @@ def create_app(app_env: str | None = None) -> FastAPI:
     )
     application.add_api_route("/api/health", health, methods=["GET"])
     application.include_router(router)
+    application.include_router(admin_router)  # spec 003, F7
     return application
 
 

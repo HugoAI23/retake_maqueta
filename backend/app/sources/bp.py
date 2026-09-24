@@ -442,29 +442,63 @@ def _events_by_season(records: list[dict]) -> dict[int, list[int]]:
     return by_season
 
 
-def _season_matches(client: PoliteClient, year: int, event_ids: list[int]) -> list[dict]:
-    return [m for status in ("completed", "upcoming_live") for m in fetch_matches(client, year, event_ids, status)] \
-        if event_ids else []
+def _current_season(page_props: dict, year: int | None) -> tuple[int, str, str] | None:
+    """Año, inicio y fin de la temporada actual según `allSeasons` (para las fichas de jugador)."""
+    for season in page_props.get("allSeasons") or []:
+        if season.get("year") == year and season.get("start_date") and season.get("end_date"):
+            return year, season["start_date"], season["end_date"]
+    return None
+
+
+def _listing_and_matches(client: PoliteClient, observed_at: datetime, statuses: tuple[str, ...]):
+    """Listado de `/matches` y partidos de los eventos de la CDL con los estados indicados.
+
+    Si la temporada en curso por fechas aún no ha jugado ningún partido, se incluye también la
+    anterior, que sigue siendo la actual (RF-2 de la 002).
+    """
+    props = fetch_page_props(client, "/matches")
+    records = parse_listing(props, observed_at)
+    by_season = _events_by_season(records)
+
+    def season_matches(year: int, ids: list[int]) -> list[dict]:
+        return [m for status in statuses for m in fetch_matches(client, year, ids, status)] if ids else []
+
+    raw = [m for year, ids in sorted(by_season.items()) for m in season_matches(year, ids)]
+    current_year = min(by_season, default=None)
+    played = any(status_of(m.get("status")) in ("live", "finished") and
+                 any(m.get("event_id") == e for e in by_season.get(current_year, [])) for m in raw)
+    if current_year is not None and not played and "completed" in statuses:
+        records = parse_listing(props, observed_at, include_previous=True)
+        previous = {y: ids for y, ids in _events_by_season(records).items() if y not in by_season}
+        raw += [m for year, ids in sorted(previous.items()) for m in season_matches(year, ids)]
+        current_year = min(previous, default=current_year)
+    return props, records, raw, current_year
 
 
 def consult_regular(client: PoliteClient, observed_at: datetime, job: str = "regular") -> ConsultaResult:
     """Listado de temporadas, eventos y equipos, y todos los partidos de los eventos de la CDL.
 
-    Si la temporada en curso por fechas aún no ha jugado ningún partido, se incluye también la
-    anterior, que sigue siendo la actual (RF-2 de la 002).
+    Devuelve también los equipos y las fechas de la temporada actual, para que el "Resto" siga
+    con sus fichas de equipo y de jugador (plan §5, RF-18).
     """
     try:
-        props = fetch_page_props(client, "/matches")
-        records = parse_listing(props, observed_at)
-        by_season = _events_by_season(records)
-        raw = [m for year, ids in sorted(by_season.items()) for m in _season_matches(client, year, ids)]
-        current_year = min(by_season, default=None)
-        played = any(status_of(m.get("status")) in ("live", "finished") and
-                     any(m.get("event_id") == e for e in by_season.get(current_year, [])) for m in raw)
-        if current_year is not None and not played:
-            records = parse_listing(props, observed_at, include_previous=True)
-            previous = {y: ids for y, ids in _events_by_season(records).items() if y not in by_season}
-            raw += [m for year, ids in sorted(previous.items()) for m in _season_matches(client, year, ids)]
+        props, records, raw, current_year = _listing_and_matches(client, observed_at, ("completed", "upcoming_live"))
+        match_records, seen = parse_matches(raw, observed_at)
+    except (Forbidden, SourceUnavailable, UnreadableResponse) as error:
+        return _failure(job, error)
+    teams = tuple(r["source_id"] for r in records if r["kind"] == "franchise")
+    return ConsultaResult(source=SOURCE, job=job, outcome="success", records=records + match_records, seen=seen,
+                          item_count=len(raw), teams=teams, season=_current_season(props, current_year))
+
+
+def consult_upcoming(client: PoliteClient, observed_at: datetime, job: str) -> ConsultaResult:
+    """Solo la lista de partidos próximos y en vivo (plan §5: "Antes del partido" y "En vivo").
+
+    Es más ligera que el listado completo: no pide los partidos terminados. Su número de elementos
+    puede llegar a 0 sin que sea un fallo (la temporada acaba).
+    """
+    try:
+        _, records, raw, _ = _listing_and_matches(client, observed_at, ("upcoming_live",))
         match_records, seen = parse_matches(raw, observed_at)
     except (Forbidden, SourceUnavailable, UnreadableResponse) as error:
         return _failure(job, error)
@@ -498,4 +532,4 @@ def consult_teams(client: PoliteClient, team_ids: Sequence[object], season: tupl
     except (Forbidden, SourceUnavailable, UnreadableResponse) as error:
         return _failure(job, error)
     return ConsultaResult(source=SOURCE, job=job, outcome="success", records=records, rejected=rejected,
-                          item_count=len(team_ids)).with_rejections_outcome()
+                          item_count=None).with_rejections_outcome()  # no es un listado completo (RF-46)

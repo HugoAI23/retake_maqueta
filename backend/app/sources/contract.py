@@ -52,7 +52,12 @@ class ConsultaResult:
         seen: Referencias (`fuente:id`) que incluía la respuesta (RF-50 a RF-52).
         rejected: Datos no entendidos.
         message: Motivo de un fallo, como texto plano recortado.
-        item_count: Elementos de la respuesta, para reconocer una respuesta vacía (RF-46).
+        item_count: Elementos de la respuesta, para reconocer una respuesta vacía (RF-46). `None`
+            en las consultas que no son un listado completo (fichas de equipo).
+        teams: Equipos de la temporada que publica el listado, para seguir con sus fichas en el
+            "Resto" (plan §5, RF-18). Solo lo rellena el listado de BreakingPoint.
+        season: Año, inicio y fin de la temporada actual, que necesitan las fichas de jugador
+            para saber qué rosters son de la temporada.
     """
 
     source: str
@@ -63,6 +68,8 @@ class ConsultaResult:
     rejected: list[Rejection] = field(default_factory=list)
     message: str | None = None
     item_count: int | None = None
+    teams: tuple[str, ...] = ()
+    season: tuple[int, str, str] | None = None
 
     def __post_init__(self) -> None:
         if self.outcome not in RUN_OUTCOMES:

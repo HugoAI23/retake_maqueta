@@ -3,7 +3,7 @@
 - **Spec**: [`spec.md`](spec.md) (`Aprobado`, 2026-09-23, con la revisión R-1)
 - **Plan**: [`plan.md`](plan.md) (`Aprobado`, 2026-09-23)
 - **Fecha**: `2026-09-23`
-- **Estado**: `Aprobado` (aprobado por Hugo el 2026-09-23). En implementación: **F0, F1, F2 y F3 completadas** el 2026-09-23 (el acceso en vivo a la Wiki de I-17 se retiró con I-26). **F4 completada** el 2026-09-23 (T-037 a T-048 y T-091 a T-093). **F4b completada** el 2026-09-23 (importación de la Wiki por CSV, cambios C-15 a C-21; Hugo importó sus CSV reales: 14 campeonatos, 284 clasificaciones, 168 franquicias y 515 jugadores). Ajustes en el registro del plan, I-1 a I-26.
+- **Estado**: `Aprobado` (aprobado por Hugo el 2026-09-23). En implementación: **F0, F1, F2 y F3 completadas** el 2026-09-23 (el acceso en vivo a la Wiki de I-17 se retiró con I-26). **F4 completada** el 2026-09-23 (T-037 a T-048 y T-091 a T-093). **F4b completada** el 2026-09-23 (importación de la Wiki por CSV, cambios C-15 a C-21; Hugo importó sus CSV reales: 14 campeonatos, 284 clasificaciones, 168 franquicias y 515 jugadores). **F5 a F8 completadas** el 2026-09-23 (F5 revisada según el plan, I-27). **F9:** T-084, T-085 y T-088 hechas; quedan T-086 y T-087 (Hugo), T-089 y T-094 (calendario) y T-090. Ajustes en el registro del plan, I-1 a I-34.
 
 Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los requisitos que cubre (**RF**), de qué tareas depende (**Dep.**) y cuándo se considera terminada (**Hecho cuando**).
 
@@ -292,7 +292,7 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
 
 ## F5 — Proceso de obtención
 
-- [ ] **T-049** Pruebas e implementación de `sync/planner` (función pura), con cada consulta del plan §5:
+- [x] **T-049** Pruebas e implementación de `sync/planner` (función pura), con cada consulta del plan §5:
   - carga inicial en orden (temporada antes que historial; entre temporadas, la última con partidos oficiales);
   - en vivo, antes del partido, resto cada hora, partidos terminados y próxima temporada;
   - ~~relecturas del Champs a 1 h y de 24 h a 168 h, y reintentos cada hora~~ (eliminadas por C-17, I-26: el historial llega con `retake import-wiki-csv`);
@@ -301,7 +301,7 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** RF-3, RF-6, RF-14, RF-16 a RF-21, RF-23 a RF-29, RF-150
   - **Dep.:** T-048
   - **Hecho cuando:** cada fila del §5 del plan tiene su prueba con el reloj simulado.
-- [ ] **T-050** `sync/registry`:
+- [x] **T-050** `sync/registry`:
   - una entrada por consulta;
   - incidencias sin repeticiones (contador y última repetición), con repeticiones por día de Ciudad de México;
   - nunca guarda el valor de un dato personal;
@@ -309,15 +309,15 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** RF-140 a RF-149
   - **Dep.:** T-048
   - **Hecho cuando:** 100 repeticiones iguales dejan una sola incidencia con contador 100.
-- [ ] **T-051** `sync/runner`: conector → ingesta → curación → registro → estado de la fuente → aviso de cambios. Anota la desaparición, la retención, la discrepancia de cancelación y las consultas prohibidas.
+- [x] **T-051** `sync/runner`: conector → ingesta → curación → registro → estado de la fuente → aviso de cambios. Anota la desaparición, la retención, la discrepancia de cancelación y las consultas prohibidas.
   - **RF:** RF-22, RF-43 a RF-47, RF-141 a RF-146
   - **Dep.:** T-049, T-050
   - **Hecho cuando:** una consulta fallida no borra nada y no frena a las demás fuentes.
-- [ ] **T-052** `sync/notify`: aviso `NOTIFY` con los conjuntos de datos cambiados, de una lista cerrada.
+- [x] **T-052** `sync/notify`: aviso `NOTIFY` con los conjuntos de datos cambiados, de una lista cerrada.
   - **RF:** RF-80, RF-81
   - **Dep.:** T-051
   - **Hecho cuando:** una prueba de integración recibe el aviso en otra conexión.
-- [ ] **T-053** `sync/worker` y orden `retake sync`:
+- [x] **T-053** `sync/worker` y orden `retake sync`:
   - bucle de 5 s con una cola por fuente;
   - recoge las peticiones del administrador (`sync_request`), con una sola en curso por fuente (sin relectura del historial: C-19, I-26);
   - termina lo empezado aunque caduque la sesión que lo pidió;
@@ -325,15 +325,15 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** RF-9, RF-44, RF-100, RF-107, RF-136
   - **Dep.:** T-051, T-052
   - **Hecho cuando:** las pruebas cubren las colas, las peticiones y la negativa en producción.
-- [ ] **T-054** Resumen diario a las 00:00 de `America/Mexico_City`: totales y lista de incidencias distintas por fuente; sin resumen si no hubo incidencias; borrado a los 7 días.
+- [x] **T-054** Resumen diario a las 00:00 de `America/Mexico_City`: totales y lista de incidencias distintas por fuente; sin resumen si no hubo incidencias; borrado a los 7 días.
   - **RF:** RF-150 a RF-154
   - **Dep.:** T-050
   - **Hecho cuando:** cubre un día sin incidencias y el paso de medianoche con el reloj simulado.
-- [ ] **T-055** Órdenes `retake sync-once --source <fuente>` (una consulta para depurar) y `retake source-mode <modo>` (en desarrollo: borra los datos de la liga y programa una carga inicial). Añadir `retake-sync` a `.claude/launch.json`.
+- [x] **T-055** Órdenes `retake sync-once --source <fuente>` (una consulta para depurar) y `retake source-mode <modo>` (en desarrollo: borra los datos de la liga y programa una carga inicial). Añadir `retake-sync` a `.claude/launch.json`.
   - **RF:** RF-11 a RF-13
   - **Dep.:** T-053
   - **Hecho cuando:** `source-mode` se niega fuera de desarrollo y, en desarrollo, deja la base de datos solo con el modo elegido.
-- [ ] **T-056** Pruebas de integración de punta a punta con la fuente simulada y el reloj simulado:
+- [x] **T-056** Pruebas de integración de punta a punta con la fuente simulada y el reloj simulado:
   - vida completa de un partido en vivo;
   - varios partidos en vivo con prioridad;
   - fuente caída y respuesta vacía;
@@ -345,7 +345,7 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** RF-3, RF-6 a RF-29, RF-43 a RF-53, RF-72, RF-73
   - **Dep.:** T-053 a T-055
   - **Hecho cuando:** todos los escenarios pasan.
-- [ ] **T-057 · Cierre F5**
+- [x] **T-057 · Cierre F5**
   - **Dep.:** T-049 a T-056
   - **Hecho cuando:** las pruebas están en verde, la guía recorre dos escenarios con `retake sync` en modo simulado y se ha sugerido el commit.
 
@@ -353,27 +353,27 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
 
 ## F6 — API ampliada y eventos del servidor
 
-- [ ] **T-058** `changedAt` en todas las respuestas de la 002 e `isStale` en cada partido (en vivo sin aparecer en las fuentes).
+- [x] **T-058** `changedAt` en todas las respuestas de la 002 e `isStale` en cada partido (en vivo sin aparecer en las fuentes).
   - **RF:** RF-90, RF-157
   - **Dep.:** T-057
   - **Hecho cuando:** las pruebas de la API de la 002 siguen en verde con los campos nuevos.
-- [ ] **T-059** `GET /api/freshness`: `lastChangedAt` y `stale` por conjunto de datos.
+- [x] **T-059** `GET /api/freshness`: `lastChangedAt` y `stale` por conjunto de datos.
   - **RF:** RF-89, RF-155, RF-158
   - **Dep.:** T-058
   - **Hecho cuando:** cubre un conjunto al día, uno sin actualizar y uno sin datos.
-- [ ] **T-060** `GET /api/logos/{id}`: la copia con su tipo real, `X-Content-Type-Options: nosniff` y caché larga; el `logoUrl` de las identidades apunta a la copia.
+- [x] **T-060** `GET /api/logos/{id}`: la copia con su tipo real, `X-Content-Type-Options: nosniff` y caché larga; el `logoUrl` de las identidades apunta a la copia.
   - **RF:** RF-65, RF-71
   - **Dep.:** T-058
   - **Hecho cuando:** un identificador inexistente da 404 y la respuesta lleva las cabeceras.
-- [ ] **T-061** `GET /api/stream`: escucha los avisos (`LISTEN`) y emite `change`, `freshness` y un latido cada 15 s, con `retry: 5000`. Configurar el proxy de Vite para que deje pasar la conexión abierta.
+- [x] **T-061** `GET /api/stream`: escucha los avisos (`LISTEN`) y emite `change`, `freshness` y un latido cada 15 s, con `retry: 5000`. Configurar el proxy de Vite para que deje pasar la conexión abierta.
   - **RF:** RF-79 a RF-81, RF-89
   - **Dep.:** T-059
   - **Hecho cuando:** una prueba de integración recibe un `change` tras una ingesta, y otra comprueba el latido a través del proxy de Vite.
-- [ ] **T-062** Comprobar que ninguna ruta devuelve datos de la próxima temporada.
+- [x] **T-062** Comprobar que ninguna ruta devuelve datos de la próxima temporada.
   - **RF:** RF-15
   - **Dep.:** T-058
   - **Hecho cuando:** con partidos de la próxima temporada guardados, ninguna respuesta los incluye.
-- [ ] **T-063 · Cierre F6**
+- [x] **T-063 · Cierre F6**
   - **Dep.:** T-058 a T-062
   - **Hecho cuando:** las pruebas están en verde, la guía muestra el canal de eventos con `curl` y se ha sugerido el commit.
 
@@ -381,11 +381,11 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
 
 ## F7 — Administración (backend)
 
-- [ ] **T-064** Contraseñas con Argon2id y orden `retake set-admin-password`: pide usuario y contraseña sin mostrarla, nunca los recibe como argumento y solo existe una cuenta.
+- [x] **T-064** Contraseñas con Argon2id y orden `retake set-admin-password`: pide usuario y contraseña sin mostrarla, nunca los recibe como argumento y solo existe una cuenta.
   - **RF:** RF-121 a RF-123
   - **Dep.:** T-063
   - **Hecho cuando:** las pruebas comprueban que en la base de datos solo hay un *hash* Argon2id y que una segunda cuenta se rechaza.
-- [ ] **T-065** Pruebas e implementación del bloqueo por origen:
+- [x] **T-065** Pruebas e implementación del bloqueo por origen:
   - el origen es la IP del cliente, o la cabecera del proxy solo si `TRUSTED_PROXY` está configurado;
   - 5 fallos seguidos con cualquier usuario bloquean 15 min, también a las credenciales correctas;
   - el bloqueo no afecta a otros orígenes;
@@ -394,7 +394,7 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** RF-126 a RF-133
   - **Dep.:** T-064
   - **Hecho cuando:** cubre cada caso con el reloj simulado.
-- [ ] **T-066** Sesiones:
+- [x] **T-066** Sesiones:
   - identificador aleatorio de 32 bytes y solo su *hash* guardado;
   - cookie `HttpOnly`, `SameSite=Strict`, limitada a `/api/admin` y con `Secure` en producción;
   - caducidad a las 8 h y varias sesiones a la vez;
@@ -402,11 +402,11 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** RF-124, RF-125, RF-134, RF-135, RF-137, RF-138
   - **Dep.:** T-064
   - **Hecho cuando:** una sesión cerrada o caducada responde 401.
-- [ ] **T-067** Protección contra peticiones falsificadas (plan D-11): toda petición de administración que cambia algo exige la cabecera `X-Retake-Admin: 1` y el mismo origen.
+- [x] **T-067** Protección contra peticiones falsificadas (plan D-11): toda petición de administración que cambia algo exige la cabecera `X-Retake-Admin: 1` y el mismo origen.
   - **RF:** RF-139
   - **Dep.:** T-066
   - **Hecho cuando:** una petición sin la cabecera o desde otro origen se rechaza.
-- [ ] **T-068** Rutas de §3.4 del plan:
+- [x] **T-068** Rutas de §3.4 del plan:
   - `login`, `logout` y `me`;
   - `sources`: última consulta, última con éxito y fuente parada;
   - `sources/{source}/refresh` y `history/reread`: una sola en curso y motivo si las normas lo prohíben;
@@ -417,7 +417,7 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** RF-100 a RF-114, RF-118 a RF-120, RF-139 a RF-154
   - **Dep.:** T-065 a T-067
   - **Hecho cuando:** cada ruta tiene sus pruebas de integración, incluida la respuesta 401.
-- [ ] **T-069 · Cierre F7**
+- [x] **T-069 · Cierre F7**
   - **Dep.:** T-064 a T-068
   - **Hecho cuando:** las pruebas están en verde, la guía incluye crear la cuenta (Hugo teclea su contraseña) y probar el bloqueo con `curl`, y se ha sugerido el commit.
 
@@ -425,11 +425,11 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
 
 ## F8 — Frontend
 
-- [ ] **T-070** `src/live/liveChannel`: una conexión de eventos por pestaña; se cierra al ocultarse y se reabre al volver; da el canal por cortado si no llega un latido en 45 s.
+- [x] **T-070** `src/live/liveChannel`: una conexión de eventos por pestaña; se cierra al ocultarse y se reabre al volver; da el canal por cortado si no llega un latido en 45 s.
   - **RF:** RF-79, RF-82, RF-89
   - **Dep.:** T-069
   - **Hecho cuando:** pruebas con un canal y una visibilidad simulados.
-- [ ] **T-071** `src/live/useLiveBlock`, sobre el cargador de la 001:
+- [x] **T-071** `src/live/useLiveBlock`, sobre el cargador de la 001:
   - la primera carga sigue sus reglas;
   - después recarga en silencio cuando el canal avisa: sin esqueleto, conservando los datos si falla y reintentando en el siguiente ciclo de la página;
   - al volver a verse la pestaña, recarga en 5 s como máximo;
@@ -437,42 +437,42 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** RF-79 a RF-88
   - **Dep.:** T-070
   - **Hecho cuando:** las pruebas cubren cada caso y las pruebas de la 001 siguen en verde.
-- [ ] **T-072** `src/live/freshnessRules` y `leagueApi.getFreshness`: `lastUpdatedOf`, `isStale` (el servidor lo dice, o el canal lleva cortado más que el umbral) y `formatLastUpdated` en los dos idiomas. El aviso se retira al volver a actualizarse.
+- [x] **T-072** `src/live/freshnessRules` y `leagueApi.getFreshness`: `lastUpdatedOf`, `isStale` (el servidor lo dice, o el canal lleva cortado más que el umbral) y `formatLastUpdated` en los dos idiomas. El aviso se retira al volver a actualizarse.
   - **RF:** RF-89, RF-91 a RF-93, RF-155 a RF-159
   - **Dep.:** T-070
   - **Hecho cuando:** pruebas de las funciones en español y en inglés.
-- [ ] **T-073** `src/live/LiveAnnouncer`: anuncia sin interrumpir los cambios de datos en vivo, y nunca los del resto de datos.
+- [x] **T-073** `src/live/LiveAnnouncer`: anuncia sin interrumpir los cambios de datos en vivo, y nunca los del resto de datos.
   - **RF:** RF-94 a RF-96
   - **Dep.:** T-071
   - **Hecho cuando:** pruebas de la región accesible y de su silencio con el resto de datos.
-- [ ] **T-074** Bloque de demostración en vivo en la página de demostración de la 001 (solo en desarrollo, fuera del menú): muestra partidos de la fuente simulada con su hora de última actualización, el aviso de datos sin actualizar y los anuncios en vivo, para verificar RF-79 a RF-96 y RF-155 a RF-159 mientras no exista ninguna spec visual que los use. Anotar el añadido en el registro del plan (§12).
+- [x] **T-074** Bloque de demostración en vivo en la página de demostración de la 001 (solo en desarrollo, fuera del menú): muestra partidos de la fuente simulada con su hora de última actualización, el aviso de datos sin actualizar y los anuncios en vivo, para verificar RF-79 a RF-96 y RF-155 a RF-159 mientras no exista ninguna spec visual que los use. Anotar el añadido en el registro del plan (§12).
   - **RF:** RF-79 a RF-96, RF-155 a RF-159
   - **Dep.:** T-071 a T-073
   - **Hecho cuando:** fuera de desarrollo la dirección da "Página no encontrada" (RF-95 de la 001).
-- [ ] **T-075** Diccionarios `es` y `en`: textos de la página de administración, del acceso, de los resultados y de la atribución.
+- [x] **T-075** Diccionarios `es` y `en`: textos de la página de administración, del acceso, de los resultados y de la atribución.
   - **RF:** RF-117, RF-118
   - **Dep.:** T-069
   - **Hecho cuando:** la prueba de diccionarios de la 001 confirma que los dos idiomas tienen las mismas claves.
-- [ ] **T-076** `src/admin/adminApi`: cliente de las rutas de §3.4 con la cabecera de D-11; un 401 lleva a la pantalla de acceso.
+- [x] **T-076** `src/admin/adminApi`: cliente de las rutas de §3.4 con la cabecera de D-11; un 401 lleva a la pantalla de acceso.
   - **RF:** RF-124, RF-137, RF-139
   - **Dep.:** T-069
   - **Hecho cuando:** pruebas con respuestas simuladas.
-- [ ] **T-077** Ruta `/admin` dentro del marco común, sin entrada en el menú ni entrada activa: pantalla de acceso (mensaje único ante credenciales incorrectas) y "Cerrar sesión".
+- [x] **T-077** Ruta `/admin` dentro del marco común, sin entrada en el menú ni entrada activa: pantalla de acceso (mensaje único ante credenciales incorrectas) y "Cerrar sesión".
   - **RF:** RF-97 a RF-99, RF-124 a RF-126, RF-138
   - **Dep.:** T-075, T-076
   - **Hecho cuando:** pruebas de componentes y de rutas.
-- [ ] **T-078** Paneles de administración como bloques de la 001:
+- [x] **T-078** Paneles de administración como bloques de la 001:
   - estado de las fuentes (última consulta, última con éxito, parada);
   - acciones (actualizar fuente; sin releer historial por C-19), desactivadas sin conexión; la Wiki muestra su última importación y nunca aparece como parada;
   - resultado de cada petición (en curso, éxito, parcial o fallo, con el número de incidencias).
   - **RF:** RF-100 a RF-116
   - **Dep.:** T-077
   - **Hecho cuando:** pruebas de cada estado, incluida la petición ya en curso y la prohibida.
-- [ ] **T-079** Paneles de registro y resúmenes: incidencias con repeticiones y última hora; mensajes de las fuentes sin traducir y como texto plano.
+- [x] **T-079** Paneles de registro y resúmenes: incidencias con repeticiones y última hora; mensajes de las fuentes sin traducir y como texto plano.
   - **RF:** RF-118 a RF-120, RF-140 a RF-154
   - **Dep.:** T-077
   - **Hecho cuando:** un mensaje con HTML se ve literal.
-- [ ] **T-080** Pie de página, año de la temporada desde `/api/season/current`:
+- [x] **T-080** Pie de página, año de la temporada desde `/api/season/current`:
   - sin año hasta obtenerlo;
   - lo mantiene si luego falla;
   - lo cambia en 5 min como máximo cuando cambia la temporada.
@@ -481,11 +481,11 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** RF-74 a RF-78
   - **Dep.:** T-070
   - **Hecho cuando:** pruebas de los tres casos; las pruebas del pie de la 001 se actualizan con el motivo anotado en el registro del plan.
-- [ ] **T-081** Pie de página, atribución: nombre de las tres fuentes con un enlace a cada una (y a la licencia CC BY-SA del texto de la Wiki), en todas las páginas y con el contraste AA de la 001.
+- [x] **T-081** Pie de página, atribución: nombre de las tres fuentes con un enlace a cada una (y a la licencia CC BY-SA del texto de la Wiki), en todas las páginas y con el contraste AA de la 001.
   - **RF:** RF-160
   - **Dep.:** T-080 (C-11 aplicado a la 001 el 2026-09-23)
   - **Hecho cuando:** aparece en las páginas de sección, "Próximamente", "Página no encontrada" y administración.
-- [ ] **T-082** Pruebas de extremo a extremo (Playwright + axe):
+- [x] **T-082** Pruebas de extremo a extremo (Playwright + axe):
   - acceso, bloqueo y cierre de sesión;
   - año y atribución en el pie;
   - actualización en vivo y aviso de datos sin actualizar en el bloque de demostración con la fuente simulada, a través del proxy de Vite;
@@ -493,7 +493,7 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** RF-79 a RF-99, RF-124 a RF-139, RF-160
   - **Dep.:** T-074, T-078 a T-081
   - **Hecho cuando:** todo en verde en desarrollo y en producción.
-- [ ] **T-083 · Cierre F8**
+- [x] **T-083 · Cierre F8**
   - **Dep.:** T-070 a T-082
   - **Hecho cuando:** las pruebas están en verde (también las de la 001 y la 002), se ha entregado la guía y se ha sugerido el commit.
 
@@ -501,7 +501,7 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
 
 ## F9 — Cierre
 
-- [ ] **T-084** Checklist de seguridad del plan §9:
+- [x] **T-084** Checklist de seguridad del plan §9:
   - sin SQL concatenado, sin HTML sin escapar;
   - contraseña solo como *hash* Argon2id; sesión con sus banderas; bloqueo por origen; protección D-11;
   - imágenes verificadas; `.env` fuera de git;
@@ -511,7 +511,7 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** RF-9, RF-60, RF-68 a RF-70, RF-119 a RF-139
   - **Dep.:** T-083
   - **Hecho cuando:** cada punto está comprobado y anotado en la guía.
-- [ ] **T-085** Ejecutar todas las pruebas: pytest, `npm test` y `npm run test:e2e`.
+- [x] **T-085** Ejecutar todas las pruebas: pytest, `npm test` y `npm run test:e2e`.
   - **RF:** —
   - **Dep.:** T-084
   - **Hecho cuando:** todo está en verde.
@@ -523,7 +523,7 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** todos
   - **Dep.:** T-086
   - **Hecho cuando:** Hugo confirma cada fila, salvo las del partido real (T-089).
-- [ ] **T-088** Sincronizar la spec y el plan con los cambios surgidos durante la implementación, en el registro del plan (constitución §1.3).
+- [x] **T-088** Sincronizar la spec y el plan con los cambios surgidos durante la implementación, en el registro del plan (constitución §1.3).
   - **RF:** —
   - **Dep.:** T-087
   - **Hecho cuando:** la spec, el plan y el código coinciden.

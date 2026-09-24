@@ -9,6 +9,7 @@ from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.api import schemas as out
+from app.api.freshness import live_last_success, match_is_stale
 from app.db.models import (
     Championship,
     Event,
@@ -57,8 +58,11 @@ def identity_out(identity: Identity | None) -> out.IdentityOut | None:
         return None
     return out.IdentityOut(
         id=str(identity.id), short_name=identity.short_name, abbreviation=identity.abbreviation,
-        logo_url=identity.logo_url, primary_color=identity.primary_color,
+        # Spec 003 (RF-65, RF-70): se muestra la copia propia; sin copia, el logo no está registrado.
+        logo_url=f"/api/logos/{identity.logo_image_id}" if identity.logo_image_id else None,
+        primary_color=identity.primary_color,
         secondary_color=identity.secondary_color, valid_from=utc(identity.valid_from),
+        changed_at=utc(identity.changed_at),
     )
 
 
@@ -71,7 +75,8 @@ def identity_of_franchise_at(session: Session, franchise_id: uuid.UUID, instant:
 # --- Temporada, franquicias, eventos ------------------------------------------------------------
 
 def season_view(season: Season) -> out.SeasonOut:
-    return out.SeasonOut(year=season.year, name=season.name, started_at=utc(season.started_at))
+    return out.SeasonOut(year=season.year, name=season.name, started_at=utc(season.started_at),
+                         changed_at=utc(season.changed_at))
 
 
 def franchise_views(session: Session) -> list[out.FranchiseOut]:
@@ -89,7 +94,8 @@ def event_views(session: Session) -> list[out.EventOut]:
     if season is None:
         return []
     events = session.scalars(select(Event).where(Event.season_id == season.id, visible(Event, "event")).order_by(Event.name))
-    return [out.EventOut(id=str(e.id), name=e.name, season_year=season.year) for e in events]
+    return [out.EventOut(id=str(e.id), name=e.name, season_year=season.year, changed_at=utc(e.changed_at))
+            for e in events]
 
 
 # --- Jugadores ---------------------------------------------------------------------------------
@@ -126,6 +132,7 @@ def player_view(session: Session, player: Player, now: datetime) -> out.PlayerOu
         is_current_season=is_current_season_player(session, player.id),
         is_free_agent=is_free_agent(session, player.id, now),
         championship_ids=[str(cid) for cid in championship_ids_for_player(session, player.id)],
+        changed_at=utc(player.changed_at),
     )
 
 
@@ -144,6 +151,7 @@ def _stats_view(stats: PlayerMapStats) -> out.StatsOut:
         franchise_id=str(stats.franchise_id) if stats.franchise_id else None,
         is_substitute=stats.is_substitute,
         corrected_fields=list(stats.corrected_fields),
+        changed_at=utc(stats.changed_at),
         **values,
     )
 
@@ -158,10 +166,11 @@ def _map_view(session: Session, game_map: MatchMap) -> out.MatchMapOut:
         score=pair(game_map.score_1, game_map.score_2) if game_map.played else None,
         winner_side=game_map.winner_side, corrected_fields=list(game_map.corrected_fields),
         stats=[_stats_view(s) for s in stats],
+        changed_at=utc(game_map.changed_at),
     )
 
 
-def match_view(session: Session, match: Match, now: datetime) -> out.MatchOut:
+def match_view(session: Session, match: Match, now: datetime, live_success: dict | None = None) -> out.MatchOut:
     schedule = [utc(s) for s in session.scalars(
         select(MatchSchedule.scheduled_at).where(MatchSchedule.match_id == match.id).order_by(MatchSchedule.seq))]
     scheduled_at = schedule[-1] if schedule else None
@@ -192,6 +201,8 @@ def match_view(session: Session, match: Match, now: datetime) -> out.MatchOut:
         if match.status == "live" else None,
         winner_side=match.winner_side, corrected_fields=list(match.corrected_fields),
         maps=[_map_view(session, m) for m in session.scalars(maps_query)],
+        changed_at=utc(match.changed_at),
+        is_stale=match_is_stale(session, match, live_success),
     )
 
 
@@ -201,7 +212,8 @@ def match_views(session: Session, now: datetime) -> list[out.MatchOut]:
         return []
     matches = session.scalars(select(Match).join(Event, Event.id == Match.event_id)
                               .where(Event.season_id == season.id, visible(Match, "match")))
-    views = [match_view(session, m, now) for m in matches]
+    live_success = live_last_success(session)
+    views = [match_view(session, m, now, live_success) for m in matches]
     far_future = datetime.max.replace(tzinfo=UTC)
     return sorted(views, key=lambda m: (m.scheduled_at or far_future, m.id))
 
@@ -216,7 +228,7 @@ def standing_views(session: Session, now: datetime) -> list[out.StandingOut]:
         out.StandingOut(
             franchise_id=str(row.franchise_id),
             identity=identity_of_franchise_at(session, row.franchise_id, now),
-            position=row.position, points=row.points,
+            position=row.position, points=row.points, changed_at=utc(row.changed_at),
         )
         for row in session.scalars(select(Standing).where(Standing.season_id == season.id))
     ]
@@ -257,10 +269,12 @@ def championship_views(session: Session) -> list[out.ChampionshipOut]:
                 roster=[out.RosterEntryOut(player_id=str(entry.player_id), gamertag_at_final=entry.gamertag_at_final,
                                            current_gamertag=gamertag) for entry, gamertag in roster],
                 corrected_fields=list(placement.corrected_fields),
+                changed_at=utc(placement.changed_at),
             ))
         views.append(out.ChampionshipOut(
             id=str(championship.id), year=championship.year, competition=championship.competition,
             game_name=championship.game_name, game_abbreviation=championship.game_abbreviation,
             final_date=championship.final_date, placements=placement_views,
+            changed_at=utc(championship.changed_at),
         ))
     return views

@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { useRoutes } from 'react-router'
+import { AdminPage } from '../admin/AdminPage.jsx'
 import { AppShell } from '../layout/AppShell.jsx'
 import { ComingSoonPage } from '../pages/ComingSoonPage.jsx'
 import { HomePage } from '../pages/HomePage.jsx'
@@ -18,6 +19,8 @@ function elementFor(definition) {
       return <HomePage />
     case 'comingSoon':
       return <ComingSoonPage sectionId={definition.sectionId} />
+    case 'admin':
+      return <AdminPage />
     case 'demo':
       if (!BlockDemoPage) return <NotFoundPage />
       return (

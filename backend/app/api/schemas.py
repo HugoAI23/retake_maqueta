@@ -3,6 +3,8 @@
 - Nombres de campo en `camelCase` y fechas ISO 8601 en UTC.
 - Un valor nulo significa "no se sabe" o "no publicado"; nunca se rellena con 0 (RF-65).
 - Nunca se devuelve la fecha ni el año de nacimiento de un jugador (RF-24, plan D-10).
+- Spec 003: cada fila lleva `changedAt`, el instante en que cambió su valor resuelto (RF-157), y
+  cada partido `isStale`, si está en vivo y lleva más de 60 s sin aparecer en las fuentes (RF-90).
 """
 
 from datetime import date, datetime
@@ -20,6 +22,7 @@ class SeasonOut(ApiModel):
     year: int
     name: str | None
     started_at: datetime
+    changed_at: datetime | None = None
 
 
 class IdentityOut(ApiModel):
@@ -30,6 +33,7 @@ class IdentityOut(ApiModel):
     primary_color: str | None
     secondary_color: str | None
     valid_from: datetime
+    changed_at: datetime | None = None
 
 
 class FranchiseOut(ApiModel):
@@ -56,12 +60,14 @@ class PlayerOut(ApiModel):
     is_current_season: bool
     is_free_agent: bool
     championship_ids: list[str]
+    changed_at: datetime | None = None
 
 
 class EventOut(ApiModel):
     id: str
     name: str
     season_year: int
+    changed_at: datetime | None = None
 
 
 class OriginOut(ApiModel):
@@ -98,6 +104,7 @@ class StatsOut(ApiModel):
     zone_captures: int | None
     overloads: int | None
     corrected_fields: list[str]
+    changed_at: datetime | None = None
 
 
 class MatchMapOut(ApiModel):
@@ -109,6 +116,7 @@ class MatchMapOut(ApiModel):
     winner_side: int | None
     corrected_fields: list[str]
     stats: list[StatsOut]
+    changed_at: datetime | None = None
 
 
 class MatchOut(ApiModel):
@@ -126,6 +134,8 @@ class MatchOut(ApiModel):
     winner_side: int | None
     corrected_fields: list[str]
     maps: list[MatchMapOut]
+    changed_at: datetime | None = None
+    is_stale: bool = False
 
 
 class StandingOut(ApiModel):
@@ -133,6 +143,7 @@ class StandingOut(ApiModel):
     identity: IdentityOut | None
     position: int | None
     points: int | None
+    changed_at: datetime | None = None
 
 
 class RosterEntryOut(ApiModel):
@@ -150,6 +161,7 @@ class PlacementOut(ApiModel):
     pool_percent: float | None
     roster: list[RosterEntryOut]
     corrected_fields: list[str]
+    changed_at: datetime | None = None
 
 
 class ChampionshipOut(ApiModel):
@@ -160,3 +172,11 @@ class ChampionshipOut(ApiModel):
     game_abbreviation: str | None
     final_date: date | None
     placements: list[PlacementOut]
+    changed_at: datetime | None = None
+
+
+class FreshnessOut(ApiModel):
+    """Frescura de un conjunto de datos (RF-89, RF-155, RF-158)."""
+
+    last_changed_at: datetime | None
+    stale: bool

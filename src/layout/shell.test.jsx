@@ -1,6 +1,6 @@
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { renderApp } from '../test/renderApp.jsx'
 import { renderWithProviders } from '../test/renderWithProviders.jsx'
 import { Logo } from '../shared/Logo.jsx'
@@ -78,18 +78,28 @@ describe('Logo (RF-11 a RF-13)', () => {
   })
 })
 
+// Spec 003 (T-080, registro I-30 del plan de la 003): el año ya no es un valor fijo, sale de
+// /api/season/current; estas pruebas simulan esa respuesta.
+function seasonApi(year) {
+  vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(new Response(JSON.stringify({ year }), {
+    status: 200, headers: { 'Content-Type': 'application/json' },
+  }))))
+}
+
 describe('pie de página (RF-56 a RF-58)', () => {
-  it('muestra nombre, aviso escolar y año de temporada', () => {
+  it('muestra nombre, aviso escolar y año de temporada', async () => {
+    seasonApi(2026)
     renderApp('/')
     const footer = screen.getByRole('contentinfo')
     expect(footer).toHaveTextContent('Retake')
     expect(footer).toHaveTextContent('Proyecto escolar sin afiliación oficial con la Call of Duty League.')
-    expect(footer).toHaveTextContent('Temporada 2026')
+    expect(await within(footer).findByText('Temporada 2026')).toBeInTheDocument()
   })
 
-  it('en inglés', () => {
+  it('en inglés', async () => {
+    seasonApi(2026)
     renderApp('/', { locale: 'en' })
-    expect(screen.getByRole('contentinfo')).toHaveTextContent('2026 season')
+    expect(await within(screen.getByRole('contentinfo')).findByText('2026 season')).toBeInTheDocument()
   })
 })
 

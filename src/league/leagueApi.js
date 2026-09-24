@@ -149,3 +149,8 @@ export const getMatch = (id) => request(`/matches/${encodeURIComponent(id)}`)
 export const getStandings = () => request('/standings')
 /** @returns {Promise<Championship[]>} */
 export const getChampionships = () => request('/championships')
+/**
+ * Frescura de cada conjunto de datos (spec 003: RF-89, RF-155, RF-158).
+ * @returns {Promise<Record<string, { lastChangedAt: string | null, stale: boolean }>>}
+ */
+export const getFreshness = () => request('/freshness')

@@ -1,5 +1,7 @@
 # Traspaso: fases F5 a F9 de la spec 003
 
+> **Actualización (2026-09-23): F5 a F8 ya están implementadas y F9 casi cerrada** (registro I-27 a I-31 del plan). Queda lo que depende de Hugo o del calendario: T-086, T-087, T-089, T-094 y T-090. Este documento se conserva como registro del traspaso.
+
 > Resumen para el agente que continúe la implementación de la spec 003 (`003-league-data-sync`) de Retake.
 > Fecha: 2026-09-23. Último commit con código: `0bfd961`. Estado de las pruebas: backend 562 en verde (`uv run pytest -q` en `backend/`), frontend 259 en verde (`npx vitest run` en la raíz).
 > Este documento **no sustituye** a la spec, al plan ni a las tareas: resume dónde está todo y qué reglas no se pueden romper. Ante cualquier duda, mandan los documentos de §2.

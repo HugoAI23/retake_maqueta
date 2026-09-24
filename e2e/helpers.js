@@ -40,3 +40,12 @@ export function mainNav(page) {
 export function menuButton(page) {
   return page.getByRole('button', { name: /^(Abrir|Cerrar) menú$|^(Open|Close) menu$/ }).first()
 }
+
+/**
+ * Simula en el navegador la temporada actual que da la API (spec 003, RF-74 a RF-78): el año del
+ * pie ya no es un valor fijo. Así estas pruebas no dependen de los datos de ninguna base.
+ */
+export async function mockSeason(page, year = 2026) {
+  await page.route('**/api/season/current', (route) =>
+    route.fulfill({ json: { year, name: `CDL ${year}`, startedAt: '2025-12-05T20:00:00Z', changedAt: null } }))
+}

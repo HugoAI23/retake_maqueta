@@ -28,7 +28,11 @@ def test_valores_por_defecto():
 URL = "postgresql+psycopg://u@localhost/x"
 
 
-def test_modo_de_fuente_por_defecto_son_los_datos_de_prueba():
+def test_modo_de_fuente_por_defecto_son_los_datos_de_prueba(monkeypatch):
+    # Sin leer backend/.env: `retake source-mode` cambia ahí el modo (T-055).
+    monkeypatch.setitem(Settings.model_config, "env_file", None)
+    monkeypatch.delenv("SOURCE_MODE", raising=False)
+    monkeypatch.delenv("TRUSTED_PROXY", raising=False)
     settings = load_settings(database_url=URL, app_env="development")
     assert settings.source_mode == "fixtures"
     assert settings.trusted_proxy is None

@@ -4,6 +4,7 @@ import { AsyncBlock } from '../../blocks/AsyncBlock.jsx'
 import { useLocale } from '../../i18n/LocaleProvider.jsx'
 import { usePageTitle } from '../../shared/usePageTitle.js'
 import { demoDictionary } from './demoDictionary.js'
+import { LiveDemoBlock } from './LiveDemoBlock.jsx'
 import { createDemoLoad, DEMO_SCENARIOS } from './demoScenarios.js'
 
 /**
@@ -98,6 +99,8 @@ export default function BlockDemoPage() {
           )}
         />
       </div>
+
+      <LiveDemoBlock />
     </section>
   )
 }

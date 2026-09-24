@@ -9,6 +9,7 @@ from pathlib import Path
 
 from alembic import command
 from alembic.config import Config
+from sqlalchemy.orm import Session
 
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 
@@ -90,6 +91,35 @@ def import_wiki_csv_command(directory: str | None = None) -> None:
         print(f"Registros retenidos nuevos: {len(result.retained)} (revísalos con `uv run retake list-retained`).")
 
 
+def set_admin_password_command() -> None:
+    """Crea o cambia la cuenta del administrador (spec 003: RF-121 a RF-123; plan D-12).
+
+    Pide la contraseña sin mostrarla y dos veces; nunca la recibe como argumento, así que no
+    queda en el historial de la terminal. Al cambiarla se cierran todas las sesiones abiertas.
+    """
+    import getpass
+    from datetime import UTC, datetime
+
+    from sqlalchemy.orm import Session
+
+    from app.admin.accounts import set_admin_password
+    from app.db import engine
+
+    username = input("Usuario del administrador: ").strip()
+    password = getpass.getpass("Contraseña (no se muestra): ")
+    if password != getpass.getpass("Repite la contraseña: "):
+        print("Las contraseñas no coinciden. No se ha cambiado nada.", file=sys.stderr)
+        raise SystemExit(1)
+    try:
+        with Session(engine.get_engine()) as session:
+            set_admin_password(session, username, password, datetime.now(UTC))
+            session.commit()
+    except ValueError as error:
+        print(f"No se ha cambiado nada: {error}", file=sys.stderr)
+        raise SystemExit(1) from None
+    print(f"Cuenta del administrador «{username}» guardada. Las sesiones abiertas se han cerrado.")
+
+
 KIND_NAMES = {"match": "partido", "event": "evento", "franchise": "franquicia", "player": "jugador"}
 
 
@@ -141,13 +171,139 @@ def sync_once_command(source: str) -> None:
         print(f"Primer registro ({result.records[0]['kind']}):", result.records[0])
 
 
+def sync_command() -> None:
+    """Arranca el trabajador continuo de sincronización periódica (spec 003, §3.4, T-053)."""
+    from app.sync.worker import SyncWorker
+
+    try:
+        SyncWorker().run()
+    except KeyboardInterrupt:
+        print("\n[retake sync] Detenido por el usuario.")
+    except RuntimeError as error:  # modo fixtures, datos ficticios en producción (RF-9 a RF-11) u otro proceso en marcha (I-34)
+        print(f"No se ha arrancado la obtención: {error}", file=sys.stderr)
+        raise SystemExit(1) from None
+
+
+def set_source_mode(
+    session: Session,
+    mode: str,
+    app_env: str,
+    env_file: Path | None = None,
+) -> None:
+    """Cambia el modo de fuentes en desarrollo, borra la liga y programa carga inicial (RF-11 a RF-13).
+
+    Args:
+        session: Sesión de SQLAlchemy activa.
+        mode: Uno de 'fixtures', 'real', 'simulated'.
+        app_env: Entorno de ejecución ('development', 'production', 'test').
+        env_file: Ruta del archivo .env a actualizar (por defecto backend/.env).
+    """
+    if app_env != "development":
+        print(
+            f"El comando source-mode solo está permitido en el entorno de desarrollo (entorno actual: {app_env}) (RF-11 a RF-13).",
+            file=sys.stderr,
+        )
+        raise SystemExit(1)
+
+    if mode not in ("fixtures", "real", "simulated"):
+        print(f"Modo no válido: {mode!r}. Debe ser fixtures, real o simulated.", file=sys.stderr)
+        raise SystemExit(1)
+
+    # 1. Borrar datos de la liga (RF-12)
+    from sqlalchemy import delete
+    from app.db.models import (
+        Championship,
+        DatasetChange,
+        Event,
+        ExternalRef,
+        Franchise,
+        Identity,
+        LogoImage,
+        Match,
+        Observation,
+        Player,
+        RefLink,
+        Season,
+        SourceState,
+        SyncJob,
+    )
+
+    session.execute(delete(Observation))
+    session.execute(delete(RefLink))
+    session.execute(delete(ExternalRef))
+    session.execute(delete(DatasetChange))
+    session.execute(delete(SourceState))
+    session.execute(delete(SyncJob))
+    session.execute(delete(Championship))
+    session.execute(delete(Match))
+    session.execute(delete(Player))
+    session.execute(delete(Identity))
+    session.execute(delete(Franchise))
+    session.execute(delete(Event))
+    session.execute(delete(Season))
+    session.execute(delete(LogoImage))
+    session.flush()
+
+    # 2. Carga inicial según el modo elegido (RF-13)
+    if mode == "fixtures":
+        from app.ingest.fixtures import load_fixtures
+
+        load_fixtures(session, app_env=app_env)
+    else:
+        from datetime import UTC, datetime
+
+        now = datetime.now(UTC)
+        session.add(
+            SyncJob(
+                key=f"initial_load_{int(now.timestamp())}",
+                kind="initial_load",
+                due_at=now,
+            )
+        )
+    session.flush()
+
+    # 3. Actualizar SOURCE_MODE en .env
+    target_env = env_file if env_file is not None else (BACKEND_DIR / ".env")
+    if target_env.exists():
+        content = target_env.read_text(encoding="utf-8")
+        lines = content.splitlines()
+        found = False
+        new_lines = []
+        for line in lines:
+            if line.startswith("SOURCE_MODE="):
+                new_lines.append(f"SOURCE_MODE={mode}")
+                found = True
+            else:
+                new_lines.append(line)
+        if not found:
+            new_lines.append(f"SOURCE_MODE={mode}")
+        target_env.write_text("\n".join(new_lines) + "\n", encoding="utf-8")
+
+
+def source_mode_command(mode: str) -> None:
+    """Comando CLI para cambiar el modo de fuentes (RF-11 a RF-13)."""
+    from sqlalchemy.orm import Session
+    from app.config import get_settings
+    from app.db.engine import get_engine
+
+    settings = get_settings()
+    with Session(get_engine()) as session:
+        set_source_mode(session, mode=mode, app_env=settings.app_env)
+        session.commit()
+    print(f"Modo cambiado a '{mode}'. Datos de la liga borrados y carga inicial preparada.")
+    print("El historial de la Wiki también se ha borrado: vuelve a importarlo con `uv run retake import-wiki-csv`.")
+
+
 COMMANDS = {
     "migrate": (migrate, "Aplica las migraciones pendientes a la base de datos."),
     "load-fixtures": (load_fixtures_command, "Carga los datos de prueba (muestra real y ficticios) y aplica la curación."),
     "apply-curation": (apply_curation_command, "Aplica el archivo de curación (roles, uniones, separaciones, retiradas)."),
+    "sync": (sync_command, "Arranca el trabajador continuo de sincronización periódica."),
     "sync-once": (sync_once_command, "Consulta BreakingPoint y muestra lo que devuelve, sin guardar nada."),
+    "source-mode": (source_mode_command, "Cambia el modo de fuentes en desarrollo, borra la liga y programa carga inicial."),
     "list-retained": (list_retained_command, "Lista los registros retenidos y sugiere candidatos (nunca une nada)."),
     "import-wiki-csv": (import_wiki_csv_command, "Importa los archivos CSV de la Wiki (historial y datos personales)."),
+    "set-admin-password": (set_admin_password_command, "Crea o cambia la cuenta del administrador (pide la contraseña sin mostrarla)."),
 }
 
 
@@ -161,11 +317,15 @@ def main(argv: list[str] | None = None) -> None:
             sub.add_argument("--dir", help="Carpeta con los CSV (por defecto WIKI_CSV_DIR, backend/data/wiki/).")
         if name == "sync-once":
             sub.add_argument("--source", choices=["bp"], required=True, help="Fuente a consultar (solo bp).")
+        if name == "source-mode":
+            sub.add_argument("mode", choices=["fixtures", "real", "simulated"], help="Modo de fuentes a activar.")
     args = parser.parse_args(argv)
     fn = COMMANDS[args.command][0]
     if args.command == "sync-once":
         fn(source=args.source)
     elif args.command == "import-wiki-csv":
         fn(directory=args.dir)
+    elif args.command == "source-mode":
+        fn(mode=args.mode)
     else:
         fn()

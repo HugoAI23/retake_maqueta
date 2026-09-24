@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test'
-import { menuButton, setBrowserLanguages } from './helpers.js'
+import { menuButton, mockSeason, setBrowserLanguages } from './helpers.js'
 
 test.describe('idioma (RF-59 a RF-69)', () => {
   test('primera visita: primer idioma admitido de la lista del navegador', async ({ page }) => {
     await setBrowserLanguages(page, ['fr-FR', 'en-GB', 'es'])
+    await mockSeason(page, 2026) // spec 003 (T-080): el año sale de la API
     await page.goto('/')
     await expect(page.locator('html')).toHaveAttribute('lang', 'en')
     await expect(page.getByRole('contentinfo')).toContainText('2026 season')
@@ -28,7 +29,10 @@ test.describe('idioma (RF-59 a RF-69)', () => {
     await page.evaluate(() => window.scrollTo(0, 200))
     const before = await page.evaluate(() => window.scrollY)
     expect(before).toBeGreaterThan(0)
-    await page.locator('header').getByRole('button', { name: 'English' }).click({ force: true })
+    // Spec 003 (I-30 de su plan): con la atribución de las fuentes el pie es más alto, y el botón de
+    // idioma queda medio oculto con este scroll; `click` haría que Playwright desplazara la página
+    // para mostrarlo. `dispatchEvent` pulsa el botón sin mover nada, que es lo que se comprueba aquí.
+    await page.locator('header').getByRole('button', { name: 'English' }).dispatchEvent('click')
     await expect(page.getByRole('main').getByRole('heading', { name: 'Players' })).toBeAttached()
     await expect(page).toHaveURL('/players')
     expect(await page.evaluate(() => window.scrollY)).toBe(before)

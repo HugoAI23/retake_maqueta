@@ -1,14 +1,19 @@
 """Rutas de solo lectura de los datos de la liga (plan de la spec 002, §1.4 y D-11)."""
 
+import re
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi.responses import StreamingResponse
+from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 
 from app.api import schemas as out
 from app.api import views
-from app.api.deps import get_clock, get_session
-from app.db.models import Match, Player
+from app.api.deps import engine_or_none, get_clock, get_session
+from app.api.freshness import freshness as freshness_of
+from app.api.stream import event_stream, pg_notifications
+from app.db.models import LogoImage, Match, Player
 from app.db.queries import current_season
 
 router = APIRouter(prefix="/api")
@@ -73,3 +78,49 @@ def standings(session: Session = Depends(get_session), clock=Depends(get_clock))
 def championships(session: Session = Depends(get_session)):
     """Historial de campeonatos mundiales terminados (RF-4, RF-55)."""
     return views.championship_views(session)
+
+
+# --- Spec 003 (F6) -------------------------------------------------------------------------------
+
+
+@router.get("/freshness", response_model=dict[str, out.FreshnessOut])
+def freshness(session: Session = Depends(get_session), clock=Depends(get_clock)):
+    """Último cambio y si está sin actualizar, por conjunto de datos (RF-89, RF-155, RF-158; C-20)."""
+    return freshness_of(session, clock.now())
+
+
+SHA256 = re.compile(r"^[0-9a-f]{64}$")
+
+
+@router.get("/logos/{logo_id}")
+def logo(logo_id: str, session: Session = Depends(get_session)):
+    """Copia propia de un logo con su tipo real, sin adivinar el tipo y con caché larga (RF-65 a RF-71).
+
+    La huella SHA-256 identifica el contenido, así que la respuesta no cambia nunca (`immutable`).
+    """
+    image = session.get(LogoImage, logo_id) if SHA256.match(logo_id) else None
+    if image is None:
+        raise HTTPException(status_code=404, detail="Logo no encontrado.")
+    return Response(content=image.content, media_type=image.media_type, headers={
+        "X-Content-Type-Options": "nosniff",
+        "Cache-Control": "public, max-age=31536000, immutable",
+    })
+
+
+@router.get("/stream")
+async def stream(request: Request, engine: Engine | None = Depends(engine_or_none), clock=Depends(get_clock)):
+    """Canal de eventos del servidor: `change`, `freshness` y latido (RF-79 a RF-81, RF-89; plan §3.3)."""
+    if engine is None:
+        raise HTTPException(status_code=503, detail="La base de datos no está disponible.")
+    conninfo = engine.url.set(drivername="postgresql").render_as_string(hide_password=False)
+
+    def stale_by_dataset() -> dict[str, bool]:
+        with Session(engine) as session:
+            return {dataset: entry["stale"] for dataset, entry in freshness_of(session, clock.now()).items()}
+
+    return StreamingResponse(
+        event_stream(pg_notifications(conninfo), stale_by_dataset, clock, is_disconnected=request.is_disconnected),
+        media_type="text/event-stream",
+        # Sin caché ni búfer en proxies, para que cada evento llegue en el momento (plan §10, "SSE y proxies").
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )

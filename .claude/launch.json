@@ -27,6 +27,17 @@
         "8000"
       ],
       "port": 8000
+    },
+    {
+      "name": "retake-sync",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": [
+        "run",
+        "--directory",
+        "backend",
+        "retake",
+        "sync"
+      ]
     }
   ]
 }

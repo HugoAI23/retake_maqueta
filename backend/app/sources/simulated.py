@@ -13,11 +13,15 @@ Los escenarios se definen con ayudantes que reproducen la estructura real de las
 import json
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from urllib.parse import urlsplit
 
 from app.sources import bp
 
 DAY = 24 * 3600
+# Hora de inicio de los escenarios: una hora antes de los partidos (`T`), dentro de la ventana
+# previa. `retake sync` en modo simulado arranca su reloj aquí (plan I-32).
+SCENARIO_START = datetime(2026, 12, 5, 19, 0, tzinfo=UTC)
 
 
 class ScenarioNotAllowed(Exception):
@@ -160,8 +164,58 @@ def _detail(match: dict, games: list[dict], start=0, end=None, bans=None) -> Stu
     return Stub(f"{bp.BASE_URL}/match/{match['id']}", _page(props), start=start, end=end)
 
 
+# Mapas de una serie, en orden, y el marcador de un mapa ganado en cada modo.
+MAP_POOL = (("Hardpoint", "Colossus"), ("Search & Destroy", "Raid"), ("Overload", "Den"),
+            ("Hardpoint", "Exposure"), ("Search & Destroy", "Raid"))
+MAP_SCORES = {"Hardpoint": (250, 200), "Search & Destroy": (6, 3), "Overload": (3, 1)}
+
+
+def _series(match: dict, start=0, end=None) -> Stub:
+    """Página de un partido cuyos mapas cuadran con su marcador: los ganados y, en vivo, el que se juega.
+
+    El trabajador consulta la página de cada partido en vivo o terminado (RF-16, RF-19); sin ella,
+    el recorrido manual en modo simulado registraría un 404 en cada revisión (T-057).
+    """
+    t1, t2 = match["team_1_id"], match["team_2_id"]
+    s1, s2 = match["team_1_score"] or 0, match["team_2_score"] or 0
+    # El ganador de la serie gana el último mapa.
+    winners = [t2] * s2 + [t1] * s1 if match["winner_id"] == t1 else [t1] * s1 + [t2] * s2
+    games = []
+    for num, winner in enumerate(winners, start=1):
+        mode, map_name = MAP_POOL[num - 1]
+        high, low = MAP_SCORES[mode]
+        games.append(_game(num, mode, map_name, (high, low) if winner == t1 else (low, high), winner, teams=(t1, t2)))
+    if match["status"] == "live":
+        mode, map_name = MAP_POOL[len(games)]
+        games.append(_game(len(games) + 1, mode, map_name, (0, 0), None, teams=(t1, t2)))
+    return _detail(match, games, start, end)
+
+
+# Un jugador ficticio por equipo, con el mismo identificador que en las estadísticas de `_game`.
+PLAYERS = {4: 9001, 743: 9002, 26: 9003, 14: 9004}
+
+
+def _team_pages() -> tuple[Stub, ...]:
+    """Fichas de equipo (puesto y puntos) y de sus jugadores (datos y roster) para el "Resto" (RF-18)."""
+    stubs = []
+    for rank, team in enumerate(TEAMS, start=1):
+        player_id = PLAYERS[team["id"]]
+        stubs.append(Stub(f"{bp.BASE_URL}/teams/{team['id']}", _page({
+            "team": {"id": team["id"], "players": [{"id": player_id, "retired": False, "current_team_id": team["id"]}]},
+            "standings": {"season_id": 2026, "rank": rank, "points": 100 - 10 * rank},
+        })))
+        stubs.append(Stub(f"{bp.BASE_URL}/players/{player_id}", _page({
+            "player": {"id": player_id, "tag": f"[FICTICIO] Jugador {player_id}", "first_name": "[FICTICIO]",
+                       "last_name": f"Nombre {player_id}", "date_of_birth": "2000-01-01",
+                       "retired": False},
+            "teamHistory": [{"team_id": team["id"], "role_name": "Player", "start_date": "2025-10-01", "end_date": None}],
+        })))
+    return tuple(stubs)
+
+
 def _robots() -> tuple[Stub, ...]:
-    return (Stub(f"{bp.BASE_URL}/robots.txt", status=404),)
+    """Normas para robots (sin publicar) y fichas de equipo y jugador, comunes a todos los escenarios."""
+    return (Stub(f"{bp.BASE_URL}/robots.txt", status=404),) + _team_pages()
 
 
 # --- Escenarios del plan §6.4 ------------------------------------------------------------------
@@ -190,11 +244,12 @@ def partido_en_vivo() -> Scenario:
 
 def marcador_que_retrocede() -> Scenario:
     """En vivo, la fuente publica 2-1 y al minuto, por error, 1-1; después 2-2 (RF-59)."""
+    stages = [(_match(901, "live", T, score=(2, 1)), 0, 60), (_match(901, "live", T, score=(1, 1)), 60, 120),
+              (_match(901, "live", T, score=(2, 2)), 120, None)]
     return Scenario("marcador_que_retrocede", marcador_que_retrocede.__doc__, _robots() + (
         _listing(), _api_page([], "completed"),
-        _api_page([_match(901, "live", T, score=(2, 1))], "upcoming_live", 0, 60),
-        _api_page([_match(901, "live", T, score=(1, 1))], "upcoming_live", 60, 120),
-        _api_page([_match(901, "live", T, score=(2, 2))], "upcoming_live", 120),
+        *(_api_page([match], "upcoming_live", start, end) for match, start, end in stages),
+        *(_series(match, start, end) for match, start, end in stages),
     ))
 
 
@@ -202,8 +257,9 @@ def fuente_caida() -> Scenario:
     """BreakingPoint responde 503 durante 2 minutos y después vuelve (RF-43 a RF-45)."""
     down = (Stub(BP_MATCHES, "<h1>503 Service Unavailable</h1>", status=503, start=0, end=120),
             Stub(BP_API_PAGE, "Service Unavailable", status=503, start=0, end=120))
-    up = (_listing(start=120), _api_page([_match(902, "complete", T, (3, 0), 4)], "completed", 120),
-          _api_page([], "upcoming_live", 120))
+    final = _match(902, "complete", T, (3, 0), 4)
+    up = (_listing(start=120), _api_page([final], "completed", 120), _api_page([], "upcoming_live", 120),
+          _series(final, start=120))
     return Scenario("fuente_caida", fuente_caida.__doc__, _robots() + down + up)
 
 
@@ -213,6 +269,7 @@ def respuesta_vacia() -> Scenario:
     return Scenario("respuesta_vacia", respuesta_vacia.__doc__, _robots() + (
         _listing(), _api_page([], "upcoming_live"),
         _api_page(matches, "completed", 0, 60), _api_page([], "completed", 60),
+        *(_series(m) for m in matches),  # las páginas siguen ahí aunque la lista llegue vacía
     ))
 
 
@@ -232,6 +289,8 @@ def partido_desaparece() -> Scenario:
         _listing(), _api_page([], "upcoming_live"),
         _api_page([match], "completed", 0, 60), _api_page([], "completed", 60, 60 + 25 * 3600),
         _api_page([match], "completed", 60 + 25 * 3600),
+        # Mientras falta, tampoco responde su página: si respondiera, seguiría apareciendo (RF-50).
+        _series(match, 0, 60), _series(match, 60 + 25 * 3600),
     ))
 
 
@@ -254,6 +313,7 @@ def cambio_de_temporada() -> Scenario:
         _listing(seasons=(SEASON_2026, SEASON_2027), events=(*EVENTS_2026, EVENT_2027)),
         _api_page([], "completed"),
         _api_page([first], "upcoming_live", 0, 3600), _api_page([live], "upcoming_live", 3600),
+        _series(live, start=3600),
     ))
 
 

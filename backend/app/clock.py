@@ -5,7 +5,7 @@ observación) reciben un reloj en lugar de leer la hora del sistema, para que la
 pruebas puedan fijar el momento exacto.
 """
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 
 class SystemClock:
@@ -29,3 +29,27 @@ class FixedClock:
     def set(self, instant: datetime) -> None:
         """Mueve el reloj a otro instante."""
         self.instant = instant
+
+    def advance(self, seconds: float | timedelta) -> None:
+        """Adelanta el reloj el número de segundos o timedelta indicado."""
+        delta = seconds if isinstance(seconds, timedelta) else timedelta(seconds=seconds)
+        self.instant += delta
+
+
+
+class ScenarioClock:
+    """Reloj de la fuente simulada: empieza en la hora de los escenarios y avanza en tiempo real.
+
+    Los escenarios fijan sus partidos en una fecha concreta; con el reloj del sistema, `retake sync`
+    en modo simulado no llegaría nunca a esa hora (spec 003, registro I-32 del plan).
+    """
+
+    def __init__(self, start: datetime, real=None):
+        if start.tzinfo is None:
+            raise ValueError("El instante debe llevar zona horaria (UTC).")
+        self._real = real or SystemClock()
+        self._start = start
+        self._real_start = self._real.now()
+
+    def now(self) -> datetime:
+        return self._start + (self._real.now() - self._real_start)

@@ -13,6 +13,12 @@ export default defineConfig({
       '/api': 'http://localhost:8000',
     },
   },
+  // La versión compilada que se sirve con `vite preview` usa la misma API (spec 003, T-082).
+  preview: {
+    proxy: {
+      '/api': 'http://localhost:8000',
+    },
+  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.js'],
