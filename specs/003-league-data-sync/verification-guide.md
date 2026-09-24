@@ -32,7 +32,7 @@ Abreviaturas de las órdenes, desde la raíz del repositorio:
    npm run dev
    ```
 
-> **Atención:** `retake source-mode` borra toda la liga de la base de desarrollo, también el historial de tus CSV (RF-12). Al terminar, vuelve con `uv run --directory backend retake source-mode fixtures` e importa de nuevo con `uv run --directory backend retake import-wiki-csv`.
+> **Atención:** `retake source-mode` borra toda la liga de la base de desarrollo, también el historial de tus CSV, y el registro, las incidencias y los resúmenes del modo anterior (RF-12; C-27). La cuenta de administración se conserva. Al terminar, vuelve con `uv run --directory backend retake source-mode fixtures` e importa de nuevo con `uv run --directory backend retake import-wiki-csv`.
 
 ## Guía por fases
 
@@ -65,7 +65,7 @@ Abreviaturas de las órdenes, desde la raíz del repositorio:
 | RF-9 | Prueba | pt `tests/integration/sync/test_worker.py -k produccion` | En producción no arranca con la fuente simulada ni con datos ficticios. |
 | RF-10 | Prueba | `grep -rn "real_client\|breakingpoint.gg" backend/tests` | Ninguna prueba crea un cliente real; todas usan transportes simulados. |
 | RF-11 | Terminal | `uv run --directory backend retake source-mode simulated` | En desarrollo se puede elegir `fixtures`, `real` o `simulated`; fuera de desarrollo se niega. |
-| RF-12 | Prueba | pt `tests/integration/sync/test_source_mode.py` | Al cambiar de modo se borra la liga guardada. |
+| RF-12 | Prueba | pt `tests/integration/sync/test_source_mode.py` | Al cambiar de modo se borran la liga guardada y el registro, las incidencias y los resúmenes del modo anterior; la cuenta de administración, sus sesiones y el bloqueo por intentos se conservan (C-27). |
 | RF-13 | Prueba | La misma | Se programa una carga inicial nueva (o se cargan los datos de prueba en `fixtures`). |
 | RF-14 | Prueba | pt `tests/integration/sync/test_simulated_e2e.py -k cambio_de_temporada` | El calendario de la próxima temporada se obtiene y se guarda. |
 | RF-15 | Prueba | pt `tests/integration/api/test_003_api.py -k proxima_temporada` | Ninguna ruta devuelve datos de la próxima temporada. |
@@ -77,9 +77,12 @@ Abreviaturas de las órdenes, desde la raíz del repositorio:
 | RF-16 | Prueba | pt `tests/unit/sync/test_planner.py -k en_vivo` y pt `tests/integration/sync/test_worker.py -k en_vivo` | Cada partido en vivo cada 60 s, antes que la cola de partidos terminados. |
 | RF-17 | Prueba | pt `tests/unit/sync/test_planner.py -k antes_del_partido` | Cada 60 s desde 1 h antes de la hora y mientras no empiece. |
 | RF-18 | Prueba | pt `tests/unit/sync/test_planner.py -k resto` y pt `tests/integration/sync/test_worker.py -k fichas` | El "Resto" cada hora, con las fichas de equipo (tabla, rosters y jugadores). |
-| RF-19 | Prueba | pt `tests/integration/sync/test_worker.py -k una_vez_por_hora` | Un partido con estadísticas pendientes se revisa cada hora, no en cada ciclo. |
-| RF-20 | Prueba | pt `tests/unit/sync/test_planner.py -k 7_dias` | 7 días más tras tener todas sus estadísticas. |
-| RF-21 | Prueba | pt `tests/unit/sync/test_planner.py -k fuera_de_plazo` | Después, solo si lo pide el administrador. |
+| RF-18a | Prueba | pt `tests/unit/sources/test_bp_unlisted.py -k "tabla_se_registra or conocidos"` y pt `tests/integration/ingest/test_003_unlisted.py -k "sin_listar or nombre_antiguo or identidades_nuevas"` | Un equipo que la fuente ya no lista pero está en la tabla entra como franquicia, antes que sus partidos; unido a su nombre siguiente, los partidos de la temporada llevan el antiguo y no se crean identidades de más (C-22). En la base real: Boston Breach con sus 37 partidos. |
+| RF-18b | Prueba | pt `tests/unit/sources/test_bp_unlisted.py -k invitado` y pt `tests/integration/sync/test_guest_refresh.py` | Un equipo que no está en la tabla entra como invitado; su ficha y las de sus jugadores, al aparecer y después una vez al mes; si falla, con el siguiente listado (C-24). En la base real: 4 invitados y 9 partidos. |
+| RF-18c | Prueba | pt `tests/integration/ingest/test_003_unlisted.py -k "ajeno or siguen_rechazando"` y pt `tests/integration/sync/test_runner.py -k ajeno` | El roster de un equipo que no es de la CDL ni invitado se descarta sin anotarlo; las demás referencias desconocidas se siguen rechazando (C-26). |
+| RF-19 | Prueba | pt `tests/unit/domain/test_review_windows.py` y pt `tests/unit/sync/test_planner.py -k recien_finalizado` | Al finalizar, o al registrarse ya finalizado, se consulta su página una vez (C-25). |
+| RF-20 | Prueba | pt `tests/integration/sync/test_worker.py -k "tres_dias or reinicie or antiguo"` | Otra consulta a las 24, 48 y 72 horas, guardada en la base (un reinicio no repite nada); ninguna si el partido ya llevaba más de 3 días jugado (C-25). En la base real: los 281 partidos de julio, sin revisiones. |
+| RF-21 | Prueba | pt `tests/unit/sync/test_planner.py -k "tres_revisiones or fallo_se_repite"` | Después, solo si lo pide el administrador; una consulta que falla se repite a la hora. |
 | RF-22 | Prueba | pt `tests/integration/sync/test_runner.py -k con_exito` | Lo nuevo o cambiado se registra al terminar la consulta. |
 | RF-23 | Prueba | pt `tests/unit/sync/test_planner.py -k prioridad` | Si no caben todos, el prioritario cada 60 s… |
 | RF-24 | Prueba | La misma | …y los demás cada 2 min. |
@@ -274,6 +277,16 @@ Abreviaturas de las órdenes, desde la raíz del repositorio:
 | RF-160 | Prueba | vt `src/layout/footer.test.jsx` · pw `e2e/footer.spec.js` | Las tres fuentes con enlace, y la licencia CC BY-SA de la Wiki, en todas las páginas. |
 
 ---
+
+## Cambios en la spec 002 surgidos en la 003 (C-23, C-25)
+
+| RF de la 002 | Dónde | Acción | Resultado esperado |
+|---|---|---|---|
+| RF-117a | Prueba | pt `tests/integration/ingest/test_003_unlisted.py -k invitado` | Un equipo invitado es una franquicia marcada como invitada, con sus identidades y su roster. |
+| RF-117b | Prueba | pt `tests/unit/sources/test_bp_unlisted.py -k ficha_mensual` | Sus jugadores, con los mismos datos que los de la CDL. |
+| RF-117c | Prueba | pt `tests/integration/api/test_003_guests.py` | Solo en sus partidos, marcado (`isGuest`, `teamIsGuest`): nunca en la tabla ni en las listas de franquicias o jugadores. |
+| RF-117d | Prueba | pt `tests/integration/ingest/test_003_unlisted.py -k deja_de_serlo` | Si entra en la lista de la liga, deja de ser invitado y conserva sus identidades. |
+| §2, plazos de corrección | Prueba | Las de RF-19 a RF-21 de la 003 | Las correcciones de un partido llegan hasta 3 días después de finalizar (C-25). |
 
 ## Checklist de seguridad (constitución §6, plan §9, T-084)
 

@@ -4,20 +4,22 @@ import { defineConfig } from 'vite'
 
 // Configuración de Vite: React + Tailwind CSS.
 // El bloque `test` lo lee Vitest (pruebas unitarias y de componentes).
+
+// Proxy de /api al backend. `changeOrigin: false` conserva el `Host` del navegador: la página de
+// administración solo acepta peticiones del mismo origen (spec 003, plan D-11), y con la forma
+// abreviada ('/api': 'http://…') Vite reescribe el `Host` y el backend las rechaza con 403.
+const apiProxy = { '/api': { target: 'http://localhost:8000', changeOrigin: false } }
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   // En desarrollo, las llamadas a /api van al backend de FastAPI (spec 002, plan D-11):
   // el frontend usa /api como si fuera su propio origen, sin configurar CORS.
   server: {
-    proxy: {
-      '/api': 'http://localhost:8000',
-    },
+    proxy: apiProxy,
   },
   // La versión compilada que se sirve con `vite preview` usa la misma API (spec 003, T-082).
   preview: {
-    proxy: {
-      '/api': 'http://localhost:8000',
-    },
+    proxy: apiProxy,
   },
   test: {
     environment: 'jsdom',

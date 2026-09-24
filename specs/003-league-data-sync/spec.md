@@ -2,7 +2,7 @@
 
 - **ID**: `003-league-data-sync`
 - **Fecha**: `2026-09-23` (borrador, segunda ronda de pendientes y resolución de la revisión QA, el mismo día)
-- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-23; revisión R-1 del mismo día, durante el plan; cambios C-15 a C-21 del mismo día: la Wiki entra por archivos CSV; cambios C-22 a C-26 del 2026-09-24: franquicias que la fuente ya no lista, equipos invitados, revisión de partidos finalizados y rosters de equipos ajenos a la CDL)
+- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-23; revisión R-1 del mismo día, durante el plan; cambios C-15 a C-21 del mismo día: la Wiki entra por archivos CSV; cambios C-22 a C-27 del 2026-09-24: franquicias que la fuente ya no lista, equipos invitados, revisión de partidos finalizados, rosters de equipos ajenos a la CDL y registro al cambiar de modo)
 
 > **Numeración:** tras la revisión QA, la spec se renumeró de principio a fin, porque aún no estaba aprobada y ninguna otra spec cita sus números. Las tablas del §5 usan ya los números nuevos.
 
@@ -72,7 +72,8 @@ Además, cierra tres deudas de specs anteriores:
 * **RF-9 (Opcional)**: DONDE Retake se ejecute en producción, EL SISTEMA solo mantendrá datos obtenidos de las fuentes reales.
 * **RF-10 (Opcional)**: DONDE Retake se ejecute en las pruebas automáticas, EL SISTEMA usará solo los datos de prueba de la spec 002, sin consultar las fuentes reales.
 * **RF-11 (Opcional)**: DONDE Retake se ejecute en el entorno de desarrollo, EL SISTEMA permitirá elegir entre los datos de prueba de la spec 002 y las fuentes reales.
-* **RF-12 (Dirigido por evento)**: CUANDO se cambie de modo en el entorno de desarrollo, EL SISTEMA borrará los datos de la liga guardados en ese entorno.
+* **RF-12 (Dirigido por evento)**: CUANDO se cambie de modo en el entorno de desarrollo, EL SISTEMA borrará los datos de la liga guardados en ese entorno, y el registro de actualizaciones, las incidencias y los resúmenes diarios del modo anterior.
+  * *Nota (cambio C-27):* el registro de un modo no describe las fuentes del otro. En modo simulado, además, sus fechas son las del escenario (plan I-32) y aparecerían como futuras. La cuenta de administración, sus sesiones y el bloqueo por intentos fallidos se conservan.
 * **RF-13 (Dirigido por evento)**: CUANDO se cambie de modo en el entorno de desarrollo, EL SISTEMA hará una carga inicial nueva con el modo elegido.
 * **RF-14 (Dirigido por evento)**: CUANDO una fuente publique el calendario de la próxima temporada, EL SISTEMA lo obtendrá.
 * **RF-15 (Estado)**: MIENTRAS la próxima temporada no sea la actual, EL SISTEMA no mostrará ninguno de sus datos.
@@ -530,12 +531,13 @@ Por la decisión Q-17, cada cambio se presentó a Hugo y se aprobó por separado
 | C-24 | 003, nota de RF-18a, RF-18b y §3 | Los equipos que no están en la tabla se registran como invitados; sus datos y los de sus jugadores se consultan al aparecer y después una vez al mes | Ídem | Aprobado · aplicado (2026-09-24) |
 | C-25 | 003, RF-19 y RF-20; 002, plazos de corrección | Revisión de partidos finalizados: una consulta al finalizar y una al día durante 3 días; ninguna más si ya eran antiguos al registrarse | Primera carga real, T-086: 281 partidos de julio en revisión horaria de 7 días | Aprobado · aplicado (2026-09-24) |
 | C-26 | 003, RF-18c | Los rosters de equipos que no son de la CDL ni invitados se descartan sin anotarlos | Primera carga real, T-086: 33 rosters de 23 equipos de Challengers | Aprobado · aplicado (2026-09-24) |
+| C-27 | 003, RF-12 | Al cambiar de modo en desarrollo también se borran el registro, las incidencias y los resúmenes del modo anterior | T-087: el registro de `/admin` mostraba 140 consultas simuladas con fecha de diciembre | Aprobado · aplicado (2026-09-24) |
 
 Además, **el ajuste I-15 del plan de la 002** queda resuelto por RF-61 a RF-64. Es un plan, no una spec, así que basta con anotarlo.
 
 ### 5.4 Pendientes
 
-No queda ningún `[NECESITA ACLARACIÓN]` abierto. Los cambios C-1 a C-26 están aprobados y aplicados. Limitación conocida: RF-75 de la 002 incumplido mientras la web de la CDL esté en reserva (F0-3).
+No queda ningún `[NECESITA ACLARACIÓN]` abierto. Los cambios C-1 a C-27 están aprobados y aplicados. Limitación conocida: RF-75 de la 002 incumplido mientras la web de la CDL esté en reserva (F0-3).
 
 ---
 

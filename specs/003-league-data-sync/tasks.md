@@ -3,7 +3,7 @@
 - **Spec**: [`spec.md`](spec.md) (`Aprobado`, 2026-09-23, con la revisión R-1)
 - **Plan**: [`plan.md`](plan.md) (`Aprobado`, 2026-09-23)
 - **Fecha**: `2026-09-23`
-- **Estado**: `Aprobado` (aprobado por Hugo el 2026-09-23). En implementación: **F0, F1, F2 y F3 completadas** el 2026-09-23 (el acceso en vivo a la Wiki de I-17 se retiró con I-26). **F4 completada** el 2026-09-23 (T-037 a T-048 y T-091 a T-093). **F4b completada** el 2026-09-23 (importación de la Wiki por CSV, cambios C-15 a C-21; Hugo importó sus CSV reales: 14 campeonatos, 284 clasificaciones, 168 franquicias y 515 jugadores). **F5 a F8 completadas** el 2026-09-23 (F5 revisada según el plan, I-27). **F9:** T-084, T-085 y T-088 hechas; quedan T-086 y T-087 (Hugo), T-089 y T-094 (calendario) y T-090. Ajustes en el registro del plan, I-1 a I-40.
+- **Estado**: `Aprobado` (aprobado por Hugo el 2026-09-23). En implementación: **F0, F1, F2 y F3 completadas** el 2026-09-23 (el acceso en vivo a la Wiki de I-17 se retiró con I-26). **F4 completada** el 2026-09-23 (T-037 a T-048 y T-091 a T-093). **F4b completada** el 2026-09-23 (importación de la Wiki por CSV, cambios C-15 a C-21; Hugo importó sus CSV reales: 14 campeonatos, 284 clasificaciones, 168 franquicias y 515 jugadores). **F5 a F8 completadas** el 2026-09-23 (F5 revisada según el plan, I-27). **F9:** T-084, T-085, T-086 (2026-09-24: primera carga real, cambios C-22 a C-27) y T-088 hechas; quedan T-087 (Hugo confirma la guía), T-089 y T-094 (calendario) y T-090. Ajustes en el registro del plan, I-1 a I-42.
 
 Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los requisitos que cubre (**RF**), de qué tareas depende (**Dep.**) y cuándo se considera terminada (**Hecho cuando**).
 
@@ -515,7 +515,7 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
   - **RF:** —
   - **Dep.:** T-084
   - **Hecho cuando:** todo está en verde.
-- [ ] **T-086** Recorrido manual en modo real: `retake sync` durante al menos un ciclo de cada tipo que la temporada permita (resto y próxima temporada; el historial, con `retake import-wiki-csv`, I-26), revisando el registro y la página de administración.
+- [x] **T-086** Recorrido manual en modo real: `retake sync` durante al menos un ciclo de cada tipo que la temporada permita (resto y próxima temporada; el historial, con `retake import-wiki-csv`, I-26), revisando el registro y la página de administración.
   - **RF:** RF-1 a RF-42, RF-112 a RF-114
   - **Dep.:** T-085
   - **Hecho cuando:** Hugo lo ha comprobado en la página de administración.

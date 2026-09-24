@@ -219,11 +219,13 @@ def set_source_mode(
     from sqlalchemy import delete
     from app.db.models import (
         Championship,
+        DailySummary,
         DatasetChange,
         Event,
         ExternalRef,
         Franchise,
         Identity,
+        Incident,
         LogoImage,
         Match,
         Observation,
@@ -232,6 +234,7 @@ def set_source_mode(
         Season,
         SourceState,
         SyncJob,
+        SyncRun,
     )
 
     session.execute(delete(Observation))
@@ -248,6 +251,11 @@ def set_source_mode(
     session.execute(delete(Event))
     session.execute(delete(Season))
     session.execute(delete(LogoImage))
+    # El registro, las incidencias y los resúmenes eran del modo anterior (RF-12; cambio C-27).
+    # La cuenta de administración, sus sesiones y el bloqueo por intentos fallidos se conservan.
+    session.execute(delete(SyncRun))
+    session.execute(delete(Incident))
+    session.execute(delete(DailySummary))
     session.flush()
 
     # 2. Carga inicial según el modo elegido (RF-13)
@@ -296,7 +304,7 @@ def source_mode_command(mode: str) -> None:
     with Session(get_engine()) as session:
         set_source_mode(session, mode=mode, app_env=settings.app_env)
         session.commit()
-    print(f"Modo cambiado a '{mode}'. Datos de la liga borrados y carga inicial preparada.")
+    print(f"Modo cambiado a '{mode}'. Datos de la liga y registro del modo anterior borrados; carga inicial preparada.")
     print("El historial de la Wiki también se ha borrado: vuelve a importarlo con `uv run retake import-wiki-csv`.")
 
 
