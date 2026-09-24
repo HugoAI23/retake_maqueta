@@ -3,7 +3,7 @@
 - **Spec**: [`spec.md`](spec.md) (`Aprobado`, 2026-09-23, con la revisión R-1)
 - **Plan**: [`plan.md`](plan.md) (`Aprobado`, 2026-09-23)
 - **Fecha**: `2026-09-23`
-- **Estado**: `Aprobado` (aprobado por Hugo el 2026-09-23). En implementación: **F0 y F1 completadas** el 2026-09-23 (decisiones de F0 en `source-map.md` §5; ajustes en el registro del plan, I-1 a I-12).
+- **Estado**: `Aprobado` (aprobado por Hugo el 2026-09-23). En implementación: **F0, F1 y F2 completadas** el 2026-09-23 (decisiones de F0 en `source-map.md` §5; ajustes en el registro del plan, I-1 a I-13).
 
 Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los requisitos que cubre (**RF**), de qué tareas depende (**Dep.**) y cuándo se considera terminada (**Hecho cuando**).
 
@@ -105,39 +105,39 @@ Checklist de tareas atómicas, en orden de ejecución. Cada tarea indica los req
 
 ## F2 — Reglas de dominio
 
-- [ ] **T-016** `domain/vocabulary`: umbrales (60 s y 1 h; ciclos de página de 30 s y 5 min) como constantes únicas. *(Las listas cerradas —tipos de consulta, resultados, tipos de incidencia, conjuntos de datos, formatos de logo— se adelantaron a F1 porque las necesitaban las restricciones de la migración; registro del plan I-9.)*
+- [x] **T-016** `domain/vocabulary`: umbrales (60 s y 1 h; ciclos de página de 30 s y 5 min) como constantes únicas. *(Las listas cerradas —tipos de consulta, resultados, tipos de incidencia, conjuntos de datos, formatos de logo— se adelantaron a F1 porque las necesitaban las restricciones de la migración; registro del plan I-9.)*
   - **RF:** RF-16, RF-18, RF-89
   - **Dep.:** T-015
   - **Hecho cuando:** los modelos y las migraciones importan de aquí las listas cerradas.
-- [ ] **T-017** Pruebas e implementación de `live_score`: más mapas terminados y, si empatan, más puntos del mapa en curso; nunca retrocede; solo mientras el partido está en vivo.
+- [x] **T-017** Pruebas e implementación de `live_score`: más mapas terminados y, si empatan, más puntos del mapa en curso; nunca retrocede; solo mientras el partido está en vivo.
   - **RF:** RF-57 a RF-59
   - **Dep.:** T-016
   - **Hecho cuando:** cubre fuentes contradictorias, marcador ausente y empate exacto.
-- [ ] **T-018** Pruebas e implementación de `cancellation`: la cancelación solo vale si la publica la fuente de mayor prioridad entre las que publican el partido; en otro caso, devuelve "discrepancia".
+- [x] **T-018** Pruebas e implementación de `cancellation`: la cancelación solo vale si la publica la fuente de mayor prioridad entre las que publican el partido; en otro caso, devuelve "discrepancia".
   - **RF:** RF-53
   - **Dep.:** T-016
   - **Hecho cuando:** cubre las combinaciones de las tres fuentes.
-- [ ] **T-019** Pruebas e implementación de `identity_merge`: combinación campo a campo (con la fecha de vigencia) según la prioridad de la 002, y si el resultado combinado cambió.
+- [x] **T-019** Pruebas e implementación de `identity_merge`: combinación campo a campo (con la fecha de vigencia) según la prioridad de la 002, y si el resultado combinado cambió.
   - **RF:** RF-61 a RF-63
   - **Dep.:** T-016
   - **Hecho cuando:** un cambio solo en una fuente secundaria que no altera el resultado no produce una identidad nueva.
-- [ ] **T-020** Pruebas e implementación de `review_windows`: revisar cada hora mientras haya estadísticas pendientes y durante 7 días desde que se completan; después, no.
+- [x] **T-020** Pruebas e implementación de `review_windows`: revisar cada hora mientras haya estadísticas pendientes y durante 7 días desde que se completan; después, no.
   - **RF:** RF-19 a RF-21
   - **Dep.:** T-016
   - **Hecho cuando:** cubre el partido sin mapas (forfeit) y los límites exactos de los 7 días.
-- [ ] **T-021** Pruebas e implementación de `disappearance`: desaparecido tras 24 h sin aparecer en ninguna consulta con éxito de las fuentes que lo publicaban; en vivo sin aparecer más de 60 s.
+- [x] **T-021** Pruebas e implementación de `disappearance`: desaparecido tras 24 h sin aparecer en ninguna consulta con éxito de las fuentes que lo publicaban; en vivo sin aparecer más de 60 s.
   - **RF:** RF-50, RF-90
   - **Dep.:** T-016
   - **Hecho cuando:** una consulta fallida no cuenta como "no aparecer".
-- [ ] **T-022** Pruebas e implementación de `freshness`: conjunto sin actualizar a partir de su última consulta con éxito y su umbral; fuente parada si pasa más del doble de su ciclo más corto sin consultas.
+- [x] **T-022** Pruebas e implementación de `freshness`: conjunto sin actualizar a partir de su última consulta con éxito y su umbral; fuente parada si pasa más del doble de su ciclo más corto sin consultas.
   - **RF:** RF-89, RF-114
   - **Dep.:** T-016
   - **Hecho cuando:** cubre los dos umbrales y el cambio de ciclo cuando empieza o acaba un partido en vivo.
-- [ ] **T-023** Pruebas e implementación de `live_priority`: con varios partidos en vivo que no caben en 60 s, el prioritario (el del spotlight o, sin su spec, el de hora de inicio más temprana) cada 60 s y los demás cada 2 min.
+- [x] **T-023** Pruebas e implementación de `live_priority`: con varios partidos en vivo que no caben en 60 s, el prioritario (el del spotlight o, sin su spec, el de hora de inicio más temprana) cada 60 s y los demás cada 2 min.
   - **RF:** RF-23 a RF-26
   - **Dep.:** T-016
   - **Hecho cuando:** cubre el empate de hora de inicio con un desempate estable.
-- [ ] **T-024 · Cierre F2**
+- [x] **T-024 · Cierre F2**
   - **Dep.:** T-016 a T-023
   - **Hecho cuando:** las pruebas están en verde, se ha entregado la guía y se ha sugerido el commit.
 
