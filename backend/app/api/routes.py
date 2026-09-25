@@ -4,7 +4,6 @@ import re
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
-from fastapi.responses import StreamingResponse
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 
@@ -12,7 +11,7 @@ from app.api import schemas as out
 from app.api import views
 from app.api.deps import engine_or_none, get_clock, get_session
 from app.api.freshness import freshness as freshness_of
-from app.api.stream import event_stream, pg_notifications
+from app.api.stream import EventStreamResponse, event_stream, pg_notifications
 from app.db.models import LogoImage, Match, Player
 from app.db.queries import current_season
 
@@ -118,7 +117,7 @@ async def stream(request: Request, engine: Engine | None = Depends(engine_or_non
         with Session(engine) as session:
             return {dataset: entry["stale"] for dataset, entry in freshness_of(session, clock.now()).items()}
 
-    return StreamingResponse(
+    return EventStreamResponse(
         event_stream(pg_notifications(conninfo), stale_by_dataset, clock, is_disconnected=request.is_disconnected),
         media_type="text/event-stream",
         # Sin caché ni búfer en proxies, para que cada evento llegue en el momento (plan §10, "SSE y proxies").

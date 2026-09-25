@@ -14,6 +14,9 @@ import asyncio
 import json
 from collections.abc import AsyncIterator, Awaitable, Callable
 
+import anyio
+from starlette.responses import StreamingResponse
+
 from app.domain.vocabulary import DATASETS
 from app.sync.notify import NOTIFY_CHANNEL
 
@@ -73,10 +76,12 @@ async def event_stream(
         async for payload in notifications:
             await queue.put(payload)
 
+    # Plan I-47: la escucha arranca dentro del bloque que la cierra, para que ningún fallo o
+    # cancelación (por ejemplo, en la primera consulta de frescura) la deje abierta.
     listener = asyncio.create_task(pump())
-    previous = await asyncio.to_thread(freshness_fn)
-    next_beat = loop.time() + heartbeat_seconds
     try:
+        previous = await asyncio.to_thread(freshness_fn)
+        next_beat = loop.time() + heartbeat_seconds
         while True:
             if is_disconnected is not None and await is_disconnected():
                 return
@@ -102,3 +107,20 @@ async def event_stream(
         except (asyncio.CancelledError, Exception):  # noqa: BLE001 — la conexión ya se cierra
             pass
         await notifications.aclose()
+
+
+class EventStreamResponse(StreamingResponse):
+    """Respuesta del canal que siempre cierra su generador (plan I-47).
+
+    Si la página se va mientras se envía un evento, Starlette cancela el envío y el generador se
+    queda suspendido en su `yield`, sin llegar a su `finally`: la conexión `LISTEN` con PostgreSQL
+    seguía abierta para siempre. Aquí se cierra al terminar la respuesta, protegido de la
+    cancelación para que el cierre de la conexión llegue a completarse.
+    """
+
+    async def __call__(self, scope, receive, send) -> None:
+        try:
+            await super().__call__(scope, receive, send)
+        finally:
+            with anyio.CancelScope(shield=True):
+                await self.body_iterator.aclose()

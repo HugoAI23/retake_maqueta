@@ -12,7 +12,7 @@ from datetime import UTC, datetime
 
 from sqlalchemy import text
 
-from app.api.stream import event_stream, pg_notifications
+from app.api.stream import EventStreamResponse, event_stream, pg_notifications
 from app.clock import FixedClock
 
 NOW = datetime(2026, 12, 5, 20, 0, tzinfo=UTC)
@@ -88,3 +88,63 @@ def test_recibe_el_aviso_real_de_postgresql_tras_una_ingesta(clean_db):
         return chunk
 
     assert parse(asyncio.run(scenario())) == ("change", {"datasets": ["matches"], "changedAt": NOW.isoformat()})
+
+
+def test_si_la_pagina_se_va_con_un_envio_a_medias_se_cierra_la_escucha():
+    # Plan I-47: con el navegador y el proxy, la página se iba mientras se enviaba un latido; el
+    # canal se quedaba suspendido y su conexión `LISTEN` con PostgreSQL no se cerraba nunca.
+    closed = []
+
+    async def listening():
+        try:
+            await asyncio.sleep(3600)
+            yield ""
+        finally:
+            closed.append(True)
+
+    async def scenario():
+        response = EventStreamResponse(event_stream(listening(), dict, FixedClock(NOW), heartbeat_seconds=0.02))
+        sent = []
+
+        async def send(message):
+            sent.append(message["type"])
+            if len(sent) >= 3:  # la página ya no lee: el envío no termina
+                await asyncio.sleep(3600)
+
+        async def receive():
+            await asyncio.sleep(0.2)
+            return {"type": "http.disconnect"}
+
+        await asyncio.wait_for(response({"type": "http", "asgi": {"spec_version": "2.3"}}, receive, send), 5)
+        await asyncio.sleep(0.05)
+        return list(closed)  # antes de que `asyncio.run` cierre lo que quede: el servidor no se para
+
+    assert asyncio.run(scenario()) == [True]
+
+
+def test_si_falla_la_primera_consulta_de_frescura_se_cierra_la_escucha():
+    # Plan I-47: bajo carga, la primera consulta de frescura esperaba al pool y fallaba antes de
+    # entrar en el bloque que cierra la escucha; cada reconexión del navegador dejaba otra huérfana.
+    closed = []
+
+    async def listening():
+        try:
+            await asyncio.sleep(3600)
+            yield ""
+        finally:
+            closed.append(True)
+
+    def failing_freshness():
+        raise TimeoutError("sin conexiones libres en el pool")
+
+    async def scenario():
+        stream = event_stream(listening(), failing_freshness, FixedClock(NOW))
+        assert await anext(stream) == "retry: 5000\n\n"
+        try:
+            await anext(stream)
+        except TimeoutError:
+            pass
+        await asyncio.sleep(0.05)
+        return list(closed)
+
+    assert asyncio.run(scenario()) == [True]
