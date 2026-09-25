@@ -9,8 +9,9 @@ otra fuente.
   clasificado en cada campeonato. Se agrupa en una clasificación por año y equipo, con su
   roster: el premio es del equipo, nunca de cada jugador (RF-7 de la 002).
 - `players_birthday.csv` (obligatorio): nombre real y fecha de nacimiento por gamertag.
-- `cdl_<año>_rosters.csv` (opcionales): país, nombre y fecha de nacimiento. Las redes sociales
-  y la edad nunca se leen.
+- `cdl_<año>_rosters.csv` (opcionales): país, nombre y fecha de nacimiento, y el nombre del equipo
+  (cambio C-28), que es el único que la Wiki publica de una franquicia que aún no ha jugado un
+  Champs. Las redes sociales y la edad nunca se leen.
 
 Solo se registran datos personales de los jugadores que figuran en el historial o en un roster
 (RF-4a). Los equipos y los jugadores se identifican por su nombre, porque los CSV no traen el
@@ -20,7 +21,7 @@ identificador de su página en la Wiki.
 import csv
 import re
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 SOURCE = "wiki"
@@ -30,7 +31,7 @@ ROSTERS_PATTERN = "cdl_*_rosters.csv"
 
 HISTORY_COLUMNS = ("Place", "Year", "Game Version", "final_date", "Prize", "Prize (%)", "Team", "Player")
 BIRTHDAYS_COLUMNS = ("Player", "Name", "Birthday")
-ROSTERS_COLUMNS = ("ID", "Country", "Name", "Birthday")
+ROSTERS_COLUMNS = ("Team", "ID", "Country", "Name", "Birthday")
 
 # Tabla de referencia de los campeonatos mundiales (RF-54 y RF-58 de la 002), mantenida a mano
 # como en `CDL-data-analysis`: nombre oficial y abreviatura del juego de cada año. Un año que no
@@ -53,6 +54,7 @@ GAMES = {
 }
 
 _DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_ROSTERS_YEAR = re.compile(r"^cdl_(\d{4})_rosters\.csv$")
 _NUMBER = re.compile(r"^-?\d+(?:\.\d+)?$")
 
 
@@ -115,6 +117,38 @@ def _date(text: str) -> tuple[str | None, bool]:
     return (raw, True) if _DATE.match(raw) else (None, False)
 
 
+def _name_valid_from(first_year: int, championships: dict[int, dict]) -> str:
+    """Desde cuándo vale un nombre de equipo, que la Wiki no publica (RF-74 de la 002; plan I-45).
+
+    Los cambios de nombre caen fuera de temporada: vale desde el día siguiente a la final del año
+    anterior a su primer campeonato; sin esa final legible, desde el 1 de enero de ese año.
+    """
+    previous, _ = _date(championships.get(first_year - 1, {}).get("final", ""))
+    try:
+        start = date.fromisoformat(previous) + timedelta(days=1) if previous else date(first_year, 1, 1)
+    except ValueError:
+        start = date(first_year, 1, 1)
+    return f"{start.isoformat()}T00:00:00+00:00"
+
+
+def _personal_data(gamertag: str, spellings: set[str], *sources: dict[str, dict]) -> dict:
+    """Datos personales de un gamertag, de menos a más prioridad (plan I-46).
+
+    Se buscan sin distinguir mayúsculas solo si ningún otro jugador de los archivos se escribe igual
+    salvo las mayúsculas: en la Wiki, LuCkY (2013) y Lucky (2026) son personas distintas.
+    """
+    wanted = gamertag.casefold()
+    info: dict = {}
+    for source in sources:
+        if len(spellings) > 1:
+            info.update(source.get(gamertag, {}))
+            continue
+        for key, values in source.items():
+            if key.casefold() == wanted:
+                info.update(values)
+    return info
+
+
 def _read(path: Path, columns: tuple[str, ...]) -> list[dict]:
     """Filas de un CSV con las columnas indicadas (acepta la marca BOM de Excel).
 
@@ -169,19 +203,19 @@ def read_wiki_csv(directory: Path, observed_at: datetime) -> WikiCsvData:
         championships[year]["places"].append(row["Place"])
 
     # Datos personales: el roster de temporada manda sobre el archivo de fechas de nacimiento.
-    personal: dict[str, dict] = {}
+    by_birthdays: dict[str, dict] = {}
     for row in birthdays:
         if row["Player"]:
-            personal.setdefault(row["Player"].casefold(), {}).update(real_name=row["Name"], birth=row["Birthday"])
+            by_birthdays.setdefault(row["Player"], {}).update(real_name=row["Name"], birth=row["Birthday"])
+    by_rosters: dict[str, dict] = {}
     roster_players: list[str] = []
     for _, rows in rosters:
         for row in rows:
             if not row["ID"]:
                 continue
             roster_players.append(row["ID"])
-            info = personal.setdefault(row["ID"].casefold(), {})
-            info.update({k: v for k, v in (("real_name", row["Name"]), ("birth", row["Birthday"]),
-                                           ("country", row["Country"])) if v})
+            by_rosters.setdefault(row["ID"], {}).update({k: v for k, v in (
+                ("real_name", row["Name"]), ("birth", row["Birthday"]), ("country", row["Country"])) if v})
 
     for year, info in sorted(championships.items()):
         name, abbreviation = GAMES.get(year, (f"Call of Duty: {info['version']}" if info["version"] else None, None))
@@ -192,14 +226,29 @@ def read_wiki_csv(directory: Path, observed_at: datetime) -> WikiCsvData:
             completed=True if "1" in info["places"] else None,
             unreadable=[] if final_ok else ["final_date"],
         ))
-    for team in dict.fromkeys(team for _, team in teams):
+    first_years: dict[str, int] = {}
+    for year, team in teams:
+        first_years[team] = min(year, first_years.get(team, year))
+    for name, rows in rosters:
+        year_match = _ROSTERS_YEAR.match(name)
+        if not year_match:
+            continue
+        for row in rows:
+            if row["Team"]:
+                year = int(year_match.group(1))
+                first_years[row["Team"]] = min(year, first_years.get(row["Team"], year))
+    for team, first_year in first_years.items():
         data.records.append(_record("franchise", _id(team), observed_at))
         data.records.append(_record("identity", f"{_id(team)}#identity", observed_at,
-                                    franchise_ref=_ref(_id(team)), short_name=team))
+                                    franchise_ref=_ref(_id(team)), short_name=team,
+                                    valid_from=_name_valid_from(first_year, championships)))
 
     gamertags = dict.fromkeys([p for entry in teams.values() for p in entry["players"]] + roster_players)
+    spellings: dict[str, set[str]] = {}
     for gamertag in gamertags:
-        info = personal.get(gamertag.casefold(), {})
+        spellings.setdefault(gamertag.casefold(), set()).add(gamertag)
+    for gamertag in gamertags:
+        info = _personal_data(gamertag, spellings[gamertag.casefold()], by_birthdays, by_rosters)
         birth, birth_ok = _date(info.get("birth", ""))
         data.records.append(_record(
             "player", _id(gamertag), observed_at, gamertag=gamertag,

@@ -3,16 +3,83 @@
 # La aplican la obtención (`retake sync`) e `import-wiki-csv`, y `apply-curation` en los modos
 # `real` y `simulated`. Los datos de prueba tienen la suya en `fixtures.yaml`.
 #
-# Roles de los jugadores reales: pendientes de confirmación de Hugo (tasks.md, dependencia de T-046).
-# Mientras tanto, esos jugadores quedan como "Sin rol" (RF-27).
+# Roles de los jugadores reales (RF-26, RF-27, RF-76): los confirma Hugo, jugador a jugador.
+# El que no tiene entrada queda como "Sin rol" (bp:393, a propósito, el 2026-09-24).
 
-roles: []
+roles:
+  - {player: "bp:2", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:4", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:7", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:8", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:9", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:11", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:12", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:13", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:15", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:17", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:18", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:19", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:20", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:22", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:23", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:26", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:27", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:28", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:29", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:30", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:31", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:35", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:36", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:39", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:40", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:41", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:42", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:43", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:48", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:54", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:55", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:58", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:69", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:81", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:89", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:94", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:97", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:98", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:101", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:104", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:106", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:107", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:114", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:134", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:135", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:138", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:163", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:167", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:172", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:178", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:189", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:190", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:192", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:194", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:231", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:235", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:395", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:399", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:407", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:412", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:414", role: SMG, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
+  - {player: "bp:762", role: AR, reason: "Rol en la temporada 2026 confirmado por Hugo (2026-09-24)"}
 
 player_merges:
-  # Jugadores reales: el mismo en BreakingPoint y en la Wiki (RF-54). Los dudosos no se unen:
-  # wiki:LuCkY y wiki:Super, jugadores antiguos con un gamertag parecido al de uno actual.
+  # Jugadores reales: el mismo en BreakingPoint y en la Wiki (RF-54). No se unen, por ser otras personas
+  # (comprobado por Hugo el 2026-09-24): wiki:LuCkY (Epsilon Esports, Champs 2013), que no es bp:93, que
+  # debutó con Advanced Warfare; y wiki:Super (Lethal Gaming 2018, Aspire eSports 2019, de Norteamérica),
+  # que no es bp:135, español que viene de los Challengers europeos. Tampoco se unen los gamertags de la
+  # Wiki que solo cambian en mayúsculas (plan I-46): wiki:MethodZ y wiki:Methodz son personas distintas
+  # (equipos distintos en 2016 y 2018); wiki:AquA y wiki:Aqua, y wiki:EndurAAA y wiki:endurAAA, dudosos.
   - {players: ["bp:2", "wiki:aBeZy"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
   - {players: ["bp:4", "wiki:Afro"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:7", "wiki:Cammy"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de BOS Breach en la Wiki (confirmado por Hugo, 2026-09-24)"}
   - {players: ["bp:8", "wiki:Cellium"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
   - {players: ["bp:9", "wiki:CleanX"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
   - {players: ["bp:11", "wiki:Dashy"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
@@ -43,11 +110,14 @@ player_merges:
   - {players: ["bp:55", "wiki:JoeDeceives"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
   - {players: ["bp:58", "wiki:Scrap"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
   - {players: ["bp:81", "wiki:Neptune"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:89", "wiki:Spart"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de BOS Breach en la Wiki (confirmado por Hugo, 2026-09-24)"}
   - {players: ["bp:93", "wiki:Lucky"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
   - {players: ["bp:94", "wiki:MettalZ"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
   - {players: ["bp:97", "wiki:Abuzah"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:98", "wiki:Purj"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de BOS Breach en la Wiki (confirmado por Hugo, 2026-09-24)"}
   - {players: ["bp:101", "wiki:Gwinn"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
   - {players: ["bp:104", "wiki:ReeaL"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
+  - {players: ["bp:106", "wiki:Snoopy"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de BOS Breach en la Wiki (confirmado por Hugo, 2026-09-24)"}
   - {players: ["bp:107", "wiki:Estreal"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
   - {players: ["bp:114", "wiki:04"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
   - {players: ["bp:134", "wiki:RenKoR"], reason: "Mismo gamertag en BreakingPoint y en el roster 2026 de la Wiki (primera carga real, 2026-09-24)"}
@@ -93,6 +163,25 @@ merges:
   # Boston Breach: BreakingPoint la lista como M80 Boston (bp:1176), pero la temporada 2026 sigue con
   # su número antiguo (bp:6), que entra por su ficha al estar en la tabla (C-22, plan I-36).
   - {kind: franchise, refs: ["bp:1176", "bp:6", "wiki:BOS_Breach"], reason: "M80 Boston es Boston Breach con otro nombre y otro número en BreakingPoint (confirmado por Hugo, 2026-09-24)"}
+  # Nombres anteriores de cada plaza (RF-114 de la 002: misma plaza = misma franquicia, aunque cambie de
+  # dueño, de ciudad o de nombre). Cada nombre de la Wiki vale desde el día siguiente a la final anterior
+  # a su primer Champs (plan I-45). Confirmadas por Hugo fila a fila el 2026-09-24.
+  - {kind: franchise, refs: ["bp:4", "wiki:DAL_Empire"], reason: "Dallas Empire y OpTic Chicago se fusionan en OpTic Texas (2022), que se queda la plaza de Dallas"}
+  - {kind: franchise, refs: ["bp:3", "wiki:SEA_Surge"], reason: "Seattle Surge se muda a Vancouver"}
+  - {kind: franchise, refs: ["bp:26", "wiki:LDN_Royal_Ravens"], reason: "London Royal Ravens se muda a Carolina del Norte (2024)"}
+  - {kind: franchise, refs: ["bp:1", "wiki:ATL_FaZe"], reason: "Atlanta FaZe se muda a Las Vegas (2026)"}
+  - {kind: franchise, refs: ["bp:11", "wiki:MIN_RØKKR"], reason: "Minnesota RØKKR pasa a llamarse G2 Minnesota"}
+  - {kind: franchise, refs: ["bp:12", "wiki:TOR_Ultra"], reason: "Toronto Ultra pasa a llamarse Toronto KOI"}
+  - {kind: franchise, refs: ["bp:27", "wiki:FLA_Mutineers"], reason: "Team Heretics compra la plaza de Florida Mutineers y forma Miami Heretics (2024)"}
+  - {kind: franchise, refs: ["bp:62", "wiki:PAR_Legion"], reason: "Paris Legion, luego Vegas Legion (2023), Vegas Falcons (2025) y Riyadh Falcons (2026)"}
+  - {kind: franchise, refs: ["bp:743", "wiki:LA_Guerrillas"], reason: "LA Guerrillas, luego LA Guerrillas M8 (2025) y Paris Gentle Mates (2026)"}
+  - {kind: franchise, refs: ["bp:2", "wiki:OpTic_Gaming_LA"], reason: "100 Thieves compra la plaza de OpTic Gaming Los Angeles (2021)"}
+  - {kind: franchise, refs: ["wiki:CHI_Huntsmen", "wiki:OpTic_CHI"], reason: "Chicago Huntsmen pasa a llamarse OpTic Chicago (2021)"}
+  # Cloud9 New York aún no ha jugado un Champs: su nombre en la Wiki sale del roster 2026 (cambio C-28).
+  - {kind: franchise, refs: ["bp:63", "wiki:Cloud9_NY", "wiki:NY_Subliners"], reason: "Cloud9 compra la plaza de NY Subliners y la renombra Cloud9 New York"}
+  # Fuera por ahora:
+  # - Chicago → M80 Boston: dudosa (la marca OpTic se fusiona en OpTic Texas y BreakingPoint da de alta
+  #   Boston Breach como equipo nuevo, RF-115).
 
 confirmed_new: []
 

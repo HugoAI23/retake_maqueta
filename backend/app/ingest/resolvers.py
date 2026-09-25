@@ -315,26 +315,38 @@ def resolve_identity(ctx: IngestContext, ref: ExternalRef) -> None:
     peer_from = {peer.id: _source_identity(peer, _own_index(ctx, peer)).valid_from or row.valid_from for peer, row in peers}
 
     if any(peer.source == ref.source and peer_from[peer.id] > own_from for peer, _ in peers):
-        target = _resolve_past_identity(ctx, franchise_id, own, own_from)
+        target = _resolve_past_identity(ctx, franchise_id, own, own_from, linked)
         ref.entity_id = target.id
     else:
-        target, group = _resolve_current_identity(ctx, ref, index, franchise_id, own, own_from, peers, peer_from)
+        target, group = _resolve_current_identity(ctx, ref, index, franchise_id, own, own_from, peers, peer_from, linked)
         for member in group:
             member.entity_id = target.id
         session.flush()
-        # Las versiones anteriores de las fuentes del grupo vuelven a sus propios datos.
+        # Las versiones anteriores de las fuentes del grupo vuelven a sus propios datos, también las de
+        # esta misma fuente que se habían sumado a la vigente antes de llegar esta (plan I-45).
         for peer, row in peers:
-            if row.id != target.id and peer not in group:
+            if peer not in group and (row.id != target.id or (peer.source == ref.source and peer_from[peer.id] < own_from)):
                 resolve_identity(ctx, peer)
     session.flush()
     reresolve_placements(ctx, Placement.franchise_id == franchise_id)
 
 
-def _resolve_past_identity(ctx: IngestContext, franchise_id, own: SourceIdentity, valid_from: datetime) -> Identity:
+def _resolve_past_identity(ctx: IngestContext, franchise_id, own: SourceIdentity, valid_from: datetime,
+                           linked: Identity | None = None) -> Identity:
     """Identidad anterior de una fuente: se compara con la vigente en su fecha (como en la 002)."""
     session = ctx.session
     data = IdentityData(*(getattr(own, name) for name in DATA_FIELDS))
     same_start = session.scalar(select(Identity).where(Identity.franchise_id == franchise_id, Identity.valid_from == valid_from))
+    if same_start is None and linked is not None and own.valid_from is not None and not needs_new_identity(
+            _identity_data(linked), data):
+        # Plan I-45: su propia fila, guardada sin fecha, toma la que ahora publica la fuente, sin
+        # saltar por encima de otra identidad.
+        low, high = sorted((linked.valid_from, valid_from))
+        rows = session.scalars(select(Identity).where(Identity.franchise_id == franchise_id, Identity.id != linked.id))
+        if not any(low <= row.valid_from <= high for row in rows):
+            linked.valid_from = valid_from
+            session.flush()
+            return linked
     in_effect = identity_at(franchise_identities(session, franchise_id), valid_from)
     if same_start is not None:
         _write_identity(same_start, data, _logo_copy(ctx, data.logo_url, same_start))
@@ -345,7 +357,30 @@ def _resolve_past_identity(ctx: IngestContext, franchise_id, own: SourceIdentity
                     logo_image_id=_logo_copy(ctx, data.logo_url, None))
 
 
-def _resolve_current_identity(ctx, ref, index, franchise_id, own, own_from, peers, peer_from):
+def _drop_left_behind(ctx: IngestContext, previous: list[Identity], target: Identity,
+                      group: list[ExternalRef]) -> datetime | None:
+    """Retira las filas que dejan las fuentes al sumarse a la identidad vigente (plan I-45).
+
+    Al unir franquicias, cada fuente traía su propia fila; la que queda sin ninguna otra referencia
+    no es historial de nadie: sus clasificaciones pasan a la identidad combinada. El nombre anterior
+    de una misma fuente no pasa por aquí (RF-73). Devuelve la fecha más antigua de las retiradas.
+    """
+    moving = {member.id for member in group}
+    earliest = None
+    for left in {row.id: row for row in previous if row is not None and row.id != target.id}.values():
+        others = ctx.session.scalar(select(exists().where(
+            ExternalRef.kind == "identity", ExternalRef.entity_id == left.id, ExternalRef.id.not_in(moving))))
+        if others:
+            continue
+        ctx.session.execute(update(Placement).where(Placement.identity_id == left.id).values(identity_id=target.id))
+        target.logo_image_id = target.logo_image_id or left.logo_image_id
+        earliest = left.valid_from if earliest is None else min(earliest, left.valid_from)
+        ctx.session.delete(left)
+    ctx.session.flush()
+    return earliest
+
+
+def _resolve_current_identity(ctx, ref, index, franchise_id, own, own_from, peers, peer_from, linked=None):
     """Identidad vigente combinada. Devuelve la fila y las referencias que la forman."""
     session = ctx.session
     latest: dict[str, tuple[ExternalRef, Identity]] = {}
@@ -385,12 +420,18 @@ def _resolve_current_identity(ctx, ref, index, franchise_id, own, own_from, peer
         target = current
         _write_identity(target, merged.data, logo_id)
 
+    earliest = _drop_left_behind(ctx, [linked, *(row for _, row in latest.values())], target, group)
+    rows = sorted(session.scalars(select(Identity).where(Identity.franchise_id == franchise_id)), key=lambda i: i.valid_from)
     # La fecha de vigencia es un campo más (Q-45), sin saltar por encima de la identidad anterior.
-    if merged.valid_from is not None and merged.valid_from != target.valid_from:
+    # Si ninguna fuente la publica, la identidad combinada está en vigor desde la más antigua de sus filas.
+    valid_from = merged.valid_from
+    if valid_from is None and earliest is not None and earliest < target.valid_from:
+        valid_from = earliest
+    if valid_from is not None and valid_from != target.valid_from:
         before = [row for row in rows if row.valid_from < target.valid_from and row.id != target.id]
-        taken = any(row.valid_from == merged.valid_from for row in rows)
-        if not taken and (not before or merged.valid_from > before[-1].valid_from):
-            target.valid_from = merged.valid_from
+        taken = any(row.valid_from == valid_from for row in rows)
+        if not taken and (not before or valid_from > before[-1].valid_from):
+            target.valid_from = valid_from
     return target, group
 
 

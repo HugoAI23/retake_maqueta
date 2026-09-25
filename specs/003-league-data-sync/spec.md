@@ -2,7 +2,7 @@
 
 - **ID**: `003-league-data-sync`
 - **Fecha**: `2026-09-23` (borrador, segunda ronda de pendientes y resolución de la revisión QA, el mismo día)
-- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-23; revisión R-1 del mismo día, durante el plan; cambios C-15 a C-21 del mismo día: la Wiki entra por archivos CSV; cambios C-22 a C-27 del 2026-09-24: franquicias que la fuente ya no lista, equipos invitados, revisión de partidos finalizados, rosters de equipos ajenos a la CDL y registro al cambiar de modo)
+- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-23; revisión R-1 del mismo día, durante el plan; cambios C-15 a C-21 del mismo día: la Wiki entra por archivos CSV; cambios C-22 a C-27 del 2026-09-24: franquicias que la fuente ya no lista, equipos invitados, revisión de partidos finalizados, rosters de equipos ajenos a la CDL y registro al cambiar de modo; cambio C-28 del mismo día: nombre del equipo en los rosters de la Wiki)
 
 > **Numeración:** tras la revisión QA, la spec se renumeró de principio a fin, porque aún no estaba aprobada y ninguna otra spec cita sus números. Las tablas del §5 usan ya los números nuevos.
 
@@ -37,7 +37,7 @@ Además, cierra tres deudas de specs anteriores:
 | **Registrar** | Que un dato nuevo o cambiado quede guardado en Retake y disponible para la web (mismo verbo que en la 002). |
 | **Datos en vivo** | De un partido `en vivo`: su estado, su marcador (mapas ganados y marcador del mapa en curso, RF-36 y RF-37 de la 002) y, de cada mapa ya terminado de ese partido, su marcador final, su ganador y las estadísticas de sus jugadores. |
 | **Resto de datos** | Cualquier otro dato de la temporada actual de la 002. Por ejemplo: calendario y horarios, eventos, fases, partidos finalizados, jugadores, rosters, franquicias, identidades, tabla de posiciones y correcciones. |
-| **Archivos de la Wiki** | Archivos CSV con datos de la Wiki que el administrador prepara y actualiza fuera de Retake: el historial de campeonatos, los nombres y fechas de nacimiento de los jugadores y los rosters por temporada con el país (cambio C-15). |
+| **Archivos de la Wiki** | Archivos CSV con datos de la Wiki que el administrador prepara y actualiza fuera de Retake: el historial de campeonatos, los nombres y fechas de nacimiento de los jugadores y los rosters por temporada con el equipo y el país (cambios C-15 y C-28). |
 | **Historial** | El historial de campeonatos mundiales de la 002 (§2.2 de la 002), incluidos los datos personales de los jugadores que solo figuran en él. |
 | **Próxima temporada** | La temporada siguiente a la actual, desde que una fuente publica su calendario hasta que pasa a ser la actual (RF-3 de la 002). |
 | **Ciclo** | Tiempo máximo entre dos consultas de un mismo dato: 60 segundos para los datos en vivo y 1 hora para el resto de datos, salvo las excepciones de §2.2. |
@@ -60,8 +60,9 @@ Además, cierra tres deudas de specs anteriores:
   * *Nota (2026-09-23, cambio C-15, sustituye a "obtendrá de las tres fuentes, sin intervención manual"):* la Wiki bloquea el acceso automático de Retake (403 de Cloudflare) y sus condiciones exigen permiso por escrito. Hugo decide que sus datos entren por archivos CSV que él prepara y actualiza (glosario, "Archivos de la Wiki").
 * **RF-2 (Ubicuo)**: EL SISTEMA aplicará a cada dato obtenido de una fuente las reglas de la spec 002 (prioridad de fuentes, validación, correcciones y datos de Retake).
 * **RF-3 (Dirigido por evento)**: CUANDO Retake se ponga en marcha sin datos de la liga, EL SISTEMA obtendrá todos los datos de la temporada actual, incluidos los partidos ya finalizados.
-* **RF-4 (Dirigido por evento)**: CUANDO el administrador ejecute en la terminal la importación de los archivos de la Wiki, EL SISTEMA registrará el historial completo que contienen y los datos personales de sus jugadores.
+* **RF-4 (Dirigido por evento)**: CUANDO el administrador ejecute en la terminal la importación de los archivos de la Wiki, EL SISTEMA registrará el historial completo que contienen, el nombre de cada equipo de sus rosters por temporada y los datos personales de sus jugadores.
   * *Nota (2026-09-23, cambio C-16, sustituye a "CUANDO Retake se ponga en marcha sin datos de la liga, EL SISTEMA obtendrá el historial completo").*
+  * *Nota (2026-09-24, cambio C-28, sustituye a "registrará el historial completo que contienen y los datos personales de sus jugadores"):* el nombre del equipo en el roster de la temporada es el único nombre que la Wiki publica de una franquicia que aún no ha jugado un Champs; sin él, su nombre anterior se tomaba por el vigente.
 * **RF-4a (Ubicuo)**: EL SISTEMA solo registrará los datos personales de los jugadores que figuran en el historial o en los rosters de los archivos de la Wiki.
 * **RF-4b (Dirigido por evento)**: CUANDO termine la importación de RF-4, EL SISTEMA mostrará en la terminal su resultado (éxito, parcial o fallo) y sus incidencias, y lo anotará en el registro.
 * **RF-4c (No deseado)**: SI falta un archivo de la Wiki o no tiene las columnas esperadas, ENTONCES EL SISTEMA no registrará nada de la importación e indicará qué archivo falla.
@@ -532,12 +533,13 @@ Por la decisión Q-17, cada cambio se presentó a Hugo y se aprobó por separado
 | C-25 | 003, RF-19 y RF-20; 002, plazos de corrección | Revisión de partidos finalizados: una consulta al finalizar y una al día durante 3 días; ninguna más si ya eran antiguos al registrarse | Primera carga real, T-086: 281 partidos de julio en revisión horaria de 7 días | Aprobado · aplicado (2026-09-24) |
 | C-26 | 003, RF-18c | Los rosters de equipos que no son de la CDL ni invitados se descartan sin anotarlos | Primera carga real, T-086: 33 rosters de 23 equipos de Challengers | Aprobado · aplicado (2026-09-24) |
 | C-27 | 003, RF-12 | Al cambiar de modo en desarrollo también se borran el registro, las incidencias y los resúmenes del modo anterior | T-087: el registro de `/admin` mostraba 140 consultas simuladas con fecha de diciembre | Aprobado · aplicado (2026-09-24) |
+| C-28 | 003, RF-4 y glosario ("Archivos de la Wiki") | La importación registra también el nombre de cada equipo de los rosters por temporada, como identidad de la Wiki de esa franquicia; solo el nombre, sin roster ni jugadores | Curación real, 2026-09-24: Cloud9 New York no tiene nombre en el historial de la Wiki y, al unirle NY Subliners, ese nombre antiguo se tomaba por el vigente | Aprobado · aplicado (2026-09-24) |
 
 Además, **el ajuste I-15 del plan de la 002** queda resuelto por RF-61 a RF-64. Es un plan, no una spec, así que basta con anotarlo.
 
 ### 5.4 Pendientes
 
-No queda ningún `[NECESITA ACLARACIÓN]` abierto. Los cambios C-1 a C-27 están aprobados y aplicados. Limitación conocida, aceptada por Hugo el 2026-09-24: RF-75 de la 002 incumplido mientras la web de la CDL esté en reserva (F0-3); la tabla sale de BreakingPoint.
+No queda ningún `[NECESITA ACLARACIÓN]` abierto. Los cambios C-1 a C-28 están aprobados y aplicados. Limitación conocida, aceptada por Hugo el 2026-09-24: RF-75 de la 002 incumplido mientras la web de la CDL esté en reserva (F0-3); la tabla sale de BreakingPoint.
 
 ---
 

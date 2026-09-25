@@ -106,6 +106,56 @@ def test_franquicias_e_identidades_por_nombre_de_equipo(folder):
     assert order.index("franchise") < order.index("placement") and order.index("player") < order.index("placement")
 
 
+def test_cada_nombre_vale_desde_el_dia_siguiente_a_la_final_anterior_a_su_primer_campeonato(tmp_path):
+    # Plan I-45: la Wiki no publica cuándo cambia un nombre; se deduce de los campeonatos (RF-74 de la 002).
+    write(tmp_path / wiki_csv.HISTORY_FILE, HISTORY_COLUMNS, [
+        history_row("1", "2020", "[FICTICIO] Viejo", "[FICTICIO] Uno", final="2020-08-30"),
+        history_row("3", "2021", "[FICTICIO] Viejo", "[FICTICIO] Uno", final="2021-08-22"),
+        history_row("4", "2022", "[FICTICIO] Nuevo", "[FICTICIO] Uno", final="2022-08-07"),
+        history_row("2", "2026", "[FICTICIO] Nuevo", "[FICTICIO] Uno", final="2026-07-19"),
+        history_row("5", "2026", "[FICTICIO] Otro", "[FICTICIO] Dos", final="2026-07-19"),
+    ])
+    write(tmp_path / wiki_csv.BIRTHDAYS_FILE, BIRTHDAY_COLUMNS, [])
+    identities = by_id(read_wiki_csv(tmp_path, NOW).records, "identity")
+    # Sin final del año anterior (2019 y 2025 no están), desde el 1 de enero de su primer año.
+    assert identities["[FICTICIO]_Viejo#identity"]["valid_from"] == "2020-01-01T00:00:00+00:00"
+    assert identities["[FICTICIO]_Nuevo#identity"]["valid_from"] == "2021-08-23T00:00:00+00:00"
+    assert identities["[FICTICIO]_Otro#identity"]["valid_from"] == "2026-01-01T00:00:00+00:00"
+
+
+def test_los_equipos_de_los_rosters_tambien_son_identidades_de_la_wiki(tmp_path):
+    # Cambio C-28: el roster de la temporada trae el nombre de una franquicia que aún no ha jugado un Champs.
+    write(tmp_path / wiki_csv.HISTORY_FILE, HISTORY_COLUMNS, [
+        history_row("1", "2024", "[FICTICIO] Viejo", "[FICTICIO] Uno", final="2024-07-21"),
+        history_row("2", "2025", "[FICTICIO] Alfa", "[FICTICIO] Dos", final="2025-06-29"),
+    ])
+    write(tmp_path / wiki_csv.BIRTHDAYS_FILE, BIRTHDAY_COLUMNS, [])
+    write(tmp_path / "cdl_2026_rosters.csv", ROSTER_COLUMNS, [
+        ["[FICTICIO] Nuevo", "", "[FICTICIO] Uno", "", "", "", "", "", "", "", ""],
+        ["[FICTICIO] Alfa", "", "[FICTICIO] Dos", "", "", "", "", "", "", "", ""],
+        ["", "", "[FICTICIO] Tres", "", "", "", "", "", "", "", ""],
+    ])
+    records = read_wiki_csv(tmp_path, NOW).records
+    assert set(by_id(records, "franchise")) == {"[FICTICIO]_Viejo", "[FICTICIO]_Alfa", "[FICTICIO]_Nuevo"}
+    identities = by_id(records, "identity")
+    nuevo = identities["[FICTICIO]_Nuevo#identity"]
+    assert (nuevo["franchise_ref"], nuevo["short_name"]) == ("wiki:[FICTICIO]_Nuevo", "[FICTICIO] Nuevo")
+    assert nuevo["valid_from"] == "2025-06-30T00:00:00+00:00"
+    # Un nombre que ya estaba en el historial vale desde su primer Champs, no desde el roster.
+    assert identities["[FICTICIO]_Alfa#identity"]["valid_from"] == "2024-07-22T00:00:00+00:00"
+    assert "placement" not in {r["kind"] for r in records if r["source_id"].endswith("[FICTICIO]_Nuevo")}
+
+
+def test_sin_fecha_legible_de_la_final_anterior_el_nombre_vale_desde_el_1_de_enero(tmp_path):
+    write(tmp_path / wiki_csv.HISTORY_FILE, HISTORY_COLUMNS, [
+        history_row("1", "2021", "[FICTICIO] Viejo", "[FICTICIO] Uno", final="agosto"),
+        history_row("4", "2022", "[FICTICIO] Nuevo", "[FICTICIO] Uno", final="2022-08-07"),
+    ])
+    write(tmp_path / wiki_csv.BIRTHDAYS_FILE, BIRTHDAY_COLUMNS, [])
+    identities = by_id(read_wiki_csv(tmp_path, NOW).records, "identity")
+    assert identities["[FICTICIO]_Nuevo#identity"]["valid_from"] == "2022-01-01T00:00:00+00:00"
+
+
 def test_datos_personales_solo_de_jugadores_del_historial_o_de_un_roster(folder):
     players = by_id(read_wiki_csv(folder, NOW).records, "player")
     assert "[FICTICIO]_Fuera" not in players  # RF-4a
@@ -114,6 +164,33 @@ def test_datos_personales_solo_de_jugadores_del_historial_o_de_un_roster(folder)
     cinco = players["[FICTICIO]_Cinco"]
     assert (cinco["country"], cinco["real_name"], cinco["birth_date"]) == ("Mexico", "[FICTICIO] Nombre Cinco", "2003-05-06")
     assert set(players["[FICTICIO]_Dos"]) == {"kind", "source", "source_id", "observed_at", "gamertag"}
+
+
+def test_los_datos_personales_no_pasan_a_otro_gamertag_que_solo_cambia_en_mayusculas(tmp_path):
+    # Plan I-46: en la Wiki, LuCkY (Champs 2013) y Lucky (roster 2026) son personas distintas.
+    write(tmp_path / wiki_csv.HISTORY_FILE, HISTORY_COLUMNS, [
+        history_row("6", "2013", "[FICTICIO] Viejo", "[FICTICIO] LuCkY", final="2013-04-07"),
+        history_row("1", "2026", "[FICTICIO] Alfa", "[FICTICIO] Lucky"),
+    ])
+    write(tmp_path / wiki_csv.BIRTHDAYS_FILE, BIRTHDAY_COLUMNS, [["[FICTICIO] Lucky", "[FICTICIO] Nombre Lucky", "2001-02-03"]])
+    write(tmp_path / "cdl_2026_rosters.csv", ROSTER_COLUMNS, [
+        ["[FICTICIO] Alfa", "", "[FICTICIO] Lucky", "Spain", "", "", "", "", "", "", ""],
+    ])
+    players = by_id(read_wiki_csv(tmp_path, NOW).records, "player")
+    lucky = players["[FICTICIO]_Lucky"]
+    assert (lucky["real_name"], lucky["birth_date"], lucky["country"]) == ("[FICTICIO] Nombre Lucky", "2001-02-03", "Spain")
+    assert set(players["[FICTICIO]_LuCkY"]) == {"kind", "source", "source_id", "observed_at", "gamertag"}
+
+
+def test_sin_otro_gamertag_parecido_los_datos_personales_se_asignan_sin_distinguir_mayusculas(tmp_path):
+    write(tmp_path / wiki_csv.HISTORY_FILE, HISTORY_COLUMNS, [history_row("1", "2026", "[FICTICIO] Alfa", "[FICTICIO] Uno")])
+    write(tmp_path / wiki_csv.BIRTHDAYS_FILE, BIRTHDAY_COLUMNS, [["[FICTICIO] UNO", "[FICTICIO] Nombre Uno", "2000-01-02"]])
+    write(tmp_path / "cdl_2026_rosters.csv", ROSTER_COLUMNS, [
+        ["[FICTICIO] Alfa", "", "[FICTICIO] Uno", "Mexico", "", "", "", "", "", "", ""],
+    ])
+    players = by_id(read_wiki_csv(tmp_path, NOW).records, "player")
+    uno = players["[FICTICIO]_Uno"]
+    assert (uno["real_name"], uno["birth_date"], uno["country"]) == ("[FICTICIO] Nombre Uno", "2000-01-02", "Mexico")
 
 
 def test_redes_sociales_y_edad_nunca_se_leen(folder):
