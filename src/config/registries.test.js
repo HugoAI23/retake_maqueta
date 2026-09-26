@@ -20,8 +20,8 @@ describe('sectionsRegistry (RF-6, RF-8, RF-26, RF-37)', () => {
     expect(sectionsRegistry.filter((s) => s.featured).map((s) => s.id)).toEqual(['mlModels'])
   })
 
-  it('solo Inicio tiene contenido en la spec 001', () => {
-    expect(sectionsRegistry.filter((s) => s.hasContent).map((s) => s.id)).toEqual(['home'])
+  it('tienen contenido Inicio (spec 001) y Posiciones (spec 004, RF-52)', () => {
+    expect(sectionsRegistry.filter((s) => s.hasContent).map((s) => s.id)).toEqual(['home', 'standings'])
   })
 
   it('cada sección tiene una dirección propia y distinta', () => {

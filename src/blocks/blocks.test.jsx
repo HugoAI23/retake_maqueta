@@ -25,6 +25,34 @@ describe('BlockSkeleton (RF-40)', () => {
     expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'true')
     expect(screen.getByText('Cargando…')).toBeInTheDocument()
   })
+
+  it('las formas existentes no cambian', () => {
+    const { unmount } = renderWithProviders(<BlockSkeleton />)
+    expect(screen.getByTestId('block-skeleton').querySelectorAll(':scope > [aria-hidden="true"]')).toHaveLength(4)
+    unmount()
+    renderWithProviders(<BlockSkeleton shape="strip" />)
+    expect(screen.getByTestId('block-skeleton').querySelectorAll(':scope > [aria-hidden="true"]')).toHaveLength(1)
+  })
+})
+
+describe('BlockSkeleton con forma de tabla (spec 004, RF-24)', () => {
+  it('pinta filas y columnas de marcador, sin texto y ocultas a los lectores', () => {
+    renderWithProviders(<BlockSkeleton shape="table" />)
+    const skeleton = screen.getByTestId('block-skeleton')
+    expect(skeleton).toHaveAttribute('data-shape', 'table')
+    expect(screen.getByRole('status')).toHaveAttribute('aria-busy', 'true')
+    expect(screen.getByText('Cargando…')).toBeInTheDocument()
+
+    const rows = skeleton.querySelectorAll('[data-skeleton-row]')
+    expect(rows.length).toBeGreaterThan(1)
+    for (const row of rows) {
+      expect(row).toHaveAttribute('aria-hidden', 'true')
+      expect(row.querySelectorAll('[data-skeleton-cell]').length).toBeGreaterThan(1)
+      expect(row.textContent).toBe('')
+    }
+    // Lo único que se lee es "Cargando…".
+    expect(skeleton.textContent).toBe('Cargando…')
+  })
 })
 
 describe('BlockError (RF-41, RF-44, RF-79)', () => {

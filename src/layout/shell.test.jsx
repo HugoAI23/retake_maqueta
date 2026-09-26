@@ -6,7 +6,8 @@ import { renderWithProviders } from '../test/renderWithProviders.jsx'
 import { Logo } from '../shared/Logo.jsx'
 import { fireEvent } from '@testing-library/react'
 
-const SECTION_PATHS = ['/matches', '/teams', '/players', '/tournaments', '/standings', '/news', '/ml-models']
+// Secciones que aún no tienen su spec de contenido (Posiciones la tiene desde la spec 004).
+const SECTION_PATHS = ['/matches', '/teams', '/players', '/tournaments', '/news', '/ml-models']
 
 describe('marco común (RF-1, RF-3)', () => {
   it.each(['/', '/players', '/no-existe'])('en %s: cinta, menú, contenido y pie en ese orden', (route) => {
@@ -31,6 +32,15 @@ describe('rutas (RF-26, RF-27, RF-37, RF-54, RF-55)', () => {
     const main = screen.getByRole('main')
     expect(within(main).getByRole('heading', { level: 1 })).toBeInTheDocument()
     expect(within(main).getByText('Próximamente')).toBeInTheDocument()
+  })
+
+  it('/standings pinta la sección Posiciones dentro del marco, sin "Próximamente" (spec 004, RF-52)', () => {
+    renderApp('/standings')
+    const main = screen.getByRole('main')
+    expect(within(main).getByTestId('standings-page')).toBeInTheDocument()
+    expect(within(main).getByRole('heading', { level: 1, name: 'Posiciones' })).toBeInTheDocument()
+    expect(within(main).queryByText('Próximamente')).toBeNull()
+    expect(screen.getByRole('contentinfo')).toBeInTheDocument()
   })
 
   it('una dirección inventada muestra "Página no encontrada" con enlace a Inicio y sin reflejar la dirección', () => {

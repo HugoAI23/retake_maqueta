@@ -20,6 +20,10 @@ export const colors = {
   // Fondo del escudo de un equipo sin logo ni color primario (spec 002, RF-118).
   // El texto encima es blanco o negro según el contraste (RF-127, RF-128).
   'team-neutral': '#3a4252',
+  // Tablas de datos (spec 004): diferencia positiva (RF-22) y fondo del
+  // resaltado de una celda que cambia (RF-30).
+  positive: '#5fe39a',
+  highlight: '#16384a',
 }
 
 /**
@@ -42,4 +46,11 @@ export const contrastPairs = [
   ['danger', 'bg'],
   ['focus', 'bg'],
   ['bg', 'focus'],
+  // Spec 004 (RF-35): diferencia positiva sobre los fondos de la tabla, y los
+  // tres colores de la diferencia sobre el resaltado.
+  ['positive', 'surface'],
+  ['positive', 'bg'],
+  ['text', 'highlight'],
+  ['positive', 'highlight'],
+  ['danger', 'highlight'],
 ]

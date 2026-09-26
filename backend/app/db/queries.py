@@ -1,9 +1,10 @@
 """Consultas de estado calculado sobre los datos resueltos (T-038)."""
 
 import uuid
+from dataclasses import dataclass
 from datetime import datetime
 
-from sqlalchemy import and_, exists, not_, or_, select
+from sqlalchemy import and_, exists, func, not_, or_, select
 from sqlalchemy.orm import Session
 
 from app.db.models import (
@@ -13,12 +14,15 @@ from app.db.models import (
     Franchise,
     Match,
     MatchMap,
+    MatchSchedule,
+    MatchSlot,
     Placement,
     PlacementRoster,
     PlayerMapStats,
     RosterMembership,
     Season,
 )
+from app.domain.season_balance import FinishedMatch
 from app.domain.seasons import current_season_year
 
 
@@ -95,3 +99,63 @@ def championship_ids_for_player(session: Session, player_id: uuid.UUID) -> list[
         .distinct()
         .order_by(Championship.id)
     ))
+
+
+# --- Balance e identidad de la tabla de posiciones (spec 004) --------------------------------------
+
+@dataclass(frozen=True)
+class SeasonMatch:
+    """Partido `finalizado` de la temporada, con el instante de su último cambio (RF-53e de la 004)."""
+
+    result: FinishedMatch
+    changed_at: datetime | None
+
+
+def _season_matches(season_id: uuid.UUID):
+    """Partidos visibles de una temporada (los ocultos por la retención no cuentan, como en la lista)."""
+    return (select(Match).join(Event, Event.id == Match.event_id)
+            .where(Event.season_id == season_id, visible(Match, "match")))
+
+
+def season_has_matches(session: Session, season_id: uuid.UUID) -> bool:
+    """Si la temporada tiene algún partido registrado, en cualquier estado (decisión D-6 de la 004)."""
+    return bool(session.scalar(select(_season_matches(season_id).exists())))
+
+
+def finished_season_matches(session: Session, season_id: uuid.UUID) -> list[SeasonMatch]:
+    """Partidos `finalizado` de la temporada con la franquicia de cada lado, el ganador y el marcador.
+
+    Es la entrada del balance de series y mapas (RF-136 a RF-138a de la 002).
+    """
+    matches = session.scalars(_season_matches(season_id).where(Match.status == "finished")).all()
+    sides = {(match_id, side): franchise_id for match_id, side, franchise_id in session.execute(
+        select(MatchSlot.match_id, MatchSlot.side, MatchSlot.franchise_id)
+        .where(MatchSlot.match_id.in_([m.id for m in matches])))}
+    return [
+        SeasonMatch(
+            result=FinishedMatch(sides=(sides.get((m.id, 1)), sides.get((m.id, 2))), winner_side=m.winner_side,
+                                 maps_won=(m.maps_won_1, m.maps_won_2)),
+            changed_at=m.changed_at,
+        )
+        for m in matches
+    ]
+
+
+def last_played_at(session: Session, season_id: uuid.UUID) -> dict[uuid.UUID, datetime]:
+    """Hora programada del último partido `en vivo` o `finalizado` de cada franquicia en la temporada.
+
+    Cuenta la última hora programada de cada partido (la de su reprogramación más reciente). Las
+    franquicias que no han jugado ninguno no aparecen (RF-41a, RF-41b de la 004).
+    """
+    last_seq = (select(MatchSchedule.match_id, func.max(MatchSchedule.seq).label("seq"))
+                .group_by(MatchSchedule.match_id).subquery())
+    played = _season_matches(season_id).where(Match.status.in_(("live", "finished"))).subquery()
+    rows = session.execute(
+        select(MatchSlot.franchise_id, func.max(MatchSchedule.scheduled_at))
+        .join(played, played.c.id == MatchSlot.match_id)
+        .join(last_seq, last_seq.c.match_id == MatchSlot.match_id)
+        .join(MatchSchedule, and_(MatchSchedule.match_id == last_seq.c.match_id, MatchSchedule.seq == last_seq.c.seq))
+        .where(MatchSlot.franchise_id.is_not(None))
+        .group_by(MatchSlot.franchise_id)
+    )
+    return dict(rows.tuples().all())

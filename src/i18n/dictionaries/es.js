@@ -130,6 +130,29 @@ export default {
       system: 'Retake (acceso y proceso)',
     },
   },
+  // Tablas de datos y sección Posiciones (spec 004).
+  standings: {
+    season: 'Temporada {{year}}',
+  },
+  tables: {
+    columns: {
+      position: 'Pos.',
+      team: 'Equipo',
+      points: 'Puntos',
+      series: 'Series',
+      maps: 'Mapas',
+      mapDiff: '±Mapas',
+    },
+    sort: {
+      best: 'ordenada de mejor a peor',
+      worst: 'ordenada de peor a mejor',
+      action: 'Ordenar por {{column}}',
+    },
+    sharedPosition: '{{position}}.º, compartido',
+    caption: {
+      standings: 'Tabla de posiciones, temporada {{year}}',
+    },
+  },
   league: {
     matchStatus: {
       scheduled: 'programado',

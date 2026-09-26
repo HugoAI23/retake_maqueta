@@ -2,7 +2,7 @@
 
 - **ID**: `002-league-data`
 - **Fecha**: `2026-09-22` (creada el 2026-09-21; revisada tras la revisión QA, revisión QA cerrada)
-- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-22; revisiones R-1 y R-2 del 2026-09-22 durante el plan y aclaraciones R-3 a R-5 durante la implementación; cambios C-4 a C-10, C-12 y C-13 de la spec 003 aplicados el 2026-09-23, y C-23 y C-25 el 2026-09-24; ver §5.1)
+- **Estado**: `Aprobado` (aprobada por Hugo el 2026-09-22; revisiones R-1 y R-2 del 2026-09-22 durante el plan y aclaraciones R-3 a R-5 durante la implementación; cambios C-4 a C-10, C-12 y C-13 de la spec 003 aplicados el 2026-09-23, y C-23 y C-25 el 2026-09-24; cambio C-29 de la spec 004 aprobado el 2026-09-25; ver §5.1)
 
 ---
 
@@ -176,6 +176,12 @@ Alcance temporal: detalle completo de la **temporada actual** y, de temporadas a
 * **RF-50 (Ubicuo)**: EL SISTEMA registrará los puntos CDL exactamente como los publica la liga, sin recalcularlos a partir de resultados.
 * **RF-75 (Ubicuo)**: EL SISTEMA tomará la posición y los puntos CDL de cada equipo primero de la web oficial de la CDL, en su defecto de BreakingPoint.gg y en último lugar de Call of Duty Esports Wiki.
 * **RF-122 (Ubicuo)**: EL SISTEMA registrará la posición de cada equipo tal como la publica la fuente de la tabla, incluidas las posiciones compartidas, sin desempatar.
+* **RF-136 (Ubicuo)**: EL SISTEMA calculará para cada franquicia de la tabla de posiciones de la temporada actual sus series ganadas y perdidas, con todos sus partidos `finalizado` de la temporada actual, incluidos los jugados contra equipos invitados.
+* **RF-137 (Ubicuo)**: EL SISTEMA calculará para cada franquicia de la tabla de posiciones de la temporada actual sus mapas ganados, sumando los mapas que ganó en el marcador final de cada uno de esos partidos (RF-38), y sus mapas perdidos, sumando los que ganó su rival (ej. un 3–1 suma 3 ganados y 1 perdido).
+* **RF-138 (No deseado)**: SI un partido `finalizado` tiene registrado su ganador pero no su marcador final (por ejemplo, porque se ganó por incomparecencia), ENTONCES EL SISTEMA lo contará en las series de los dos equipos y no lo contará en sus mapas.
+* **RF-138a (No deseado)**: SI un partido `finalizado` no tiene registrados ni su ganador ni su marcador final, ENTONCES EL SISTEMA no lo contará en las series ni en los mapas de ningún equipo.
+* **RF-139 (No deseado)**: SI Retake todavía no ha obtenido los partidos de la temporada actual, ENTONCES EL SISTEMA dará como no disponible el balance de series y de mapas de todas las franquicias de la tabla de posiciones.
+  * *Nota (2026-09-25, cambio C-29 de la spec 004):* RF-136 a RF-139. Los partidos cancelados ya no forman parte de los datos (RF-83). Un partido contra un invitado cuenta para el equipo de la liga; el invitado sigue sin aparecer en la tabla ni en los resúmenes de la temporada (RF-117c).
 * **RF-51**: trasladado a §2.9 (reglas comunes de presentación).
 
 ### 2.8 Fuentes de datos
@@ -474,6 +480,7 @@ Cambios derivados de la spec 003, aprobados por Hugo uno a uno antes de aprobar 
 | C-12 | Si ninguna fuente publica el K/D, se calcula como kills ÷ deaths (surgió en la fase F0 de la 003; aprobado y aplicado el 2026-09-23) | RF-45, RF-79 |
 | C-13 | Si la fuente no publica la semana de un clasificatorio, se calcula por el orden de la semana con partidos (surgió en la fase F0 de la 003; aprobado y aplicado el 2026-09-23) | RF-31, RF-45 |
 | C-23 | Equipos invitados: equipos de fuera de la CDL que juegan un evento de la CDL, con su roster y sus jugadores, visibles solo en sus partidos (surgió en la primera carga real de la 003; aprobado y aplicado el 2026-09-24) | RF-117a a RF-117d |
+| C-29 | Balance de series y de mapas de cada franquicia de la tabla, calculado con todos sus partidos finalizados de la temporada actual, también los jugados contra invitados (surgió en la entrevista de la spec 004; aprobado el 2026-09-25, RF-137 aclarado en su revisión QA del mismo día; se implementa con la 004) | RF-136 a RF-139 |
 
 Los cambios C-1 a C-3 y C-11 afectan a la spec 001 (su §5.4).
 

@@ -84,7 +84,10 @@ const BASE_URL = '/api'
  * @property {string[]} correctedFields
  * @property {MatchMap[]} maps
  *
- * @typedef {{ franchiseId: string, identity: Identity | null, position: number | null, points: number | null }} StandingRow
+ * @typedef {{ won: number, lost: number }} WinLoss Balance de ganados y perdidos (spec 004, C-29).
+ * @typedef {{ franchiseId: string, identity: Identity | null, position: number | null, points: number | null,
+ *   series: WinLoss | null, maps: WinLoss | null, changedAt: string | null }} StandingRow
+ *   `series` y `maps` nulos = balance no disponible (RF-139 de la 002).
  *
  * @typedef {object} Placement
  * @property {string} franchiseId

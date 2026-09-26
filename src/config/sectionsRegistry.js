@@ -20,7 +20,7 @@ export const sectionsRegistry = Object.freeze([
   { id: 'teams', path: '/teams', featured: false, hasContent: false },
   { id: 'players', path: '/players', featured: false, hasContent: false },
   { id: 'tournaments', path: '/tournaments', featured: false, hasContent: false },
-  { id: 'standings', path: '/standings', featured: false, hasContent: false },
+  { id: 'standings', path: '/standings', featured: false, hasContent: true },
   { id: 'news', path: '/news', featured: false, hasContent: false },
   { id: 'mlModels', path: '/ml-models', featured: true, hasContent: false },
 ])

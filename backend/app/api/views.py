@@ -32,13 +32,17 @@ from app.db.models.matches import PLAYER_STAT_FIELDS
 from app.db.queries import (
     championship_ids_for_player,
     current_season,
+    finished_season_matches,
     guest_only_player_ids,
     is_current_season_player,
     is_free_agent,
+    last_played_at,
+    season_has_matches,
     visible,
 )
 from app.domain.ages import player_age
 from app.domain.identities import identity_at
+from app.domain.season_balance import counts, season_balances
 from app.ingest.resolvers import franchise_identities
 
 
@@ -227,20 +231,41 @@ def match_views(session: Session, now: datetime) -> list[out.MatchOut]:
 
 # --- Tabla de posiciones e historial ------------------------------------------------------------
 
+def _record_out(record) -> out.RecordOut:
+    return out.RecordOut(won=record.won, lost=record.lost)
+
+
 def standing_views(session: Session, now: datetime) -> list[out.StandingOut]:
     season = current_season(session)
     if season is None:
         return []
-    views = [
-        out.StandingOut(
+    # Un invitado nunca está en la tabla (RF-117c de la 002; C-23).
+    rows = session.scalars(select(Standing).join(Franchise, Franchise.id == Standing.franchise_id)
+                           .where(Standing.season_id == season.id, Franchise.is_guest.is_(False))).all()
+    # Balance de series y mapas (RF-136 a RF-139 de la 002; C-29).
+    matches = finished_season_matches(session, season.id)
+    balances = season_balances([row.franchise_id for row in rows], [m.result for m in matches],
+                               season_has_matches(session, season.id))
+    # Última actualización de cada fila: la fila o sus partidos contados (RF-53e de la 004, D-7).
+    changed = {row.franchise_id: row.changed_at for row in rows}
+    for m in (m for m in matches if counts(m.result) and m.changed_at is not None):
+        for franchise_id in m.result.sides:
+            if franchise_id in changed and (changed[franchise_id] is None or m.changed_at > changed[franchise_id]):
+                changed[franchise_id] = m.changed_at
+    # Cada fila lleva la identidad de su último partido jugado de la temporada o, si no ha jugado
+    # ninguno, la vigente (RF-41a, RF-41b de la 004): el nombre con el que jugó esa temporada.
+    played_at = last_played_at(session, season.id)
+    views = []
+    for row in rows:
+        balance = balances[row.franchise_id] if balances is not None else None
+        views.append(out.StandingOut(
             franchise_id=str(row.franchise_id),
-            identity=identity_of_franchise_at(session, row.franchise_id, now),
-            position=row.position, points=row.points, changed_at=utc(row.changed_at),
-        )
-        # Un invitado nunca está en la tabla (RF-117c de la 002; C-23).
-        for row in session.scalars(select(Standing).join(Franchise, Franchise.id == Standing.franchise_id)
-                                   .where(Standing.season_id == season.id, Franchise.is_guest.is_(False)))
-    ]
+            identity=identity_of_franchise_at(session, row.franchise_id, played_at.get(row.franchise_id, now)),
+            position=row.position, points=row.points,
+            series=_record_out(balance.series) if balance else None,
+            maps=_record_out(balance.maps) if balance else None,
+            changed_at=utc(changed[row.franchise_id]),
+        ))
     return sorted(views, key=lambda v: (v.position is None, v.position or 0,
                                         v.identity.short_name.casefold() if v.identity else ""))
 

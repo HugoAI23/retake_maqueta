@@ -140,11 +140,19 @@ class MatchOut(ApiModel):
     is_stale: bool = False
 
 
+class RecordOut(ApiModel):
+    won: int
+    lost: int
+
+
 class StandingOut(ApiModel):
     franchise_id: str
     identity: IdentityOut | None
     position: int | None
     points: int | None
+    # Spec 004 (C-29): balance de la temporada; `null` = no disponible (RF-139 de la 002).
+    series: RecordOut | None = None
+    maps: RecordOut | None = None
     changed_at: datetime | None = None
 
 

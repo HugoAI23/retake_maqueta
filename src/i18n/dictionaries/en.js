@@ -129,6 +129,29 @@ export default {
       system: 'Retake (access and process)',
     },
   },
+  // Tablas de datos y sección Posiciones (spec 004).
+  standings: {
+    season: '{{year}} Season',
+  },
+  tables: {
+    columns: {
+      position: 'Pos.',
+      team: 'Team',
+      points: 'Points',
+      series: 'Series',
+      maps: 'Maps',
+      mapDiff: '±Maps',
+    },
+    sort: {
+      best: 'sorted best to worst',
+      worst: 'sorted worst to best',
+      action: 'Sort by {{column}}',
+    },
+    sharedPosition: '{{position}}, tied',
+    caption: {
+      standings: 'Standings, {{year}} season',
+    },
+  },
   league: {
     matchStatus: {
       scheduled: 'scheduled',

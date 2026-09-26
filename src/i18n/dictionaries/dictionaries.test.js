@@ -73,3 +73,41 @@ describe('diccionarios (RF-63, RF-70)', () => {
     }
   })
 })
+
+describe('textos de las tablas y de Posiciones (spec 004, RF-40, RF-42, RF-48)', () => {
+  const tableKeys = [
+    'standings.season',
+    'tables.columns.position',
+    'tables.columns.team',
+    'tables.columns.points',
+    'tables.columns.series',
+    'tables.columns.maps',
+    'tables.columns.mapDiff',
+    'tables.sort.best',
+    'tables.sort.worst',
+    'tables.sort.action',
+    'tables.sharedPosition',
+    'tables.caption.standings',
+  ]
+  const ofSpec004 = (entries) =>
+    entries.filter(([k]) => k.startsWith('standings.') || k.startsWith('tables.'))
+  // Variables {{...}} de un texto, para comprobar que las dos traducciones usan las mismas.
+  const variables = (text) => [...text.matchAll(/{{(\w+)}}/g)].map(([, name]) => name).sort()
+
+  it.each(tableKeys)('%s existe en es y en en', (key) => {
+    expect(esEntries.map(([k]) => k)).toContain(key)
+    expect(enEntries.map(([k]) => k)).toContain(key)
+  })
+
+  it('las claves standings.* y tables.* son las mismas en los dos diccionarios', () => {
+    expect(ofSpec004(enEntries).map(([k]) => k).sort()).toEqual(
+      ofSpec004(esEntries).map(([k]) => k).sort(),
+    )
+  })
+
+  it.each(tableKeys)('%s usa las mismas variables en es y en en', (key) => {
+    const esValue = new Map(esEntries).get(key)
+    const enValue = new Map(enEntries).get(key)
+    expect(variables(enValue)).toEqual(variables(esValue))
+  })
+})

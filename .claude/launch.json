@@ -38,6 +38,24 @@
         "retake",
         "sync"
       ]
+    },
+    {
+      "name": "retake-api-guia",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "export DATABASE_URL=\"$(grep '^DATABASE_URL=' backend/.env | cut -d= -f2- | sed 's#/retake$#/retake_guia#')\" SOURCE_MODE=fixtures && exec uv run --directory backend uvicorn app.main:app --port 8002"
+      ],
+      "port": 8002
+    },
+    {
+      "name": "retake-dev-guia",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "RETAKE_API_TARGET=http://localhost:8002 exec npx vite --port 5174 --strictPort"
+      ],
+      "port": 5174
     }
   ]
 }
