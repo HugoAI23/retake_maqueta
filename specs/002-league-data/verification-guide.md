@@ -8,28 +8,31 @@ Guía paso a paso para que Hugo compruebe cada requisito de la spec 002 (constit
    ```bash
    brew services start postgresql@18
    ```
-2. Base de datos al día y datos de prueba cargados (se cargan en `retake`):
+2. **Base aparte con los datos de prueba** (`retake_guia`). La base `retake` tiene los datos reales de la 003 y no se toca: **no uses `retake source-mode`**, que reescribe `backend/.env` y borra la liga (RF-12 de la 003). En una terminal propia, que se usa para todo lo del backend:
+   ```bash
+   createdb -h localhost retake_guia
+   ```
+   ```bash
+   export DATABASE_URL="$(grep '^DATABASE_URL=' backend/.env | cut -d= -f2- | sed 's#/retake$#/retake_guia#')" SOURCE_MODE=fixtures
+   ```
    ```bash
    uv run --directory backend retake migrate
    ```
    ```bash
    uv run --directory backend retake load-fixtures
    ```
-   Si la base ya tenía datos de otra carga, vaciarla antes:
+3. Arrancar el backend de la guía (en esa misma terminal) y la web apuntando a él (en otra):
    ```bash
-   psql -h localhost -d retake -c "TRUNCATE external_ref, player, franchise, season, championship CASCADE"
-   ```
-3. Arrancar el backend y el frontend (dos terminales):
-   ```bash
-   uv run --directory backend uvicorn app.main:app --port 8000
+   uv run --directory backend uvicorn app.main:app --port 8002
    ```
    ```bash
-   npm run dev
+   RETAKE_API_TARGET=http://localhost:8002 npx vite --port 5174
    ```
+   Al terminar la guía, parar los dos con Ctrl+C y, si quieres, borrar la base: `dropdb -h localhost retake_guia`.
 4. Herramientas:
-   - **API**: abrir `http://localhost:8000/docs`, desplegar la ruta, **Try it out** → **Execute**. Para una ruta de detalle, copiar el `id` desde la lista.
-   - **psql**: ejecutar la orden de la fila en una terminal.
-   - **Consola**: abrir `http://localhost:5173`, la consola del navegador (filtro **All**) y pegar una sola vez:
+   - **API**: abrir `http://localhost:8002/docs`, desplegar la ruta, **Try it out** → **Execute**. Para una ruta de detalle, copiar el `id` desde la lista.
+   - **psql**: ejecutar la orden de la fila en una terminal (sobre `retake_guia`).
+   - **Consola**: abrir `http://localhost:5174`, la consola del navegador (filtro **All**) y pegar una sola vez:
      ```js
      (async () => {
        window.api = await import('/src/league/leagueApi.js');
@@ -52,16 +55,21 @@ uv run --directory backend pytest
 npm test
 ```
 
+## Cambios de la spec 003 en esta spec
+
+La 003 cambió algunos requisitos de la 002 (§5.1 de la 002). Las filas de esta guía siguen valiendo con los datos de prueba; el comportamiento nuevo se comprueba en la guía de la 003:
+C-4 (RF-1: calendario de la próxima temporada guardado sin mostrar), C-5 (RF-3: cambio de temporada automático), C-6 (RF-67: en vivo manda el marcador más avanzado), C-7 (RF-73: identidad nueva según el resultado combinado), C-8 y C-25 (RF-96: plazos de corrección), C-9 (RF-131: uniones también de partidos, eventos y franquicias), C-10 (RF-78: la retirada impide volver a guardar los datos), C-12 (RF-79: K/D calculado si ninguna fuente lo publica), C-13 (RF-31: semana calculada en clasificatorios) y C-23 (RF-117a a RF-117d: equipos invitados).
+
 ## Guía por fases
 
 | Fase | Qué comprobar |
 |---|---|
-| F0 | `/api/health` responde `{"status":"ok","database":"ok"}` a través de `http://localhost:5173/api/health`, y `/docs` abre. |
-| F1 | `psql -h localhost -d retake -c '\dt'` lista 19 tablas más `alembic_version`. |
+| F0 | `/api/health` responde `{"status":"ok","database":"ok"}` a través de `http://localhost:5174/api/health`, y `/docs` abre. |
+| F1 | `psql -h localhost -d retake_guia -c '\dt'` lista 31 tablas más `alembic_version` (19 de la 002 y 12 que añadió la 003). |
 | F2 | `uv run --directory backend pytest tests/unit/domain -v`: los nombres de las pruebas describen cada regla. |
 | F3 | Dos registros del mismo jugador de dos fuentes quedan en uno; `apply-curation` asigna y retira roles. |
 | F4 | `load-fixtures` acepta 253 registros sin rechazos; el historial muestra `ATL FaZe` en 2021 y `DAL Empire` en 2020. |
-| F5 | Las 10 rutas de `/docs` responden con los datos de prueba; ninguna respuesta de jugadores contiene "birth". |
+| F5 | Las 10 rutas de la 002 en `/docs` (`health`, `season/current`, `franchises`, `players` y su detalle, `events`, `matches` y su detalle, `standings` y `championships`; las demás son de la 003) responden con los datos de prueba; ninguna respuesta de jugadores contiene "birth". |
 | F6 | En la consola, `rules.displayMaps` de la gran final da 7 marcadores y 2 "No jugado". |
 | F7 | Checklist de seguridad (abajo) y esta guía completa. |
 
@@ -111,6 +119,10 @@ npm test
 | RF-115 | Prueba | `pytest -k sin_predecesora -v` | Una franquicia sin predecesora es una franquicia nueva. |
 | RF-116 | Prueba | `pytest -k franquicia_que_sale -v` | `[FICTICIO] Se Va` desaparece al cambiar de temporada; lo del historial queda. |
 | RF-117 | API `/api/franchises` | Buscar `Fariko Impact`. | Existe como franquicia con su identidad, aunque nunca fue de la CDL. |
+| RF-117a | Prueba | `pytest tests/unit/sources/test_bp_unlisted.py -k invitado -v` | Un equipo de fuera de la CDL en un evento de la CDL se registra como franquicia invitada, con su identidad y sin plaza (C-23 de la 003). |
+| RF-117b | Prueba | `pytest tests/unit/sources/test_bp_unlisted.py -k ficha_mensual -v` | De sus jugadores se guardan los mismos datos, con las mismas reglas, que de los de la CDL. |
+| RF-117c | Prueba | `pytest tests/integration/api/test_003_guests.py -v` | No salen en `/api/franchises`, `/api/standings` ni `/api/players`; en sus partidos salen marcados (`isGuest`, `teamIsGuest`) y con sus estadísticas. |
+| RF-117d | Prueba | `pytest tests/integration/ingest/test_003_unlisted.py -k deja_de_serlo -v` | Si entra en la lista de la CDL deja de ser invitado y conserva sus identidades. |
 
 ## 2.4 Jugadores
 
@@ -131,16 +143,16 @@ npm test
 | RF-110 | Prueba | `pytest -k pais_unico -v` | Con dos fuentes, queda un único país, el de BreakingPoint. |
 | RF-109 | API `/api/players` | Mirar `[FICTICIO] Solo Edad`. | `age: {min: 20, max: 21}` (edad 21 publicada en 2026 → año aproximado 2005). |
 | RF-60 | Prueba | `pytest -k datos_personales -v` | Los datos personales se guardan también de jugadores solo históricos si la fuente los publica. |
-| RF-77 | psql | `psql -h localhost -d retake -c "select current_gamertag, real_name from player where real_name is not null"` | Solo los nombres reales publicados en las fuentes (los 8 de la gran final). |
+| RF-77 | psql | `psql -h localhost -d retake_guia -c "select current_gamertag, real_name from player where real_name is not null"` | Solo los nombres reales publicados en las fuentes (los 8 de la gran final). |
 | RF-78 | API `/api/players` | Mirar `[FICTICIO] Retirada`. | `realName`, `country` y `age` a `null`. |
 | RF-26 | API `/api/players` | Mirar `[FICTICIO] A1` y `A2`. | `role: "SMG"` y `"AR"` (asignados en `curation.yaml`). |
-| RF-76 | Archivo `backend/curation/curation.yaml` | Cambiar el rol de `bp:fx-A1` a `AR` y ejecutar `uv run --directory backend retake apply-curation`. | El jugador pasa a `AR`, sin historial. Deshacer el cambio y volver a aplicar. |
+| RF-76 | Prueba | `pytest tests/integration/ingest/test_curation.py -k roles_se_asignan -v` | Un rol se sustituye por el nuevo para toda la temporada, sin historial, y sin entrada vuelve a `Sin rol`. Con datos reales, el cambio de KiSMET de SMG a AR del 2026-09-24 (`curation.yaml` + `apply-curation`): su rol pasó a `AR` sin rastro del anterior. |
 | RF-27 | API `/api/players` | Mirar Simp. | `role: null` (sin rol asignado por Retake). |
 | RF-105 | API `/api/players` | Mirar `[FICTICIO] Libre`. | `isCurrentSeason: true` aunque ya no tiene equipo. |
 | RF-106 | API `/api/players` | Mirar `[FICTICIO] Libre`. | `isFreeAgent: true`, `teamFranchiseId: null`. |
 | RF-102 | API `/api/players` | Mirar `[FICTICIO] Suplente`. | `isCurrentSeason: true`. |
 | RF-103 | API `/api/matches` | Partido `[FICTICIO]` al mejor de 5 con 5 mapas, mapa 1. | La fila de `[FICTICIO] Suplente` tiene `isSubstitute: true`. |
-| RF-104 | psql | `psql -h localhost -d retake -c "select count(*) from roster_membership r join player p on p.id=r.player_id where p.current_gamertag='[FICTICIO] Suplente'"` | `0`: el suplente no entra en el roster. |
+| RF-104 | psql | `psql -h localhost -d retake_guia -c "select count(*) from roster_membership r join player p on p.id=r.player_id where p.current_gamertag='[FICTICIO] Suplente'"` | `0`: el suplente no entra en el roster. |
 | RF-29 | API `/api/matches` | Mismo mapa. | El suplente tiene el `franchiseId` del equipo con el que jugó. |
 
 ## 2.5 Eventos y partidos
@@ -194,12 +206,17 @@ npm test
 | RF-50 | API `/api/standings` | Primera fila. | `OpTic TEX`, posición 1, 575 puntos, tal como se publican. |
 | RF-75 | Prueba | `pytest -k prioridad_de_la_web_oficial -v` | En la tabla, la web oficial manda sobre BreakingPoint. |
 | RF-122 | API `/api/standings` | Últimas filas. | Dos equipos en la posición 13 (compartida). |
+| RF-136 | API `/api/standings` | Mirar `series`. | Equipo A `3–0`, Equipo B `0–3`, FaZe VGS `1–0`, OpTic TEX `0–1` y el resto `0–0` (C-29; los partidos contra invitados cuentan: `pytest tests/integration/api/test_004_standings.py -k invitado -v`). |
+| RF-137 | API `/api/standings` | Mirar `maps`. | Equipo A `8–0` (3–0, 3–0 y 2–0), FaZe VGS `5–2`: los mapas del marcador final, los del rival como perdidos. |
+| RF-138 | Prueba | `pytest tests/unit/domain/test_season_balance.py -k sin_marcador -v` | Con ganador y sin marcador cuenta la serie, no los mapas. |
+| RF-138a | Prueba | `pytest tests/unit/domain/test_season_balance.py -k ni_marcador -v` | Sin ganador ni marcador no cuenta. |
+| RF-139 | Prueba | `pytest tests/integration/api/test_004_standings.py -k no_esta_disponible -v` | Sin partidos de la temporada, `series` y `maps` son `null` en todas las filas. |
 
 ## 2.8 Fuentes, seguridad y correcciones
 
 | RF | Dónde | Acción | Resultado esperado |
 |---|---|---|---|
-| RF-66 | psql | `psql -h localhost -d retake -c "select source, count(*) from external_ref group by source"` | Aparecen `bp`, `wiki` y `cdl`. |
+| RF-66 | psql | `psql -h localhost -d retake_guia -c "select source, count(*) from external_ref group by source"` | Aparecen `bp`, `wiki` y `cdl`. |
 | RF-67 | Prueba | `pytest -k "prioridad or breakingpoint" -v` | BreakingPoint > Wiki > web oficial en cada campo. |
 | RF-129 | API `/api/players` | Buscar el gamertag con `<img`. | Llega literal, como texto: `[FICTICIO] <img src=x onerror="alert(1)">`. |
 | RF-130 | API `/api/franchises` | Buscar `[FICTICIO] Equipo B`. | `logoUrl: null` (la fuente publicó `javascript:`). |
@@ -257,4 +274,4 @@ npm test
 | Credenciales | `git check-ignore -v backend/.env` | `backend/.env` ignorado; `.env.example` sin secretos. |
 | Datos ficticios en producción | `load-fixtures` con `APP_ENV=production` | Se niega (prueba `test_en_produccion_se_niega...`). |
 | Privacidad | `/api/players` | Ni fecha ni año de nacimiento (prueba que recorre todas las claves). |
-| Curación | `backend/curation/curation.yaml` | Solo referencias y motivos; ningún dato personal. |
+| Curación | `backend/curation/curation.yaml` y `fixtures.yaml` (I-35 de la 003) | Solo referencias, motivos, roles y nombres de país; ningún dato personal (revisado de nuevo el 2026-09-24 con la curación real). |
